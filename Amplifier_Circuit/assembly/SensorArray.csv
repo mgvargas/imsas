@@ -1,47 +1,27 @@
-"Source:","C:\Users\Robert\Documents\PCB_Design\test\SensorArray.sch"
-"Date:","27.06.2020 00:27:22"
-"Tool:","Eeschema (5.1.6)-1"
-"Generator:","C:\Program Files\KiCad\bin\scripting\plugins/bom_csv_grouped_by_value_with_fp.py"
-"Component Count:","99"
-"Ref","Qnty","Value","Cmp name","Footprint","Description","Vendor"
-"C1, C15, C16, C22, C28, C33, C35, ","7","10u","C_Small","Capacitor_SMD:C_0805_2012Metric","Unpolarized capacitor, small symbol",""
-"C2, C3, C4, C5, C6, C7, C8, C9, C10, C17, C19, C20, C23, C29, C34, C36, ","16","100n","C_Small","Capacitor_SMD:C_0402_1005Metric","Unpolarized capacitor, small symbol",""
-"C11, C12, ","2","2.2u","C_Small","Capacitor_SMD:C_0603_1608Metric","Unpolarized capacitor, small symbol",""
-"C13, C14, ","2","12p","C_Small","Capacitor_SMD:C_0402_1005Metric","Unpolarized capacitor, small symbol",""
-"C18, ","1","10n","C_Small","Capacitor_SMD:C_0402_1005Metric","Unpolarized capacitor, small symbol",""
-"C21, C24, C25, C27, C30, C31, ","6","1u","C_Small","Capacitor_SMD:C_0603_1608Metric","Unpolarized capacitor, small symbol",""
-"C26, C32, ","2","1n","C_Small","Capacitor_SMD:C_0603_1608Metric","Unpolarized capacitor, small symbol",""
-"D1, D3, D4, D5, D6, ","5","LED","LED_Small","LED_SMD:LED_0603_1608Metric","Light emitting diode, small symbol",""
-"D2, ","1","B5819W","D_Schottky_Small","Diode_SMD:D_SOD-123","Schottky diode, small symbol",""
-"F1, ","1","500mA","Fuse_Small","Fuse:Fuse_0603_1608Metric","Fuse, small symbol",""
-"FB1, FB2, ","2","100 @ 100 MHz","Ferrite_Bead_Small","Inductor_SMD:L_0805_2012Metric","Ferrite bead, small symbol",""
-"H1, H2, H3, H4, ","4","MountingHole_Pad","MountingHole_Pad","MountingHole:MountingHole_4.3mm_M4_Pad_Via","Mounting Hole with connection",""
-"HSE1, ","1","16MHz","Crystal_GND24_Small","Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm","Four pin crystal, GND on pins 2 and 4, small symbol",""
-"J1, ","1","UART_Connector","Conn_01x02","Connector_PinSocket_2.54mm:PinSocket_1x02_P2.54mm_Vertical","Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)",""
-"J2, ","1","Conn_02x05_Odd_Even","Conn_02x05_Odd_Even","Connector_PinHeader_1.27mm:PinHeader_2x05_P1.27mm_Vertical_SMD","Generic connector, double row, 02x05, odd/even pin numbering scheme (row 1 odd numbers, row 2 even numbers), script generated (kicad-library-utils/schlib/autogen/connector/)",""
-"J3, ","1","I2C_Connector","Conn_01x02","Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical","Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)",""
-"J4, ","1","VCC_Connector","Conn_01x02","Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical","Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)",""
-"J5, ","1","SPI_Connector","Conn_01x04","Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical","Generic connector, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)",""
-"J6, ","1","3V3_Connector","Conn_01x02","Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical","Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)",""
-"J7, ","1","Sensor_Array_Connector","Conn_01x22","Connector_FFC-FPC:Molex_200528-0220_1x22-1MP_P1.00mm_Horizontal","Generic connector, single row, 01x22, script generated (kicad-library-utils/schlib/autogen/connector/)",""
-"J8, ","1","Sensor_Connector","Conn_02x02_Counter_Clockwise","Connector_PinHeader_2.54mm:PinHeader_2x02_P2.54mm_Vertical","Generic connector, double row, 02x02, counter clockwise pin numbering scheme (similar to DIP packge numbering), script generated (kicad-library-utils/schlib/autogen/connector/)",""
-"J9, ","1","Amp_Sensor_out","Conn_01x02","Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical","Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)",""
-"R1, R2, R6, R7, R19, Ref1, Ref2, Ref3, Ref4, RgainA1, RgainB1, ","11","2k2","R_Small","Resistor_SMD:R_0603_1608Metric","Resistor, small symbol",""
-"R3, R4, R10, R14, ","4","10k","R_Small","Resistor_SMD:R_0603_1608Metric","Resistor, small symbol",""
-"R5, ","1","220","R_Small","Resistor_SMD:R_0603_1608Metric","Resistor, small symbol",""
-"R8, R20, ","2","1.5k","R_Small","Resistor_SMD:R_0603_1608Metric","Resistor, small symbol",""
-"R9, ","1","680","R_Small","Resistor_SMD:R_0603_1608Metric","Resistor, small symbol",""
-"R11, R17, ","2","100","R_Small","Resistor_SMD:R_0603_1608Metric","Resistor, small symbol",""
-"R12, R15, ","2","16k","R_Small","Resistor_SMD:R_0603_1608Metric","Resistor, small symbol",""
-"R13, R16, ","2","20k","R_Small","Resistor_SMD:R_0603_1608Metric","Resistor, small symbol",""
-"R18, ","1","100k","R_Small","Resistor_SMD:R_0603_1608Metric","Resistor, small symbol",""
-"R_GND1, R_GND2, ","2","0","R_Small","Resistor_SMD:R_0603_1608Metric","Resistor, small symbol",""
-"S1, ","1","1825910-6","1825910-6","digikey-footprints:SMD-4_5x4.4mm_P4mm","SWITCH TACTILE SPST-NO 0.05A 24V",""
-"SW1, ","1","SW_DIP_x01","SW_DIP_x01","Button_Switch_THT:SW_DIP_SPSTx01_Slide_9.78x4.72mm_W7.62mm_P2.54mm","1x DIP Switch, Single Pole Single Throw (SPST) switch, small symbol",""
-"U1, ","1","STM32F405RGTx","STM32F405RGTx","Package_QFP:LQFP-64_10x10mm_P0.5mm","ARM Cortex-M4 MCU, 1024KB flash, 128KB RAM, 168MHz, 1.8-3.6V, 51 GPIO, LQFP-64",""
-"U2, ","1","AMS1117-3.3","AMS1117-3.3","Package_TO_SOT_SMD:SOT-223-3_TabPin2","1A Low Dropout regulator, positive, 3.3V fixed output, SOT-223",""
-"U3, ","1","TLV71310PDBV","TLV71310PDBV","Package_TO_SOT_SMD:SOT-23-5","150mA Low Dropout Voltage Regulator, Fixed Output 1.0V, SOT-23-5",""
-"U4, U8, ","2","INA326","INA326","Package_SO:MSOP-8_3x3mm_P0.65mm","Precision, Rail-to-Rail I/O Instrumentation Amplifier, MSOP-8 package",""
-"U5, U7, ","2","AD5272BRM","AD5272BRM","Package_SO:MSOP-10_3x3mm_P0.5mm","Digital potentiometer, 1024 position, 1% Resistor Tolerance, I2C interface, MSOP-10",""
-"U6, U10, ","2","CD74HC4067M","CD74HC4067M","Package_SO:SOIC-24W_7.5x15.4mm_P1.27mm","High-Speed CMOS Logic 16-Channel Analog Multiplexer/Demultiplexer, SOIC-24",""
-"U9, ","1","MCP3562","MCP3562","digikey-footprints:TSSOP-20_W4.4mm","",""
+Designator,Quantity,Value,Footprint,LCSC Part #
+"C1, C15, C16, C22, C28, C33, C35, ",7,10u,0805,C15850
+"C2, C3, C4, C5, C6, C7, C8, C9, C10, C17, C19, C20, C23, C29, C34, C36, ",16,100n,0402,C1525
+"C11, C12, ",2,2.2u,0603,C23630
+"C13, C14, ",2,12p,0402,C1547
+"C18, ",1,10n,0402,C15195
+"C21, C24, C25, C27, C30, C31, ",6,1u,0603,C15849
+"C26, C32, ",2,1n,0603,C1588
+"D1, D3, D4, D5, D6, ",5,LED,0603,C72043
+"D2, ",1,B5819W,SOD-123,C8598
+"FB1, FB2, ",2,100 @ 100 MHz,0805,C1015
+"HSE1, ",1,16MHz,SMD-3225_4P,C13738
+"R1, R2, R6, R7, R19, Ref1, Ref2, Ref3, Ref4, RgainA1, RgainB1, ",11,2k2,0603,C4190
+"R3, R4, R10, R14, ",4,10k,0603,C25804
+"R5, ",1,220,0603,C22962
+"R8, R20, ",2,1.5k,0603,C22843
+"R9, ",1,680,0603,C23228
+"R11, R17, ",2,100,0603,C22775
+"R12, R15, ",2,16k,0603,C22818
+"R13, R16, ",2,20k,0603,C4184
+"R18, ",1,100k,0603,C25803
+"R_GND1, R_GND2, ",2,0,0603,C21189
+"S1, ",1,1825910-6,SMD-SW-4_5.1x5.1x1.5,C318884
+"U1, ",1,STM32F405RGTx,LQFP-64_10.0x10.0x0.5P,C15742
+"U2, ",1,AMS1117-3.3,SOT-223,C6186
+"U5, U7, ",2,AD5272BRM,MSOP-10_3.0x3.0x0.5P,C208055
+"U6, U10, ",2,CD74HC4067M,SOIC-24_7.5x15.4x1.27P,C496123

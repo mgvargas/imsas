@@ -1,0 +1,15 @@
+Designator,Quantity,Value,Footprint
+"F1, ",1,500mA,Fuse:Fuse_0603_1608Metric
+"J1, ",1,UART_Connector,Connector_PinSocket_2.54mm:PinSocket_1x02_P2.54mm_Vertical
+"J2, ",1,Conn_02x05_Odd_Even,Connector_PinHeader_1.27mm:PinHeader_2x05_P1.27mm_Vertical_SMD
+"J3, ",1,I2C_Connector,Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical
+"J4, ",1,VCC_Connector,Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical
+"J5, ",1,SPI_Connector,Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical
+"J6, ",1,3V3_Connector,Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical
+"J7, ",1,Sensor_Array_Connector,Connector_FFC-FPC:Molex_200528-0220_1x22-1MP_P1.00mm_Horizontal
+"J8, ",1,Sensor_Connector,Connector_PinHeader_2.54mm:PinHeader_2x02_P2.54mm_Vertical
+"J9, ",1,Amp_Sensor_out,Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical
+"SW1, ",1,SW_DIP_x01,Button_Switch_THT:SW_DIP_SPSTx01_Slide_9.78x4.72mm_W7.62mm_P2.54mm
+"U4, U8, ",2,INA326,Package_SO:MSOP-8_3x3mm_P0.65mm
+"U9, ",1,MCP3562,digikey-footprints:TSSOP-20_W4.4mm
+"U3, ",1,TLV71310PDBV,Package_TO_SOT_SMD:SOT-23-5
