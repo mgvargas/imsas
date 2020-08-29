@@ -1,3 +1,4 @@
 (sym_lib_table
   (lib (name ADC)(type Legacy)(uri ${KIPRJMOD}/Lib_ADC/ADC.lib)(options "")(descr ""))
+  (lib (name SensorArray-rescue)(type Legacy)(uri ${KIPRJMOD}/SensorArray-rescue.lib)(options "")(descr ""))
 )
