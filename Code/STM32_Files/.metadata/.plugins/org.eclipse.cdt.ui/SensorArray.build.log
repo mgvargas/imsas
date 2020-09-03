@@ -1,0 +1,21 @@
+22:04:39 **** Incremental Build of configuration Debug for project SensorArray ****
+make -j4 all 
+arm-none-eabi-gcc "../Core/Src/CD74HC4067.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DSTM32F405xx -DUSE_HAL_DRIVER -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/CD74HC4067.d" -MT"Core/Src/CD74HC4067.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/CD74HC4067.o"
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DSTM32F405xx -DUSE_HAL_DRIVER -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "SensorArray.elf" @"objects.list"   -mcpu=cortex-m4 -T"U:\Hair_Sensor\SensorArray\Code\STM32_Files\SensorArray\STM32F405RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="SensorArray.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: SensorArray.elf
+ 
+arm-none-eabi-objdump -h -S  SensorArray.elf  > "SensorArray.list"
+arm-none-eabi-objcopy  -O binary  SensorArray.elf  "SensorArray.bin"
+arm-none-eabi-size   SensorArray.elf 
+   text	   data	    bss	    dec	    hex	filename
+  11660	    276	   1948	  13884	   363c	SensorArray.elf
+Finished building: default.size.stdout
+ 
+Finished building: SensorArray.bin
+ 
+Finished building: SensorArray.list
+ 
+
+22:04:45 Build Finished. 0 errors, 0 warnings. (took 5s.658ms)
+
