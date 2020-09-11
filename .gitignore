@@ -8,4 +8,6 @@
 *.map
 *.su
 **/.metadata
-STM32_Files_____For ref only
+**/.settings
+Reference_manual_stm32f405
+STM32_Files_____For_ref_only
