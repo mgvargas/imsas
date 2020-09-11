@@ -79,6 +79,8 @@ static void MX_USART1_UART_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+  // Variable definition
+  uint8_t UART_Data[25] = "Test UART communication \n";
 
   /* USER CODE END 1 */
 
@@ -105,18 +107,34 @@ int main(void)
   MX_ADC1_Init();
   MX_ADC2_Init();
   MX_USART1_UART_Init();
+
   /* USER CODE BEGIN 2 */
 
-  mux_channel(9);
+  mux_channel(9);  // Select mux channel (for both mux)
+
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	//Blink a LED
+	//Blink a LED#
 	HAL_GPIO_TogglePin(GPIOB,LED_STATUS_Pin);
 	HAL_Delay(500);
+	HAL_GPIO_TogglePin(GPIOB,LED_STATUS_Pin);
+	HAL_Delay(500);
+	HAL_UART_Transmit(&huart1, UART_Data,25,20); // Handle_type, data, length, timeout
+	HAL_GPIO_TogglePin(GPIOB,LED_STATUS_Pin);
+	HAL_Delay(500);
+
+	/* Test plots Arduino Editor / Tools / Serial Plotter
+	 * RealtimePlotter https://github.com/sebnil/RealtimePlotter
+	 * Real time serial data plot (not sure) http://www.fast-product-development.com/real-time-serial-data-plot.html
+	 * SlimPLot https://github.com/infomaniac50/projectsimplot/releases
+	 * others https://arduino.stackexchange.com/questions/1180/serial-data-plotting-programs
+	 * */
+
 
     /* USER CODE END WHILE */
 

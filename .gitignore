@@ -1,0 +1,11 @@
+*.log
+*.lock
+*.elf
+*.mk
+*.list
+*cache
+*.dcm
+*.map
+*.su
+**/.metadata
+STM32_Files_____For ref only
