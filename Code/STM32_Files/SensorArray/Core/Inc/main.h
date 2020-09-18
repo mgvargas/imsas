@@ -33,6 +33,26 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+////////////////////////////////// Digital Potentiometer /////////////////////////////////
+
+/* Write data mode */
+typedef enum {
+   UART_WRITE_NO_INT = 1,            /* Write data when interrupts are disabled */
+   UART_WRITE_IN_INT,               /* Write data while in an interrupt routine */
+   UART_WRITE
+} enWriteData;
+
+/*************************** Functions prototypes *****************************/
+extern void Poti_SPI_Init(void);
+extern void Poti_SPI_Write(unsigned char* data, unsigned char bytesNumber, unsigned char poti);
+extern void Poti_SPI_Read(unsigned char* data, unsigned char bytesNumber, unsigned char poti);
+void Float_to_uint(float n, char* res, int afterpoint);
+int intToStr(int x, char str[], int d);
+
+
+/**************************** Configuration parameters **********************/
+////////////////////////////////// END Digital Potentiometer /////////////////////////////////
+
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

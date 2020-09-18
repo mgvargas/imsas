@@ -20,10 +20,13 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "CD74HC4067.h"		// Multiplexer
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "CD74HC4067.h"		// Multiplexer
+#include "AD5270.h"
+#include "math.h"
+
 
 /* USER CODE END Includes */
 
@@ -69,7 +72,8 @@ static void MX_USART1_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+uint8_t SPI_Data[2] = {0x1C, 0x03};
+uint8_t POTIA[2] = {0x07, 0xff};
 /* USER CODE END 0 */
 
 /**
@@ -80,7 +84,12 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
   // Variable definition
-  uint8_t UART_Data[25] = "Test UART communication \n";
+  uint8_t UART_Data[25] = "Test UART communication :";
+  uint8_t Data[11] = " Data5sent ";
+  //uint8_t SPI_Data[2] = {0x1C, 0x03};
+  //uint8_t POTIA[2] = {0x07, 0xFF};
+  uint16_t Res_value;
+  uint8_t ResValUint[6] = "Ein We";
 
   /* USER CODE END 1 */
 
@@ -107,7 +116,6 @@ int main(void)
   MX_ADC1_Init();
   MX_ADC2_Init();
   MX_USART1_UART_Init();
-
   /* USER CODE BEGIN 2 */
 
   mux_channel(9);  // Select mux channel (for both mux)
@@ -119,14 +127,38 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	//Blink a LED#
+	//Blink a LED
 	HAL_GPIO_TogglePin(GPIOB,LED_STATUS_Pin);
-	HAL_Delay(500);
-	HAL_GPIO_TogglePin(GPIOB,LED_STATUS_Pin);
-	HAL_Delay(500);
 	HAL_UART_Transmit(&huart1, UART_Data,25,20); // Handle_type, data, length, timeout
-	HAL_GPIO_TogglePin(GPIOB,LED_STATUS_Pin);
-	HAL_Delay(500);
+	HAL_Delay(1000);
+
+
+	// Start SPI communication with Digital Poti SPI1_CS_ADC_Pin
+
+	/*HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_RESET);
+	HAL_SPI_Transmit(&hspi1, (uint8_t *)SPI_Data, 2, HAL_MAX_DELAY);
+	HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_SET);
+	HAL_Delay(10);
+	HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_RESET);
+	HAL_SPI_Transmit(&hspi1, (uint8_t *)POTIA, 2, HAL_MAX_DELAY);
+	HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_SET);
+	HAL_Delay(10);*/
+
+	AD5270_WriteRDAC(1500, 'B');
+	HAL_Delay(10);
+	//Res_value = AD5270_ReadRDAC('B');
+	Res_value =AD5270_WriteRDAC(1500, 'A');
+	HAL_Delay(10);
+    Res_value= 100.0;
+	//float rounded = (int)(Res_value*100+0.5);
+	//Res_value = rounded/100;
+	//Float_to_uint(Res_value, ResValUint, 2);
+	//Res_value = 0x0020;
+	HAL_UART_Transmit(&huart1, Res_value, 4,20);
+	HAL_Delay(10);
+	HAL_UART_Transmit(&huart1, Data,11,20); // Handle_type, data, length, timeout
+	HAL_Delay(1000);
+
 
 	/* Test plots Arduino Editor / Tools / Serial Plotter
 	 * RealtimePlotter https://github.com/sebnil/RealtimePlotter
@@ -340,9 +372,9 @@ static void MX_SPI1_Init(void)
   hspi1.Init.Direction = SPI_DIRECTION_2LINES;
   hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
   hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
-  hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
+  hspi1.Init.CLKPhase = SPI_PHASE_2EDGE;
   hspi1.Init.NSS = SPI_NSS_SOFT;
-  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;
   hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -447,6 +479,216 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+// Reverses a string 'str' of length 'len'
+void reverse(char* str, int len)
+{
+    int i = 0, j = len - 1, temp;
+    while (i < j) {
+        temp = str[i];
+        str[i] = str[j];
+        str[j] = temp;
+        i++;
+        j--;
+    }
+}
+
+// Converts a given integer x to string str[].
+// d is the number of digits required in the output.
+// If d is more than the number of digits in x,
+// then 0s are added at the beginning.
+int intToStr(int x, char str[], int d)
+{
+    int i = 0;
+    while (x) {
+        str[i++] = (x % 10) + '0';
+        x = x / 10;
+    }
+
+    // If number of digits required is more, then
+    // add 0s at the beginning
+    while (i < d)
+        str[i++] = '0';
+
+    reverse(str, i);
+    str[i] = '\0';
+    return i;
+}
+
+// Converts a floating-point/double number to a string.
+void Float_to_uint(float n, char* res, int afterpoint)
+{
+    // Extract integer part
+    int ipart = (int)n;
+
+    // Extract floating part
+    float fpart = n - (float)ipart;
+
+    // convert integer part to string
+    int i = intToStr(ipart, res, 0);
+
+    // check for display option after point
+    if (afterpoint != 0) {
+        res[i] = '.'; // add dot
+
+        // Get the value of fraction part upto given no.
+        // of points after dot. The third parameter
+        // is needed to handle cases like 233.007
+        fpart = fpart * pow(10, afterpoint);
+
+        intToStr((int)fpart, res + i + 1, afterpoint);
+    }
+}
+
+////////////////////////////////// Digital Potentiometer /////////////////////////////////
+/**
+   @brief SPI initialization
+   @return none
+*
+void Poti_SPI_Init(void)
+{
+    pinMode(AD5270_CS_PIN, OUTPUT); // Set CS pin for ADT7310 as output
+    digitalWrite(AD5270_CS_PIN, HIGH);
+
+    SPI.begin();
+    SPI.setDataMode(SPI_MODE3);
+    delay(1000);
+
+}*/
+uint16_t AD5270_WriteRDAC(uint16_t resistance, unsigned char poti)
+{
+   //float RDAC_Value;
+
+   uint16_t setValue;
+
+   uint16_t RDAC_val = AD5270_CalcRDAC(resistance);
+
+   uint8_t RDAC[2];
+
+    //RDAC_Value = (float)((RDAC_val * MAX_RESISTANCE) / 1024.0); // inverse operation to get actual resistance in the RDAC
+
+   //RDAC_val = (RDAC_val | WRITE_RDAC);
+
+   RDAC[0] = RDAC_val & 0xff;
+   RDAC[1] = ((RDAC_val >> 8) | 0x04);
+
+   setValue = AD5270_ReadReg(READ_CTRL_REG, poti);
+
+	//(RDAC & 0x03ff) | WRITE_RDAC
+
+    if(strcmp(poti, 'A') ==1){			// Select Poti A or B
+    	HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_RESET);
+    	HAL_SPI_Transmit(&hspi1, (uint8_t *)SPI_Data, 2, HAL_MAX_DELAY);
+    	HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_SET);
+    	HAL_Delay(10);
+        HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_RESET);
+        HAL_SPI_Transmit(&hspi1, RDAC, 2, HAL_MAX_DELAY);
+        //HAL_SPI_Transmit(&hspi1, (uint8_t *)POTIA, 2, HAL_MAX_DELAY);
+        HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_SET);}
+    else{
+    	HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_RESET);
+    	HAL_SPI_Transmit(&hspi1, (uint8_t *)SPI_Data, 2, HAL_MAX_DELAY);
+    	HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_SET);
+    	HAL_Delay(10);
+        HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_RESET);
+        HAL_SPI_Transmit(&hspi1, (uint8_t *)RDAC, 2, HAL_MAX_DELAY);
+        HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_SET);}
+
+    return (uint16_t)RDAC_val;
+}
+/***************************************************************************
+ * @brief Writes data to SPI.
+ *
+ * @param data - Write data buffer:
+ *               - first byte is the chip select number;
+ *               - from the second byte onwards are located data bytes to write.
+ * @param bytesNumber - Number of bytes to write.
+ * @param poti - Select potentiometer A or B.
+ *
+ * @return Number of written bytes.
+*******************************************************************************/
+void Poti_SPI_Write(unsigned char* data, unsigned char bytesNumber, unsigned char poti)
+{
+    uint8_t count = 0;
+
+    //if(convFlag == 0 && daisyCh == 0){
+      if(strcmp(poti, 'A') ==1)			// Select Poti A or B
+         //digitalWrite(AD5270_CS_PIN, LOW);
+         HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_RESET);
+      else
+    	 HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_RESET);
+    //}
+
+    for(count = 0;count < bytesNumber;count++)
+    {
+    	HAL_UART_Transmit(&huart1, data[count],strlen(data[count]),20);
+        //SPI.transfer(data[count]);  // write instruction
+    }
+
+    //if(convFlag == 0 && daisyCh == 0){
+      if(strcmp(poti, 'A') ==1)			// Select Poti A or B
+         //digitalWrite(AD5270_CS_PIN, HIGH);
+         HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_SET);
+      else
+    	 HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_SET);
+    //}
+
+}
+/***************************************************************************//**
+ * @brief Reads data from SPI.
+ *
+ * @param data - As an input parameter, data represents the write buffer:
+ *               - first byte is the chip select number;
+ *               - from the second byte onwards are located data bytes to write.
+ *               As an output parameter, data represents the read buffer:
+ *               - from the first byte onwards are located the read data bytes.
+ * @param bytesNumber - Number of bytes to write.
+ *
+ * @return Number of written bytes.
+*******************************************************************************/
+void Poti_SPI_Read(unsigned char* data, unsigned char bytesNumber, unsigned char poti)
+{
+
+   unsigned char writeData[4]  = {0, 0, 0, 0};
+   unsigned char count          = 0;
+
+    for(count = 0;count <= bytesNumber;count++)
+    {
+        if(count == 0)
+           writeData[count] = data[count];
+        else
+           writeData[count] = 0xAA;    /* dummy value */
+    }
+
+    //if(convFlag == 0){
+        //digitalWrite(AD5270_CS_PIN, LOW);
+        if(strcmp(poti, 'A') ==1)			// Select Poti A or B
+           HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_RESET);
+        else
+      	   HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_RESET);
+    //}
+
+    //SPI.transfer(writeData[0]);
+    HAL_UART_Transmit(&huart1, writeData[0], strlen(writeData[0]),20);
+
+    for(count = 1; count < bytesNumber + 1;count++)
+    {
+        //data[count - 1] = SPI.transfer(writeData[count]);
+        data[count - 1] = HAL_UART_Transmit(&huart1, writeData[count],strlen(writeData[count]),20);
+    }
+
+    //if(convFlag == 0){
+        //digitalWrite(AD5270_CS_PIN, HIGH);
+        if(strcmp(poti, 'A') ==1)			// Select Poti A or B
+           HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_SET);
+        else
+      	   HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_SET);
+    //}
+}
+
+
+
+////////////////////////////////// END Digital Potentiometer /////////////////////////////////
 
 /* USER CODE END 4 */
 
