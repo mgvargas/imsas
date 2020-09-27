@@ -50,7 +50,7 @@
 extern "C" {
 #endif*/
 
-#define MAX_RESISTANCE                    20000.0
+#define MAX_RESISTANCE                    20000
 #define WRITE_OPERATION_50TP_TIMEOUT      350
 #define MEMORY_OPERATION_TIMEOUT          6
 #define REG_OPERATION_TIMEOUT             2
@@ -61,7 +61,7 @@ extern "C" {
     typedef enum {
         NO_OP               =  0x00,    ///< No data
         NO_OP_cmd           =  0x0000,  ///< 16 bit no data
-        WRITE_RDAC          =  0x0400,    ///< Write to the RDAC Register
+        WRITE_RDAC          =  0x04,    ///< Write to the RDAC Register
         READ_RDAC           =  0x08,    ///< Read from the RDAC Register
         STORE_50TP          =  0x0C,    ///< Store RDAC setting to 50-TP
         SW_RST              =  0x10,    ///< Software reset to last memory location
