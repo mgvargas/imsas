@@ -173,34 +173,34 @@ int main(void)
 	cmd_ADC[0] = (ADC_ADDRESS << 6) | (ADC_reg << 2) | ADC_WRITE;
 
 	// Start SPI communication with ADC (MCP3562) SPI1_CS_ADC_Pin
-/*	HAL_GPIO_WritePin(GPIOB, SPI1_CS_ADC_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_RESET);
 	HAL_SPI_Transmit(&hspi1, (uint8_t *){cmd_ADC, 0x22}, 2, HAL_MAX_DELAY);
-	HAL_GPIO_WritePin(GPIOB, SPI1_CS_ADC_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_SET);
 
 	ADC_reg = 0x4;
 	cmd_ADC = (ADC_ADDRESS << 6) | (ADC_reg << 2) | ADC_WRITE;
 
-	HAL_GPIO_WritePin(GPIOB, SPI1_CS_ADC_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_RESET);
 	HAL_SPI_Transmit(&hspi1, (uint8_t *){cmd_ADC, 0xC0}, 2, HAL_MAX_DELAY);
-	HAL_GPIO_WritePin(GPIOB, SPI1_CS_ADC_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_SET);
 
 	ADC_reg = 0x6;
 	cmd_ADC = (ADC_ADDRESS << 6) | (ADC_reg << 2) | ADC_WRITE;
 
-	HAL_GPIO_WritePin(GPIOB, SPI1_CS_ADC_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_RESET);
 	HAL_SPI_Transmit(&hspi1, (uint8_t *){cmd_ADC, 0x01}, 2, HAL_MAX_DELAY);
-	HAL_GPIO_WritePin(GPIOB, SPI1_CS_ADC_Pin, GPIO_PIN_SET);
-*/
+	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_SET);
+
 	ADC_reg = 0x2;
 	cmd_ADC[0] = (ADC_ADDRESS << 6) | (ADC_reg << 2) | ADC_READ;
 	uint8_t ADC_RX_buffer[4] = {0x2, 0x00, 0x33, 0x33};
 	HAL_Delay(10);
 
-	HAL_GPIO_WritePin(GPIOB, SPI1_CS_ADC_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_RESET);
 	HAL_SPI_Transmit(&hspi1, (uint8_t *)cmd_ADC, 1, HAL_MAX_DELAY);
 	HAL_SPI_Receive(&hspi1, (uint8_t *)ADC_RX_buffer, 20, HAL_MAX_DELAY);
 	HAL_Delay(10);
-	HAL_GPIO_WritePin(GPIOB, SPI1_CS_ADC_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_SET);
 
 
   /* USER CODE END 2 */
