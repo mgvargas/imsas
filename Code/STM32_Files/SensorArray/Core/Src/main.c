@@ -85,8 +85,8 @@ int main(void)
   /* USER CODE BEGIN 1 */
 	// Variable definition
 	uint8_t UART_Data[25] = "Test UART communication :";
-	uint8_t Data[11] = " Data sent ";
-	//uint16_t Res_value;
+	uint8_t Data[11] = " Data2sent ";
+	uint16_t Res_value;
 	//uint8_t ResValUint[2];
 
 
@@ -117,14 +117,17 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 
-	mux_channel(9);  // Select mux channel (for both mux)
+	mux_channel(0);  // Select mux channel (for both mux)
 	Poti_SPI_Init(); // Initialize digital potentiometer
 
 	// Start SPI communication with Digital Poti (AD5270) SPI1_CS_POTIA_Pin
 
-	AD5270_WriteRDAC(500, 'B');
+	AD5270_WriteRDAC(20000, 'B');
+	HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_RESET);
+	HAL_SPI_TransmitReceive(&hspi1, (uint8_t *)POTIA, Res_value, 10, HAL_MAX_DELAY);
+	HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_SET);
 	//Res_value = AD5270_ReadRDAC('B');
-	AD5270_WriteRDAC(500, 'A');
+	//AD5270_WriteRDAC(1500, 'A');
 	/*Res_value= 100.0;
 	int rounded = (int)(Res_value*100+0.5);
 	Res_value = rounded/100;
@@ -173,34 +176,34 @@ int main(void)
 	cmd_ADC[0] = (ADC_ADDRESS << 6) | (ADC_reg << 2) | ADC_WRITE;
 
 	// Start SPI communication with ADC (MCP3562) SPI1_CS_ADC_Pin
-	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_RESET);
-	HAL_SPI_Transmit(&hspi1, (uint8_t *){cmd_ADC, 0x22}, 2, HAL_MAX_DELAY);
+	//HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_RESET);
+	/*HAL_SPI_Transmit(&hspi1, (uint8_t *){cmd_ADC, 0x22}, 2, HAL_MAX_DELAY);
 	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_SET);
 
 	ADC_reg = 0x4;
-	cmd_ADC = (ADC_ADDRESS << 6) | (ADC_reg << 2) | ADC_WRITE;
+	cmd_ADC[0] = (ADC_ADDRESS << 6) | (ADC_reg << 2) | ADC_WRITE;
 
 	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_RESET);
 	HAL_SPI_Transmit(&hspi1, (uint8_t *){cmd_ADC, 0xC0}, 2, HAL_MAX_DELAY);
 	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_SET);
 
 	ADC_reg = 0x6;
-	cmd_ADC = (ADC_ADDRESS << 6) | (ADC_reg << 2) | ADC_WRITE;
+	cmd_ADC[0] = (ADC_ADDRESS << 6) | (ADC_reg << 2) | ADC_WRITE;
 
 	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_RESET);
 	HAL_SPI_Transmit(&hspi1, (uint8_t *){cmd_ADC, 0x01}, 2, HAL_MAX_DELAY);
 	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_SET);
 
-	ADC_reg = 0x2;
+	ADC_reg = 0x4;
 	cmd_ADC[0] = (ADC_ADDRESS << 6) | (ADC_reg << 2) | ADC_READ;
 	uint8_t ADC_RX_buffer[4] = {0x2, 0x00, 0x33, 0x33};
 	HAL_Delay(10);
 
 	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_RESET);
 	HAL_SPI_Transmit(&hspi1, (uint8_t *)cmd_ADC, 1, HAL_MAX_DELAY);
-	HAL_SPI_Receive(&hspi1, (uint8_t *)ADC_RX_buffer, 20, HAL_MAX_DELAY);
+	HAL_SPI_Receive(&hspi1, (uint8_t *)ADC_RX_buffer, 4, HAL_MAX_DELAY);
 	HAL_Delay(10);
-	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_SET);*/
 
 
   /* USER CODE END 2 */
@@ -214,7 +217,8 @@ int main(void)
 		HAL_UART_Transmit(&huart1, UART_Data,25,20); // Handle_type, data, length, timeout
 		HAL_Delay(1000);
 
-		HAL_UART_Transmit(&huart1, ADC_RX_buffer, 4, 20);
+		//HAL_UART_Transmit(&huart1, ADC_RX_buffer, 4, 20);
+		HAL_UART_Transmit(&huart1, Res_value, 10, 20);
 		HAL_Delay(10);
 		HAL_UART_Transmit(&huart1, Data,11,20); // Handle_type, data, length, timeout
 		HAL_Delay(1000);
@@ -432,9 +436,9 @@ static void MX_SPI1_Init(void)
   hspi1.Init.Direction = SPI_DIRECTION_2LINES;
   hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
   hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
-  hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
+  hspi1.Init.CLKPhase = SPI_PHASE_2EDGE;
   hspi1.Init.NSS = SPI_NSS_SOFT;
-  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
   hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
