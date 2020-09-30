@@ -53,7 +53,7 @@ uint16_t AD5270_CalcRDAC(uint16_t resistance)
 	if (resistance < 0)
 		resistance = 0 ;
 
-   return ((uint16_t)( (resistance / MAX_RESISTANCE) * 1024 - 1));
+   return ((uint16_t)( ( ((uint32_t) resistance << 10) / (uint32_t) MAX_RESISTANCE) -1));
 
 }
 /**

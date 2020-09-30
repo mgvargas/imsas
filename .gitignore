@@ -7,6 +7,7 @@
 *.dcm
 *.map
 *.su
+*.o
 **/.metadata
 **/.settings
 Reference_manual_stm32f405

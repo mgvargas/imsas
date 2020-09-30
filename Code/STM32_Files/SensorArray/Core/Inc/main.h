@@ -53,6 +53,15 @@ int intToStr(int x, char str[], int d);
 /**************************** Configuration parameters **********************/
 ////////////////////////////////// END Digital Potentiometer /////////////////////////////////
 
+
+////////////////////////////////// ADC /////////////////////////////////
+typedef enum {
+   ADC_ADDRESS = 0x01,          /* Address of the ADC */
+   ADC_WRITE = 0x02,            	/* Incremental Write Starting at Register Address */
+   ADC_READ = 0x01 				/* Incremental Read Starting at Register Address */
+};
+////////////////////////////////// End ADC /////////////////////////////////
+
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
