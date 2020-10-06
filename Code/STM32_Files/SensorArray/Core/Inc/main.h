@@ -59,7 +59,9 @@ typedef enum {
    ADC_ADDRESS = 0x01,          /* Address of the ADC */
    ADC_WRITE = 0x02,            	/* Incremental Write Starting at Register Address */
    ADC_READ = 0x01 				/* Incremental Read Starting at Register Address */
-};
+} adc_commands;
+void config_ADC(uint8_t ADC_reg, uint8_t command);
+uint8_t read_ADC(uint8_t ADC_reg);
 ////////////////////////////////// End ADC /////////////////////////////////
 
 /* USER CODE END Includes */

@@ -74,6 +74,8 @@ static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN 0 */
 uint8_t SPI_Data[2] = {0x1C, 0x03};
 uint8_t POTIA[2] = {0x07, 0xff};
+uint8_t cmd_ADC[2];
+//uint8_t POTIA[2] = {0x0C, 0x00};
 /* USER CODE END 0 */
 
 /**
@@ -85,9 +87,10 @@ int main(void)
   /* USER CODE BEGIN 1 */
 	// Variable definition
 	uint8_t UART_Data[25] = "Test UART communication :";
-	uint8_t Data[11] = " Data2sent ";
+	uint8_t Data[11] = " Data sent ";
 	uint16_t Res_value;
 	//uint8_t ResValUint[2];
+	uint8_t *ADC_RX_buffer;//[3];// = {0x2, 0x00, 0x33, 0x33};
 
 
   /* USER CODE END 1 */
@@ -121,11 +124,8 @@ int main(void)
 	Poti_SPI_Init(); // Initialize digital potentiometer
 
 	// Start SPI communication with Digital Poti (AD5270) SPI1_CS_POTIA_Pin
+	AD5270_WriteRDAC(600, 'B');
 
-	AD5270_WriteRDAC(20000, 'B');
-	HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_RESET);
-	HAL_SPI_TransmitReceive(&hspi1, (uint8_t *)POTIA, Res_value, 10, HAL_MAX_DELAY);
-	HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_SET);
 	//Res_value = AD5270_ReadRDAC('B');
 	//AD5270_WriteRDAC(1500, 'A');
 	/*Res_value= 100.0;
@@ -143,7 +143,7 @@ int main(void)
 	 *    CS_SEL[1:0] 00 ->  No current source is applied       			CONFIG0[3:2]
 	 *    ADC_MODE[1:0] 11 -> conversion, needs 256 DMCLK time to start     CONFIG0[1:0]
 	 *    				10 -> stand by
-	 *    so: 0x23 {0x02, 0x03} for conversion mode, 0x22 {0x02, 0x02} for standby mode
+	 *    so: 0x23 for conversion mode, 0x22 for standby mode
 	 *
 	 *  Register CONFIG1: Address 0x2, leave as default (0x0C)
 	 *    OSR[3:0] = 0011 -> Data Rate (Hz) with MCLK = 4.9152 MHz is 4800
@@ -154,7 +154,7 @@ int main(void)
 	 *    AZ_MUX 0 no auto-zeroing
 	 *    RESERVED[1:0] 11
 	 *
-	 *  Register CONFIG3: Address 0x4  set to 0xC0 {0xC, 0x00}
+	 *  Register CONFIG3: Address 0x4  set to 0xC0
 	 *    CONV_MODE[1:0] = 11 -> = Continuous Conversion mode
 	 *    DATA_FORMAT[1:0] = 00 ->  the output register shows only the 24-bit value
 	 *    CRC_FORMAT 0 default
@@ -171,39 +171,12 @@ int main(void)
 	 *  Send a command 01 (ADC address) 0001 (register) 10 (write)  -> 0x46
 	 *
 	 */
-	uint8_t ADC_reg = 0x1;
-	uint8_t cmd_ADC[1];
-	cmd_ADC[0] = (ADC_ADDRESS << 6) | (ADC_reg << 2) | ADC_WRITE;
 
-	// Start SPI communication with ADC (MCP3562) SPI1_CS_ADC_Pin
-	//HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_RESET);
-	/*HAL_SPI_Transmit(&hspi1, (uint8_t *){cmd_ADC, 0x22}, 2, HAL_MAX_DELAY);
-	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_SET);
-
-	ADC_reg = 0x4;
-	cmd_ADC[0] = (ADC_ADDRESS << 6) | (ADC_reg << 2) | ADC_WRITE;
-
-	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_RESET);
-	HAL_SPI_Transmit(&hspi1, (uint8_t *){cmd_ADC, 0xC0}, 2, HAL_MAX_DELAY);
-	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_SET);
-
-	ADC_reg = 0x6;
-	cmd_ADC[0] = (ADC_ADDRESS << 6) | (ADC_reg << 2) | ADC_WRITE;
-
-	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_RESET);
-	HAL_SPI_Transmit(&hspi1, (uint8_t *){cmd_ADC, 0x01}, 2, HAL_MAX_DELAY);
-	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_SET);
-
-	ADC_reg = 0x4;
-	cmd_ADC[0] = (ADC_ADDRESS << 6) | (ADC_reg << 2) | ADC_READ;
-	uint8_t ADC_RX_buffer[4] = {0x2, 0x00, 0x33, 0x33};
-	HAL_Delay(10);
-
-	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_RESET);
-	HAL_SPI_Transmit(&hspi1, (uint8_t *)cmd_ADC, 1, HAL_MAX_DELAY);
-	HAL_SPI_Receive(&hspi1, (uint8_t *)ADC_RX_buffer, 4, HAL_MAX_DELAY);
-	HAL_Delay(10);
-	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_SET);*/
+	// Configure ADC
+	config_ADC(0x1,0x22); // Standby mode
+	config_ADC(0x4,0xC0); // Configure conversion and gain
+	config_ADC(0x6,0x23); // Select ADC B
+	config_ADC(0x1,0x23); // Conversion mode
 
 
   /* USER CODE END 2 */
@@ -212,13 +185,22 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 	while (1)
 	{
+		//Read ADC value
+		ADC_RX_buffer = read_ADC(0x00);
+		config_ADC(0x6,0x01); // Select ADC A
+		ADC_RX_buffer = read_ADC(0x00);
+		config_ADC(0x6,0x23); // Select ADC B
+		ADC_RX_buffer = read_ADC(0x00);
+
 		//Blink a LED
 		HAL_GPIO_TogglePin(GPIOB,LED_STATUS_Pin);
+
+		// Send test message UART
 		HAL_UART_Transmit(&huart1, UART_Data,25,20); // Handle_type, data, length, timeout
 		HAL_Delay(1000);
 
-		//HAL_UART_Transmit(&huart1, ADC_RX_buffer, 4, 20);
-		HAL_UART_Transmit(&huart1, Res_value, 10, 20);
+		HAL_UART_Transmit(&huart1, ADC_RX_buffer, 4, 20);
+		//HAL_UART_Transmit(&huart1, Res_value, 10, 20);
 		HAL_Delay(10);
 		HAL_UART_Transmit(&huart1, Data,11,20); // Handle_type, data, length, timeout
 		HAL_Delay(1000);
@@ -435,7 +417,7 @@ static void MX_SPI1_Init(void)
   hspi1.Init.Mode = SPI_MODE_MASTER;
   hspi1.Init.Direction = SPI_DIRECTION_2LINES;
   hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
-  hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
+  hspi1.Init.CLKPolarity = SPI_POLARITY_HIGH;
   hspi1.Init.CLKPhase = SPI_PHASE_2EDGE;
   hspi1.Init.NSS = SPI_NSS_SOFT;
   hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
@@ -613,15 +595,18 @@ void Poti_SPI_Init(void)
 {
     //pinMode(AD5270_CS_PIN, OUTPUT); // Set CS pin for ADT7310 as output
     //digitalWrite(AD5270_CS_PIN, HIGH);
+	hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;  // Change SPI config
 
 	HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_RESET); // Poti A
 	HAL_SPI_Transmit(&hspi1, (uint8_t *)SPI_Data, 2, HAL_MAX_DELAY);
 	HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_SET);
-	HAL_Delay(5);
+	HAL_Delay(1);
 	HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_RESET); // Poti B
 	HAL_SPI_Transmit(&hspi1, (uint8_t *)SPI_Data, 2, HAL_MAX_DELAY);
 	HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_SET);
-	HAL_Delay(5);
+	HAL_Delay(1);
+
+	hspi1.Init.CLKPolarity = SPI_POLARITY_HIGH;  // Change SPI config
     //SPI.setDataMode(SPI_MODE3);
     //delay(1000);
 
@@ -632,6 +617,8 @@ uint16_t AD5270_WriteRDAC(uint16_t resistance, unsigned char poti)
 	//uint16_t setValue;
 	uint16_t RDAC_val = AD5270_CalcRDAC(resistance);
 	uint8_t RDAC[2];
+
+	hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;  // Change SPI config
 
 	//RDAC_Value = (float)((RDAC_val * MAX_RESISTANCE) / 1024.0); // inverse operation to get actual resistance in the RDAC
 
@@ -650,7 +637,9 @@ uint16_t AD5270_WriteRDAC(uint16_t resistance, unsigned char poti)
 		HAL_SPI_Transmit(&hspi1, (uint8_t *)RDAC, 2, HAL_MAX_DELAY);
 		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_SET);}
 
-	HAL_Delay(10);
+	HAL_Delay(5);
+
+	hspi1.Init.CLKPolarity = SPI_POLARITY_HIGH;  // Change SPI config
 
 	return (uint16_t)resistance;
 }
@@ -736,10 +725,36 @@ void Poti_SPI_Read(unsigned char* data, unsigned char bytesNumber, unsigned char
 	//}
 }
 
-
-
 ////////////////////////////////// END Digital Potentiometer /////////////////////////////////
 
+//////////////////////////////////////////// ADC /////////////////////////////////
+void config_ADC(uint8_t ADC_reg, uint8_t command){
+	cmd_ADC[0] = (ADC_ADDRESS << 6) | (ADC_reg << 2) | ADC_WRITE;
+	cmd_ADC[1] = command;
+
+	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_RESET);
+	HAL_SPI_Transmit(&hspi1, (uint8_t *)cmd_ADC, 2, HAL_MAX_DELAY);
+	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_SET);
+}
+
+uint8_t read_ADC(uint8_t ADC_reg){
+	uint8_t ADC_RX_buffer[3];
+	uint8_t Read_ADC[1];
+
+	Read_ADC[0] = (ADC_ADDRESS << 6) | (ADC_reg << 2) | ADC_READ;
+
+	HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_RESET);
+	HAL_SPI_Transmit(&hspi1, (uint8_t *)Read_ADC, 1, HAL_MAX_DELAY);
+	HAL_SPI_Receive(&hspi1, (uint8_t *)ADC_RX_buffer, 3, HAL_MAX_DELAY);
+	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_SET);
+	return ADC_RX_buffer;
+}
+
+/////////////////////////////////////////// End ADC /////////////////////////////////
 /* USER CODE END 4 */
 
 /**
