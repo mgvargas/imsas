@@ -14,4 +14,4 @@ Designator,Qty,Value,Footprint,What is it?
 "U9, ",1,MCP3562,digikey-footprints:TSSOP-20_W4.4mm,ADC
 "U3, ",1,TLV71310PDBV,Package_TO_SOT_SMD:SOT-23-5,Vreg
 ,,,,
-"U5, U7",1,AD5272BRM,MSOP-10_3x3mm_P0.5mm,var resist
+"U5, U7",1,AD5272BRM changed --> AD5270BRM ,MSOP-10_3x3mm_P0.5mm,var resist

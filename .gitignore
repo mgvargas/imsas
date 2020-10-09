@@ -1,0 +1,15 @@
+*.log
+*.lock
+*.elf
+*.mk
+*.list
+*cache
+*.dcm
+*.map
+*.su
+*.o
+*.d
+**/.metadata
+**/.settings
+Reference_manual_stm32f405
+STM32_Files_____For_ref_only
