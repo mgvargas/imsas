@@ -1,0 +1,3 @@
+(sym_lib_table
+  (lib (name SensorArray-rescue)(type Legacy)(uri ${KIPRJMOD}/SensorArray-rescue.lib)(options "")(descr ""))
+)

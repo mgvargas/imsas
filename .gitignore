@@ -8,6 +8,7 @@
 *.map
 *.su
 *.o
+*.d
 **/.metadata
 **/.settings
 Reference_manual_stm32f405
