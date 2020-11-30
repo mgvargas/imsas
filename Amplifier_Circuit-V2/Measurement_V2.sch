@@ -190,14 +190,14 @@ Wire Wire Line
 	6000 6950 6000 6800
 Wire Wire Line
 	6250 6950 6250 6800
-Text GLabel 6750 6100 2    50   Input ~ 0
-ADC_SPI1_CS
-Text GLabel 6750 6000 2    50   Input ~ 0
-SPI1_SCK
-Text GLabel 6750 5800 2    50   Input ~ 0
-SPI1_MISO
-Text GLabel 6750 5900 2    50   Input ~ 0
-SPI1_MOSI
+Text GLabel 7550 6100 2    50   Input ~ 0
+ADC_SPI2_CS
+Text GLabel 7550 6000 2    50   Input ~ 0
+SPI2_SCK
+Text GLabel 7550 5800 2    50   Input ~ 0
+SPI2_MISO
+Text GLabel 7550 5900 2    50   Input ~ 0
+SPI2_MOSI
 $Comp
 L SensorArray-rescue:GND-power #PWR?
 U 1 1 5ECD276C
@@ -487,7 +487,7 @@ L SensorArray-rescue:R_Small-Device RgainA1
 U 1 1 5ED07748
 P 8700 1500
 F 0 "RgainA1" H 8759 1546 50  0000 L CNN
-F 1 "2k2" H 8759 1455 50  0000 L CNN
+F 1 "2k" H 8759 1455 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 8700 1500 50  0001 C CNN
 F 3 "~" H 8700 1500 50  0001 C CNN
 	1    8700 1500
@@ -543,7 +543,7 @@ L SensorArray-rescue:R_Small-Device Ref1
 U 1 1 5ED2137F
 P 8050 1800
 F 0 "Ref1" H 8109 1846 50  0000 L CNN
-F 1 "2k2" H 8109 1755 50  0000 L CNN
+F 1 "1M" H 8109 1755 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 8050 1800 50  0001 C CNN
 F 3 "~" H 8050 1800 50  0001 C CNN
 	1    8050 1800
@@ -554,7 +554,7 @@ L SensorArray-rescue:R_Small-Device Ref2
 U 1 1 5ED23EC7
 P 8050 2250
 F 0 "Ref2" H 8109 2296 50  0000 L CNN
-F 1 "2k2" H 8109 2205 50  0000 L CNN
+F 1 "1M" H 8109 2205 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 8050 2250 50  0001 C CNN
 F 3 "~" H 8050 2250 50  0001 C CNN
 	1    8050 2250
@@ -567,7 +567,7 @@ P 8450 2250
 AR Path="/5ED2951A" Ref="C?"  Part="1" 
 AR Path="/5EE29113/5ED2951A" Ref="C26"  Part="1" 
 F 0 "C26" H 8542 2296 50  0000 L CNN
-F 1 "1n" H 8542 2205 50  0000 L CNN
+F 1 "0.2n" H 8542 2205 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0603_1608Metric" H 8450 2250 50  0001 C CNN
 F 3 "~" H 8450 2250 50  0001 C CNN
 	1    8450 2250
@@ -605,7 +605,7 @@ L SensorArray-rescue:R_Small-Device RgainB1
 U 1 1 5ED97E67
 P 8700 3750
 F 0 "RgainB1" H 8759 3796 50  0000 L CNN
-F 1 "2k2" H 8759 3705 50  0000 L CNN
+F 1 "2k" H 8759 3705 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 8700 3750 50  0001 C CNN
 F 3 "~" H 8700 3750 50  0001 C CNN
 	1    8700 3750
@@ -661,7 +661,7 @@ L SensorArray-rescue:R_Small-Device Ref3
 U 1 1 5ED97E8E
 P 8050 4050
 F 0 "Ref3" H 8109 4096 50  0000 L CNN
-F 1 "2k2" H 8109 4005 50  0000 L CNN
+F 1 "1M" H 8109 4005 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 8050 4050 50  0001 C CNN
 F 3 "~" H 8050 4050 50  0001 C CNN
 	1    8050 4050
@@ -672,7 +672,7 @@ L SensorArray-rescue:R_Small-Device Ref4
 U 1 1 5ED97E94
 P 8050 4500
 F 0 "Ref4" H 8109 4546 50  0000 L CNN
-F 1 "2k2" H 8109 4455 50  0000 L CNN
+F 1 "1M" H 8109 4455 50  0000 L CNN
 F 2 "Resistor_SMD:R_0603_1608Metric" H 8050 4500 50  0001 C CNN
 F 3 "~" H 8050 4500 50  0001 C CNN
 	1    8050 4500
@@ -685,7 +685,7 @@ P 8450 4500
 AR Path="/5ED97E9A" Ref="C?"  Part="1" 
 AR Path="/5EE29113/5ED97E9A" Ref="C32"  Part="1" 
 F 0 "C32" H 8542 4546 50  0000 L CNN
-F 1 "1n" H 8542 4455 50  0000 L CNN
+F 1 "0.2n" H 8542 4455 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0603_1608Metric" H 8450 4500 50  0001 C CNN
 F 3 "~" H 8450 4500 50  0001 C CNN
 	1    8450 4500
@@ -1735,37 +1735,7 @@ F 3 "http://www.ti.com/lit/ds/symlink/ina326.pdf" H 9550 3750 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 NoConn ~ 1450 850 
-$Comp
-L SensorArray-rescue:+3.3V-power #PWR?
-U 1 1 5EDC8737
-P 7300 5050
-AR Path="/5EDC8737" Ref="#PWR?"  Part="1" 
-AR Path="/5EE29113/5EDC8737" Ref="#PWR070"  Part="1" 
-F 0 "#PWR070" H 7300 4900 50  0001 C CNN
-F 1 "+3.3V" H 7315 5223 50  0000 C CNN
-F 2 "" H 7300 5050 50  0001 C CNN
-F 3 "" H 7300 5050 50  0001 C CNN
-	1    7300 5050
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	7300 5150 7300 5050
-Wire Wire Line
-	7300 5600 7300 5350
-$Comp
-L SensorArray-rescue:R_Small-Device R18
-U 1 1 5ECCD249
-P 7300 5250
-F 0 "R18" H 7359 5296 50  0000 L CNN
-F 1 "3k3" H 7359 5205 50  0000 L CNN
-F 2 "Resistor_SMD:R_0603_1608Metric" H 7300 5250 50  0001 C CNN
-F 3 "~" H 7300 5250 50  0001 C CNN
-	1    7300 5250
-	1    0    0    -1  
-$EndComp
 NoConn ~ 6750 5600
-Text GLabel 7300 5600 2    50   Input ~ 0
-SPI1_MOSI
 $Comp
 L SensorArray-rescue:D_Schottky_Small-Device D?
 U 1 1 5F986E80
@@ -1899,4 +1869,60 @@ Wire Wire Line
 Connection ~ 8900 3550
 Wire Wire Line
 	8900 3550 9150 3550
+$Comp
+L SensorArray-rescue:R_Small-Device R23
+U 1 1 5FAD4A74
+P 6850 5800
+F 0 "R23" V 6900 5750 50  0000 L CNN
+F 1 "100" V 6800 5750 50  0000 L CNN
+F 2 "Resistor_SMD:R_0402_1005Metric" H 6850 5800 50  0001 C CNN
+F 3 "~" H 6850 5800 50  0001 C CNN
+	1    6850 5800
+	0    -1   -1   0   
+$EndComp
+$Comp
+L SensorArray-rescue:R_Small-Device R24
+U 1 1 5FB07200
+P 7050 5900
+F 0 "R24" V 7100 5850 50  0000 L CNN
+F 1 "100" V 7000 5850 50  0000 L CNN
+F 2 "Resistor_SMD:R_0402_1005Metric" H 7050 5900 50  0001 C CNN
+F 3 "~" H 7050 5900 50  0001 C CNN
+	1    7050 5900
+	0    -1   -1   0   
+$EndComp
+$Comp
+L SensorArray-rescue:R_Small-Device R25
+U 1 1 5FB0EC1C
+P 7250 6000
+F 0 "R25" V 7300 5950 50  0000 L CNN
+F 1 "100" V 7200 5950 50  0000 L CNN
+F 2 "Resistor_SMD:R_0402_1005Metric" H 7250 6000 50  0001 C CNN
+F 3 "~" H 7250 6000 50  0001 C CNN
+	1    7250 6000
+	0    -1   -1   0   
+$EndComp
+$Comp
+L SensorArray-rescue:R_Small-Device R26
+U 1 1 5FB1F375
+P 7450 6100
+F 0 "R26" V 7500 6050 50  0000 L CNN
+F 1 "100" V 7400 6050 50  0000 L CNN
+F 2 "Resistor_SMD:R_0402_1005Metric" H 7450 6100 50  0001 C CNN
+F 3 "~" H 7450 6100 50  0001 C CNN
+	1    7450 6100
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	7350 6100 6750 6100
+Wire Wire Line
+	6750 6000 7150 6000
+Wire Wire Line
+	6950 5900 6750 5900
+Wire Wire Line
+	6950 5800 7550 5800
+Wire Wire Line
+	7150 5900 7550 5900
+Wire Wire Line
+	7350 6000 7550 6000
 $EndSCHEMATC
