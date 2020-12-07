@@ -1,6 +1,6 @@
-update=27.06.2020 00:23:58
+update=30-Nov-20 1:43:33 PM
 version=1
-last_client=kicad
+last_client=eeschema
 [general]
 version=1
 RootSch=
@@ -15,7 +15,7 @@ LibDir=
 [pcbnew]
 version=1
 PageLayoutDescrFile=
-LastNetListRead=SensorArray.net
+LastNetListRead=SensorArray_v2.net
 CopperLayerCount=4
 BoardThickness=1.6
 AllowMicroVias=0
@@ -65,7 +65,7 @@ OthersTextUpright=1
 SolderMaskClearance=0.05
 SolderMaskMinWidth=0
 SolderPasteClearance=0
-SolderPasteRatio=-0
+SolderPasteRatio=0
 [pcbnew/Layer.F.Cu]
 Name=F.Cu
 Type=0
@@ -247,7 +247,7 @@ dPairViaGap=0.25
 [schematic_editor]
 version=1
 PageLayoutDescrFile=
-PlotDirectoryName=
+PlotDirectoryName=U:/Hair_Sensor/SensorArray/Amplifier_Circuit-V2/
 SubpartIdSeparator=0
 SubpartFirstId=65
 NetFmtName=Pcbnew

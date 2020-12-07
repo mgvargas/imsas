@@ -33,6 +33,9 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+void Float_to_uint(float n, char* res, int afterpoint);
+int intToStr(int x, char str[], int d);
+
 ////////////////////////////////// Digital Potentiometer /////////////////////////////////
 
 /* Write data mode */
@@ -42,15 +45,13 @@ typedef enum {
    UART_WRITE
 } enWriteData;
 
-/*************************** Functions prototypes *****************************/
-extern void Poti_SPI_Init(void);
-extern void Poti_SPI_Write(unsigned char* data, unsigned char bytesNumber, unsigned char poti);
-extern void Poti_SPI_Read(unsigned char* data, unsigned char bytesNumber, unsigned char poti);
-void Float_to_uint(float n, char* res, int afterpoint);
-int intToStr(int x, char str[], int d);
+void Poti_SPI_Init(void);
+//extern void Poti_SPI_Write(unsigned char* data, unsigned char bytesNumber, unsigned char poti);
+//extern void Poti_SPI_Read(unsigned char* data, unsigned char bytesNumber, unsigned char poti);
+void Poti_SPI_Write(unsigned char* data, unsigned char bytesNumber, unsigned char poti);
+void Poti_SPI_Read(unsigned char* data, unsigned char bytesNumber, unsigned char poti);
+uint16_t Poti_Set_RDAC(uint16_t resistance, unsigned char poti);
 
-
-/**************************** Configuration parameters **********************/
 ////////////////////////////////// END Digital Potentiometer /////////////////////////////////
 
 
@@ -58,11 +59,21 @@ int intToStr(int x, char str[], int d);
 typedef enum {
    ADC_ADDRESS = 0x01,          /* Address of the ADC */
    ADC_WRITE = 0x02,            	/* Incremental Write Starting at Register Address */
-   ADC_READ = 0x01 				/* Incremental Read Starting at Register Address */
+   ADC_READ = 0x01, 				/* Incremental Read Starting at Register Address */
+   ADC_A_Select = 0x01,				/* if sent to address 6, selects ADC A */
+   ADC_B_Select = 0x23,				/* if sent to address 6, selects ADC B */
+   Array_mode = 0x10,				/* Sensor array mode */
+   Single_mode = 0x200,				/* Single array mode */
 } adc_commands;
 void config_ADC(uint8_t ADC_reg, uint8_t command);
-uint8_t read_ADC(uint8_t ADC_reg);
+uint8_t * read_ADC(uint8_t ADC_reg);
+float voltage_ADC(uint8_t *ADC_RX_buffer_pointer);
 ////////////////////////////////// End ADC /////////////////////////////////
+
+////////////////////////////////// Calibration ///////////////////////////
+int balance_one_channel(unsigned char channel);
+void calibrate_potis();
+////////////////////////////////// End Calibration ///////////////////////////
 
 /* USER CODE END Includes */
 

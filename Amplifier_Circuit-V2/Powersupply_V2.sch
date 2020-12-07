@@ -16,105 +16,101 @@ $EndDescr
 $Comp
 L SensorArray-rescue:AMS1117-3.3-Regulator_Linear U?
 U 1 1 5EE04570
-P 2500 1400
+P 2850 1400
 AR Path="/5EE04570" Ref="U?"  Part="1" 
 AR Path="/5EDF6668/5EE04570" Ref="U2"  Part="1" 
-F 0 "U2" H 2550 1650 50  0000 C CNN
-F 1 "AMS1117-3.3" H 2650 1550 50  0000 C CNN
-F 2 "Package_TO_SOT_SMD:SOT-223-3_TabPin2" H 2500 1600 50  0001 C CNN
-F 3 "http://www.advanced-monolithic.com/pdf/ds1117.pdf" H 2600 1150 50  0001 C CNN
-	1    2500 1400
+F 0 "U2" H 2900 1650 50  0000 C CNN
+F 1 "AMS1117-3.3" H 3000 1550 50  0000 C CNN
+F 2 "Package_TO_SOT_SMD:SOT-223-3_TabPin2" H 2850 1600 50  0001 C CNN
+F 3 "http://www.advanced-monolithic.com/pdf/ds1117.pdf" H 2950 1150 50  0001 C CNN
+	1    2850 1400
 	1    0    0    -1  
 $EndComp
 $Comp
 L SensorArray-rescue:Ferrite_Bead_Small-Device FB?
 U 1 1 5EE04576
-P 1950 1400
+P 2300 1400
 AR Path="/5EE04576" Ref="FB?"  Part="1" 
 AR Path="/5EDF6668/5EE04576" Ref="FB1"  Part="1" 
-F 0 "FB1" V 1713 1400 50  0000 C CNN
-F 1 "100 @ 100 MHz" V 1804 1400 50  0000 C CNN
-F 2 "Inductor_SMD:L_0805_2012Metric" V 1880 1400 50  0001 C CNN
-F 3 "~" H 1950 1400 50  0001 C CNN
-	1    1950 1400
+F 0 "FB1" V 2150 1400 50  0000 C CNN
+F 1 "100 @ 100 MHz" V 2450 1200 50  0000 C CNN
+F 2 "Inductor_SMD:L_0805_2012Metric" V 2230 1400 50  0001 C CNN
+F 3 "~" H 2300 1400 50  0001 C CNN
+	1    2300 1400
 	0    1    1    0   
 $EndComp
 $Comp
 L SensorArray-rescue:Fuse_Small-Device F?
 U 1 1 5EE0457C
-P 1500 1400
+P 1100 1400
 AR Path="/5EE0457C" Ref="F?"  Part="1" 
 AR Path="/5EDF6668/5EE0457C" Ref="F1"  Part="1" 
-F 0 "F1" H 1500 1585 50  0000 C CNN
-F 1 "500mA" H 1500 1494 50  0000 C CNN
-F 2 "Fuse:Fuse_0603_1608Metric" H 1500 1400 50  0001 C CNN
-F 3 "~" H 1500 1400 50  0001 C CNN
-	1    1500 1400
+F 0 "F1" H 1100 1585 50  0000 C CNN
+F 1 "500mA" H 1100 1494 50  0000 C CNN
+F 2 "Fuse:Fuse_0603_1608Metric" H 1100 1400 50  0001 C CNN
+F 3 "~" H 1100 1400 50  0001 C CNN
+	1    1100 1400
 	1    0    0    -1  
 $EndComp
 $Comp
 L SensorArray-rescue:D_Schottky_Small-Device D?
 U 1 1 5EE04582
-P 1100 1400
+P 1800 1250
 AR Path="/5EE04582" Ref="D?"  Part="1" 
 AR Path="/5EDF6668/5EE04582" Ref="D2"  Part="1" 
-F 0 "D2" H 1100 1193 50  0000 C CNN
-F 1 "B5819W" H 1100 1284 50  0000 C CNN
-F 2 "Diode_SMD:D_SOD-123" V 1100 1400 50  0001 C CNN
-F 3 "~" V 1100 1400 50  0001 C CNN
-	1    1100 1400
-	-1   0    0    1   
+F 0 "D2" V 1850 1150 50  0000 C CNN
+F 1 "B5819W" V 1950 1050 50  0000 C CNN
+F 2 "Diode_SMD:D_SOD-123" V 1800 1250 50  0001 C CNN
+F 3 "~" V 1800 1250 50  0001 C CNN
+	1    1800 1250
+	0    -1   -1   0   
 $EndComp
 $Comp
 L SensorArray-rescue:C_Small-Device C?
 U 1 1 5EE04588
-P 2050 1650
+P 2400 1650
 AR Path="/5EE04588" Ref="C?"  Part="1" 
 AR Path="/5EDF6668/5EE04588" Ref="C15"  Part="1" 
-F 0 "C15" H 2142 1696 50  0000 L CNN
-F 1 "10u" H 2142 1605 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 2050 1650 50  0001 C CNN
-F 3 "~" H 2050 1650 50  0001 C CNN
-	1    2050 1650
+F 0 "C15" H 2492 1696 50  0000 L CNN
+F 1 "10u" H 2492 1605 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 2400 1650 50  0001 C CNN
+F 3 "~" H 2400 1650 50  0001 C CNN
+	1    2400 1650
 	1    0    0    -1  
 $EndComp
 $Comp
 L SensorArray-rescue:C_Small-Device C?
 U 1 1 5EE0458E
-P 2900 1650
+P 3250 1650
 AR Path="/5EE0458E" Ref="C?"  Part="1" 
 AR Path="/5EDF6668/5EE0458E" Ref="C16"  Part="1" 
-F 0 "C16" H 2992 1696 50  0000 L CNN
-F 1 "10u" H 2992 1605 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0805_2012Metric" H 2900 1650 50  0001 C CNN
-F 3 "~" H 2900 1650 50  0001 C CNN
-	1    2900 1650
+F 0 "C16" H 3342 1696 50  0000 L CNN
+F 1 "10u" H 3342 1605 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric" H 3250 1650 50  0001 C CNN
+F 3 "~" H 3250 1650 50  0001 C CNN
+	1    3250 1650
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	1200 1400 1400 1400
+	2400 1400 2400 1550
 Wire Wire Line
-	1600 1400 1850 1400
+	2400 1400 2550 1400
+Connection ~ 2400 1400
 Wire Wire Line
-	2050 1400 2050 1550
+	2400 1750 2400 1900
 Wire Wire Line
-	2050 1400 2200 1400
-Connection ~ 2050 1400
+	2400 1900 2850 1900
 Wire Wire Line
-	2050 1750 2050 1900
+	3250 1900 3250 1750
 Wire Wire Line
-	2050 1900 2500 1900
+	3250 1550 3250 1400
 Wire Wire Line
-	2900 1900 2900 1750
+	3250 1400 3150 1400
 Wire Wire Line
-	2900 1550 2900 1400
+	2850 1700 2850 1900
+Connection ~ 2850 1900
 Wire Wire Line
-	2900 1400 2800 1400
-Wire Wire Line
-	2500 1700 2500 1900
-Connection ~ 2500 1900
-Wire Wire Line
-	2500 1900 2900 1900
+	2850 1900 3250 1900
 $Comp
 L SensorArray-rescue:VCC-power #PWR?
 U 1 1 5EE045A1
@@ -131,18 +127,18 @@ $EndComp
 $Comp
 L SensorArray-rescue:GND-power #PWR?
 U 1 1 5EE045A7
-P 2500 2050
+P 2850 2050
 AR Path="/5EE045A7" Ref="#PWR?"  Part="1" 
 AR Path="/5EDF6668/5EE045A7" Ref="#PWR032"  Part="1" 
-F 0 "#PWR032" H 2500 1800 50  0001 C CNN
-F 1 "GND" H 2505 1877 50  0000 C CNN
-F 2 "" H 2500 2050 50  0001 C CNN
-F 3 "" H 2500 2050 50  0001 C CNN
-	1    2500 2050
+F 0 "#PWR032" H 2850 1800 50  0001 C CNN
+F 1 "GND" H 2855 1877 50  0000 C CNN
+F 2 "" H 2850 2050 50  0001 C CNN
+F 3 "" H 2850 2050 50  0001 C CNN
+	1    2850 2050
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	2500 2050 2500 1900
+	2850 2050 2850 1900
 Wire Wire Line
 	1000 1400 900  1400
 Wire Wire Line
@@ -150,31 +146,27 @@ Wire Wire Line
 $Comp
 L SensorArray-rescue:+3.3V-power #PWR?
 U 1 1 5EE045B0
-P 3100 1300
+P 3450 1300
 AR Path="/5EE045B0" Ref="#PWR?"  Part="1" 
 AR Path="/5EDF6668/5EE045B0" Ref="#PWR025"  Part="1" 
-F 0 "#PWR025" H 3100 1150 50  0001 C CNN
-F 1 "+3.3V" H 3115 1473 50  0000 C CNN
-F 2 "" H 3100 1300 50  0001 C CNN
-F 3 "" H 3100 1300 50  0001 C CNN
-	1    3100 1300
+F 0 "#PWR025" H 3450 1150 50  0001 C CNN
+F 1 "+3.3V" H 3465 1473 50  0000 C CNN
+F 2 "" H 3450 1300 50  0001 C CNN
+F 3 "" H 3450 1300 50  0001 C CNN
+	1    3450 1300
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	2900 1400 3100 1400
+	3250 1400 3450 1400
 Wire Wire Line
-	3100 1400 3100 1300
-Connection ~ 2900 1400
-Wire Notes Line
-	800  1000 800  2300
+	3450 1400 3450 1300
+Connection ~ 3250 1400
 Wire Notes Line
 	800  2300 3600 2300
 Wire Notes Line
-	3600 2300 3600 1000
-Wire Notes Line
-	3600 1000 800  1000
-Text Notes 850  850  0    50   ~ 0
-Schottkey Diode for reverse polarity protection\n
+	3600 800  800  800 
+Text Notes 800  750  0    50   ~ 0
+Schottkey Diode for reverse polarity protection. \nSelecting between Power Pin and 5V from USB\n
 $Comp
 L SensorArray-rescue:+3.3V-power #PWR?
 U 1 1 5EE17BE7
@@ -265,19 +257,6 @@ $EndComp
 Wire Wire Line
 	5100 1350 5100 1450
 Connection ~ 5100 1450
-$Comp
-L SensorArray-rescue:VCC-power #PWR?
-U 1 1 5EDCC66E
-P 8750 1250
-AR Path="/5EDCC66E" Ref="#PWR?"  Part="1" 
-AR Path="/5EDF6668/5EDCC66E" Ref="#PWR021"  Part="1" 
-F 0 "#PWR021" H 8750 1100 50  0001 C CNN
-F 1 "VCC" H 8765 1423 50  0000 C CNN
-F 2 "" H 8750 1250 50  0001 C CNN
-F 3 "" H 8750 1250 50  0001 C CNN
-	1    8750 1250
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	8750 1400 8750 1250
 $Comp
@@ -496,4 +475,63 @@ F 3 "" H 4950 3700 50  0001 C CNN
 	1    4950 3700
 	1    0    0    -1  
 $EndComp
+$Comp
+L power:+5V #PWR051
+U 1 1 5FCAC6AF
+P 1800 1050
+F 0 "#PWR051" H 1800 900 50  0001 C CNN
+F 1 "+5V" H 1815 1223 50  0000 C CNN
+F 2 "" H 1800 1050 50  0001 C CNN
+F 3 "" H 1800 1050 50  0001 C CNN
+	1    1800 1050
+	1    0    0    -1  
+$EndComp
+$Comp
+L Transistor_FET:AO3401A Q1
+U 1 1 5FCAD3EA
+P 1500 1500
+F 0 "Q1" V 1842 1500 50  0000 C CNN
+F 1 "AO3401A" V 1751 1500 50  0000 C CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 1700 1425 50  0001 L CIN
+F 3 "http://www.aosmd.com/pdfs/datasheet/AO3401A.pdf" H 1500 1500 50  0001 L CNN
+	1    1500 1500
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	1200 1400 1300 1400
+Wire Wire Line
+	1700 1400 1800 1400
+Wire Wire Line
+	1800 1350 1800 1400
+Connection ~ 1800 1400
+Wire Wire Line
+	1800 1400 2050 1400
+Wire Wire Line
+	1800 1050 1800 1150
+Wire Notes Line
+	3600 800  3600 2300
+Wire Notes Line
+	800  800  800  2300
+$Comp
+L SensorArray-rescue:GND-power #PWR?
+U 1 1 5FCE06F1
+P 1500 1700
+AR Path="/5FCE06F1" Ref="#PWR?"  Part="1" 
+AR Path="/5EDF6668/5FCE06F1" Ref="#PWR052"  Part="1" 
+F 0 "#PWR052" H 1500 1450 50  0001 C CNN
+F 1 "GND" H 1505 1527 50  0000 C CNN
+F 2 "" H 1500 1700 50  0001 C CNN
+F 3 "" H 1500 1700 50  0001 C CNN
+	1    1500 1700
+	1    0    0    -1  
+$EndComp
+Text GLabel 2050 1650 3    50   Input ~ 0
+Vin
+Connection ~ 2050 1400
+Wire Wire Line
+	2050 1400 2200 1400
+Wire Wire Line
+	2050 1400 2050 1650
+Text GLabel 8750 1250 1    50   Input ~ 0
+Vin
 $EndSCHEMATC
