@@ -1,0 +1,7 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP HairSensorArray
+D HairSensorArray 9 channels
+$ENDCMP
+#
+#End Doc Library
