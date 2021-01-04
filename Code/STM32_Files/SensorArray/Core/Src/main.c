@@ -71,7 +71,8 @@ static void MX_USART1_UART_Init(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
+
+/* USER CODE BEGIN 0**************************************************************************** */
 /////////////////////////// Global Variables //////////////////////////////////
 uint8_t SPI_Data[2] = {0x1C, 0x03};
 uint8_t POTIA[2] = {0x07, 0xff};
@@ -88,7 +89,7 @@ int Potentiometer_values_B[10] = {10000, 10000, 10000, 10000, 10000, 10000, 1000
 float Sensor_values_A[10];
 float Sensor_values_B[10];
 /////////////////////////// end Global Variables //////////////////////////////////
-/* USER CODE END 0 */
+/* USER CODE END 0 *****************************************************************************/
 
 /**
   * @brief  The application entry point.
@@ -96,7 +97,7 @@ float Sensor_values_B[10];
   */
 int main(void)
 {
-  /* USER CODE BEGIN 1 */
+  /* USER CODE BEGIN 1 *****************************************************************************/
 	// Variable definition
 	uint8_t UART_Data[25] = "Test UART communication :";
 	//uint8_t Data[11] = " Data sent ";
