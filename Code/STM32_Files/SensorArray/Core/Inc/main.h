@@ -57,7 +57,7 @@ uint16_t Poti_Set_RDAC(uint16_t resistance, unsigned char poti);
 
 ////////////////////////////////// ADC /////////////////////////////////
 typedef enum {
-   ADC_ADDRESS = 0x01,          /* Address of the ADC */
+   ADC_ADDRESS = 0x01,          	/* Address of the ADC */
    ADC_WRITE = 0x02,            	/* Incremental Write Starting at Register Address */
    ADC_READ = 0x01, 				/* Incremental Read Starting at Register Address */
    ADC_A_Select = 0x01,				/* if sent to address 6, selects ADC A */
@@ -112,8 +112,8 @@ void Error_Handler(void);
 #define ADC_Amplifier_A_GPIO_Port GPIOA
 #define ADC_Amplifier_B_Pin GPIO_PIN_2
 #define ADC_Amplifier_B_GPIO_Port GPIOA
-#define SPI1_CS_ADC_Pin GPIO_PIN_3
-#define SPI1_CS_ADC_GPIO_Port GPIOA
+#define SPI2_CS_ADC_Pin GPIO_PIN_3
+#define SPI2_CS_ADC_GPIO_Port GPIOA
 #define SPI1_CS_Pin GPIO_PIN_4
 #define SPI1_CS_GPIO_Port GPIOA
 #define MUXB_S0_Pin GPIO_PIN_4

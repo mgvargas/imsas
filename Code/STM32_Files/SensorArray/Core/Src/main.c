@@ -17,16 +17,17 @@
  ******************************************************************************
  */
 /* USER CODE END Header */
-
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "usb_device.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "CD74HC4067.h"		// Multiplexer
 #include "AD5270.h"
 #include "math.h"
-
+#include "usbd_cdc_if.h"
+#include "string.h"
 
 /* USER CODE END Includes */
 
@@ -51,6 +52,7 @@ ADC_HandleTypeDef hadc2;
 I2C_HandleTypeDef hi2c1;
 
 SPI_HandleTypeDef hspi1;
+SPI_HandleTypeDef hspi2;
 
 UART_HandleTypeDef huart1;
 
@@ -66,13 +68,13 @@ static void MX_SPI1_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_ADC2_Init(void);
 static void MX_USART1_UART_Init(void);
+static void MX_SPI2_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
-
-/* USER CODE BEGIN 0**************************************************************************** */
+/* USER CODE BEGIN 0 */
 /////////////////////////// Global Variables //////////////////////////////////
 uint8_t SPI_Data[2] = {0x1C, 0x03};
 uint8_t POTIA[2] = {0x07, 0xff};
@@ -88,8 +90,10 @@ int Potentiometer_values_B[10] = {10000, 10000, 10000, 10000, 10000, 10000, 1000
 // Read sensors
 float Sensor_values_A[10];
 float Sensor_values_B[10];
+// USB
+uint8_t *usb_msg = "Hello USB port!\n";
 /////////////////////////// end Global Variables //////////////////////////////////
-/* USER CODE END 0 *****************************************************************************/
+/* USER CODE END 0 */
 
 /**
   * @brief  The application entry point.
@@ -97,14 +101,12 @@ float Sensor_values_B[10];
   */
 int main(void)
 {
-  /* USER CODE BEGIN 1 *****************************************************************************/
+  /* USER CODE BEGIN 1 */
 	// Variable definition
 	uint8_t UART_Data[25] = "Test UART communication :";
 	//uint8_t Data[11] = " Data sent ";
 	//uint16_t Res_value;
 	uint8_t *ADC_RX_buffer_pointer;//[3];// = {0x2, 0x00, 0x33, 0x33};
-
-
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -130,14 +132,16 @@ int main(void)
   MX_ADC1_Init();
   MX_ADC2_Init();
   MX_USART1_UART_Init();
+  MX_SPI2_Init();
+  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
 
 	mux_channel(0);  // Select mux channel (for both mux)
 	Poti_SPI_Init(); // Initialize digital potentiometer
 
 	// Start SPI communication with Digital Poti (AD5270) SPI1_CS_POTIA_Pin
-	Poti_Set_RDAC(10000, 'B');
 	Poti_Set_RDAC(10000, 'A');
+	Poti_Set_RDAC(10000, 'B');
 
 	/*Res_value= 100.0;
 	int rounded = (int)(Res_value*100+0.5);
@@ -153,7 +157,7 @@ int main(void)
 	 *    CLK_SEL[1:0] 10 -> Internal RC Oscillator, no clock output        CONFIG0[5:4]
 	 *    CS_SEL[1:0] 00 ->  No current source is applied       			CONFIG0[3:2]
 	 *    ADC_MODE[1:0] 11 -> conversion, needs 256 DMCLK time to start     CONFIG0[1:0]
-	 *    				10 -> stand by
+	 *    				10 -> standby
 	 *    so: 0x23 for conversion mode, 0x22 for standby mode
 	 *
 	 *  Register CONFIG1: Address 0x2, leave as default (0x0C)
@@ -184,10 +188,14 @@ int main(void)
 	 */
 
 	// Configure ADC
-	config_ADC(0x1,0x22); // Standby mode
-	config_ADC(0x4,0xC0); // Configure conversion and gain
-	config_ADC(0x6,ADC_B_Select); // Select ADC B
-	config_ADC(0x1,0x23); // Conversion mode
+	config_ADC(0x01,0x22); // Standby mode
+	config_ADC(0x04,0xC0); // Configure conversion and gain
+	config_ADC(0x06,ADC_B_Select); // Select ADC B
+	config_ADC(0x01,0x23); // Conversion mode
+
+	//USB test
+	char txBuf[8];
+	uint8_t count = 1;
 
   /* USER CODE END 2 */
 
@@ -214,17 +222,34 @@ int main(void)
 		float test;
 		test = voltage_ADC(&ADC_RX_buffer_pointer);
 		test = test+1;
+		/*Poti_Set_RDAC(1000, 'A');
+		Poti_Set_RDAC(1000, 'B');
+		Poti_Set_RDAC(20000, 'A');
+		Poti_Set_RDAC(20000, 'B');
+		Poti_Set_RDAC(5000, 'A');
+		Poti_Set_RDAC(5000, 'B');*/
 
 		//Blink a LED
+		HAL_GPIO_TogglePin(GPIOB,LED_STATUS_Pin);
+		HAL_Delay(200);
 		HAL_GPIO_TogglePin(GPIOB,LED_STATUS_Pin);
 
 		// Send test message UART
 		HAL_UART_Transmit(&huart1, UART_Data,25,20); // Handle_type, data, length, timeout
-		HAL_Delay(1000);
+		HAL_Delay(800);
 		HAL_UART_Transmit(&huart1, ADC_RX_buffer, 3, 20);
 		//HAL_Delay(10);
 		//HAL_UART_Transmit(&huart1, Data,11,20); // Handle_type, data, length, timeout
-		HAL_Delay(1000);
+
+		// Test USB
+		CDC_Transmit_FS((uint8_t *) txBuf, strlen(txBuf));
+
+		sprintf(txBuf, "%u\r\n", count);
+		count++;
+		if (count>100)
+			count = 1;
+
+		CDC_Transmit_FS(usb_msg, strlen(usb_msg));
 
 
 		/* Test plots Arduino Editor / Tools / Serial Plotter
@@ -255,30 +280,31 @@ void SystemClock_Config(void)
   */
   __HAL_RCC_PWR_CLK_ENABLE();
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
-  /** Initializes the CPU, AHB and APB busses clocks
+  /** Initializes the RCC Oscillators according to the specified parameters
+  * in the RCC_OscInitTypeDef structure.
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLM = 8;
-  RCC_OscInitStruct.PLL.PLLN = 72;
+  RCC_OscInitStruct.PLL.PLLN = 168;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-  RCC_OscInitStruct.PLL.PLLQ = 3;
+  RCC_OscInitStruct.PLL.PLLQ = 7;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
   }
-  /** Initializes the CPU, AHB and APB busses clocks
+  /** Initializes the CPU, AHB and APB buses clocks
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
   {
     Error_Handler();
   }
@@ -437,11 +463,11 @@ static void MX_SPI1_Init(void)
   hspi1.Instance = SPI1;
   hspi1.Init.Mode = SPI_MODE_MASTER;
   hspi1.Init.Direction = SPI_DIRECTION_2LINES;
-  hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
-  hspi1.Init.CLKPolarity = SPI_POLARITY_HIGH;
+  hspi1.Init.DataSize = SPI_DATASIZE_16BIT;
+  hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi1.Init.CLKPhase = SPI_PHASE_2EDGE;
   hspi1.Init.NSS = SPI_NSS_SOFT;
-  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;
   hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -453,6 +479,44 @@ static void MX_SPI1_Init(void)
   /* USER CODE BEGIN SPI1_Init 2 */
 
   /* USER CODE END SPI1_Init 2 */
+
+}
+
+/**
+  * @brief SPI2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_SPI2_Init(void)
+{
+
+  /* USER CODE BEGIN SPI2_Init 0 */
+
+  /* USER CODE END SPI2_Init 0 */
+
+  /* USER CODE BEGIN SPI2_Init 1 */
+
+  /* USER CODE END SPI2_Init 1 */
+  /* SPI2 parameter configuration*/
+  hspi2.Instance = SPI2;
+  hspi2.Init.Mode = SPI_MODE_MASTER;
+  hspi2.Init.Direction = SPI_DIRECTION_2LINES;
+  hspi2.Init.DataSize = SPI_DATASIZE_8BIT;
+  hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
+  hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
+  hspi2.Init.NSS = SPI_NSS_SOFT;
+  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;
+  hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
+  hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
+  hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+  hspi2.Init.CRCPolynomial = 10;
+  if (HAL_SPI_Init(&hspi2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN SPI2_Init 2 */
+
+  /* USER CODE END SPI2_Init 2 */
 
 }
 
@@ -509,7 +573,7 @@ static void MX_GPIO_Init(void)
                           |MUXB_S0_Pin|MUXB_S1_Pin|MUXB_S2_Pin|MUXB_S3_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin|SPI1_CS_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, SPI2_CS_ADC_Pin|SPI1_CS_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin|SPI1_CS_POTIB_Pin|LED_STATUS_Pin, GPIO_PIN_RESET);
@@ -523,8 +587,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : SPI1_CS_ADC_Pin SPI1_CS_Pin */
-  GPIO_InitStruct.Pin = SPI1_CS_ADC_Pin|SPI1_CS_Pin;
+  /*Configure GPIO pins : SPI2_CS_ADC_Pin SPI1_CS_Pin */
+  GPIO_InitStruct.Pin = SPI2_CS_ADC_Pin|SPI1_CS_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -619,7 +683,7 @@ void Poti_SPI_Init(void)
 {
 	//pinMode(AD5270_CS_PIN, OUTPUT); // Set CS pin for ADT7310 as output
 	//digitalWrite(AD5270_CS_PIN, HIGH);
-	hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;  // Change SPI config
+	//hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;  // Change SPI config
 
 	HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_RESET); // Poti A
 	HAL_SPI_Transmit(&hspi1, (uint8_t *)SPI_Data, 2, HAL_MAX_DELAY);
@@ -630,7 +694,7 @@ void Poti_SPI_Init(void)
 	HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_SET);
 	HAL_Delay(1);
 
-	hspi1.Init.CLKPolarity = SPI_POLARITY_HIGH;  // Change SPI config
+	//hspi1.Init.CLKPolarity = SPI_POLARITY_HIGH;  // Change SPI config
 	//SPI.setDataMode(SPI_MODE3);
 	//delay(1000);
 
@@ -644,7 +708,7 @@ uint16_t Poti_Set_RDAC(uint16_t resistance, unsigned char poti)
 	uint16_t RDAC_val = AD5270_CalcRDAC(resistance);
 	uint8_t RDAC[2];
 
-	hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;  // Change SPI config
+	// hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;  // Change SPI config
 
 	//RDAC_Value = (float)((RDAC_val * MAX_RESISTANCE) / 1024.0); // inverse operation to get actual resistance in the RDAC
 
@@ -654,7 +718,7 @@ uint16_t Poti_Set_RDAC(uint16_t resistance, unsigned char poti)
 	//setValue = AD5270_ReadReg(READ_CTRL_REG, poti);
 	//Float_to_uint(RDAC_Value,setValue, 2);
 
-	if(strcmp(poti, 'A') ==1){			// Select Poti A or B
+	if(poti == 'A'){			// Select Poti A or B
 		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_RESET);
 		HAL_SPI_Transmit(&hspi1, (uint8_t *)RDAC, 2, HAL_MAX_DELAY);
 		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_SET);}
@@ -663,9 +727,8 @@ uint16_t Poti_Set_RDAC(uint16_t resistance, unsigned char poti)
 		HAL_SPI_Transmit(&hspi1, (uint8_t *)RDAC, 2, HAL_MAX_DELAY);
 		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_SET);}
 
-	HAL_Delay(5);
-
-	hspi1.Init.CLKPolarity = SPI_POLARITY_HIGH;  // Change SPI config
+	// HAL_Delay(5);
+	 // hspi1.Init.CLKPolarity = SPI_POLARITY_HIGH;  // Change SPI config
 
 	return (uint16_t)resistance;
 }
@@ -685,7 +748,7 @@ void Poti_SPI_Write(unsigned char* data, unsigned char bytesNumber, unsigned cha
 {
 	uint8_t count = 0;
 
-	if(strcmp(poti, 'A') ==1)			// Select Poti A or B
+	if(poti == 'A')			// Select Poti A or B
 
 		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_RESET);
 	else
@@ -697,7 +760,7 @@ void Poti_SPI_Write(unsigned char* data, unsigned char bytesNumber, unsigned cha
 		//SPI.transfer(data[count]);
 	}
 
-	if(strcmp(poti, 'A') ==1)			// Select Poti A or B
+	if(poti == 'A')			// Select Poti A or B
 		//digitalWrite(AD5270_CS_PIN, HIGH);
 		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_SET);
 	else
@@ -730,7 +793,7 @@ void Poti_SPI_Read(unsigned char* data, unsigned char bytesNumber, unsigned char
 			writeData[count] = 0xAA;    /* dummy value */
 	}
 
-	if(strcmp(poti, 'A') ==1)			// Select Poti A or B
+	if(poti == 'A')			// Select Poti A or B
 		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_RESET);
 	else
 		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_RESET);
@@ -741,7 +804,7 @@ void Poti_SPI_Read(unsigned char* data, unsigned char bytesNumber, unsigned char
 		data[count - 1] = HAL_UART_Transmit(&huart1, writeData[count],strlen(writeData[count]),20);
 	}
 
-	if(strcmp(poti, 'A') ==1)			// Select Poti A or B
+	if(poti == 'A')			// Select Poti A or B
 		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_SET);
 	else
 		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_SET);
@@ -755,10 +818,10 @@ void config_ADC(uint8_t ADC_reg, uint8_t command){
 	cmd_ADC[0] = (ADC_ADDRESS << 6) | (ADC_reg << 2) | ADC_WRITE;
 	cmd_ADC[1] = command;
 
-	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, SPI2_CS_ADC_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_RESET);
-	HAL_SPI_Transmit(&hspi1, (uint8_t *)cmd_ADC, 2, HAL_MAX_DELAY);
-	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_SET);
+	HAL_SPI_Transmit(&hspi2, (uint8_t *)cmd_ADC, 2, HAL_MAX_DELAY);
+	HAL_GPIO_WritePin(GPIOA, SPI2_CS_ADC_Pin, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_SET);
 }
 
@@ -769,10 +832,10 @@ uint8_t * read_ADC(uint8_t ADC_reg){
 	Read_ADC[0] = (ADC_ADDRESS << 6) | (ADC_reg << 2) | ADC_READ;
 
 	HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_RESET);  // Remove later
-	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_RESET);
-	HAL_SPI_Transmit(&hspi1, (uint8_t *)Read_ADC, 1, HAL_MAX_DELAY);
-	HAL_SPI_Receive(&hspi1, (uint8_t *)ADC_RX_buffer, 3, HAL_MAX_DELAY);
-	HAL_GPIO_WritePin(GPIOA, SPI1_CS_ADC_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, SPI2_CS_ADC_Pin, GPIO_PIN_RESET);
+	HAL_SPI_Transmit(&hspi2, (uint8_t *)Read_ADC, 1, HAL_MAX_DELAY);
+	HAL_SPI_Receive(&hspi2, (uint8_t *)ADC_RX_buffer, 3, HAL_MAX_DELAY);
+	HAL_GPIO_WritePin(GPIOA, SPI2_CS_ADC_Pin, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_SET);   // Remove later
 	return ADC_RX_buffer; // Returns address of the array
 }
