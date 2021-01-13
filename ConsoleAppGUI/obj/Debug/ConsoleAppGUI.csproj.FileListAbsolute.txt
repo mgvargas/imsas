@@ -1,0 +1,11 @@
+D:\IMSAS_GUI\ConsoleAppGUI\bin\Debug\ConsoleAppGUI.exe.config
+D:\IMSAS_GUI\ConsoleAppGUI\bin\Debug\ConsoleAppGUI.exe
+D:\IMSAS_GUI\ConsoleAppGUI\bin\Debug\ConsoleAppGUI.pdb
+D:\IMSAS_GUI\ConsoleAppGUI\obj\Debug\ConsoleAppGUI.csprojAssemblyReference.cache
+D:\IMSAS_GUI\ConsoleAppGUI\obj\Debug\ConsoleAppGUI.Form1.resources
+D:\IMSAS_GUI\ConsoleAppGUI\obj\Debug\ConsoleAppGUI.Properties.Resources.resources
+D:\IMSAS_GUI\ConsoleAppGUI\obj\Debug\ConsoleAppGUI.csproj.GenerateResource.cache
+D:\IMSAS_GUI\ConsoleAppGUI\obj\Debug\ConsoleAppGUI.csproj.CoreCompileInputs.cache
+D:\IMSAS_GUI\ConsoleAppGUI\obj\Debug\ConsoleAppGUI.exe
+D:\IMSAS_GUI\ConsoleAppGUI\obj\Debug\ConsoleAppGUI.pdb
+D:\IMSAS_GUI\ConsoleAppGUI\obj\Debug\ConsoleAppGUI.csproj.ResolveComReference.cache
