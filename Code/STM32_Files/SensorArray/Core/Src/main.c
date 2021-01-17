@@ -91,7 +91,7 @@ int Potentiometer_values_B[10] = {10000, 10000, 10000, 10000, 10000, 10000, 1000
 float Sensor_values_A[10];
 float Sensor_values_B[10];
 // USB
-uint8_t *usb_msg = "Hello USB port!\n";
+uint8_t usb_msg[20] = "Hello USB port!\n";
 /////////////////////////// end Global Variables //////////////////////////////////
 /* USER CODE END 0 */
 
@@ -248,9 +248,9 @@ int main(void)
 		count++;
 		if (count>100)
 			count = 1;
-
-		CDC_Transmit_FS(usb_msg, strlen(usb_msg));
-
+		HAL_Delay(10);
+		CDC_Transmit_FS(usb_msg, strlen((char *)usb_msg));
+		HAL_Delay(10);
 
 		/* Test plots Arduino Editor / Tools / Serial Plotter
 		 * RealtimePlotter https://github.com/sebnil/RealtimePlotter
