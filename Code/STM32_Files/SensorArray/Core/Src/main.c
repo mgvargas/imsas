@@ -196,11 +196,12 @@ int main(void)
 	config_ADC(0x0D,0xA5); // Lock register: Write access is allowed on the full register map
 	//config_ADC(0x01,0xE2); // Standby mode
 	config_ADC(0x01,0xE3); // Conversion mode
+	config_ADC(0x02,0x1C); // Oversampling rate
 	config_ADC(0x04,0xC0); // Configure conversion and gain
 	config_ADC(0x05,0x04); // Configure IRQ register, only a test
 	config_ADC(0x06,ADC_A_Select); // Select ADC B
 
-	//config_ADC2(0x07); // Scan register
+	config_ADC2(0x07); // Scan register
 
 	//USB test
 	uint8_t usb_msg_A[15] = "USB Voltage A: ";
@@ -249,18 +250,6 @@ int main(void)
 		CDC_Transmit_FS((uint8_t *) txBuf, strlen(txBuf));
 
 		HAL_Delay(100);
-
-
-		/*config_ADC(0x6, ADC_A_Select); // Select ADC A
-		ADC_RX_buffer_pointer = read_ADC(0x00); // read last ADC value
-		for ( i = 0; i < 3; i++ )   // Save buffer pointer to array
-			ADC_RX_buffer[i] = *(ADC_RX_buffer_pointer + i);
-		HAL_UART_Transmit(&huart1, ADC_RX_buffer, 3, 20);
-
-		config_ADC(0x6, ADC_B_Select); // Select ADC B
-		ADC_RX_buffer_pointer = read_ADC(0x00);
-		for ( i = 0; i < 3; i++ )   // Save buffer pointer to array
-			ADC_RX_buffer[i] = *(ADC_RX_buffer_pointer + i);*/
 
 		/*Poti_Set_RDAC(1000, 'A');
 		Poti_Set_RDAC(1000, 'B');
@@ -867,7 +856,7 @@ void config_ADC2(uint8_t ADC_reg){
 	uint8_t cmd_ADC2[4];
 	cmd_ADC2[0] = (ADC_ADDRESS << 6) | (ADC_reg << 2) | ADC_WRITE;
 	cmd_ADC2[1] = 0x00;
-	cmd_ADC2[2] = 0x01;
+	cmd_ADC2[2] = 0x00;
 	cmd_ADC2[3] = 0x00;
 
 	HAL_GPIO_WritePin(GPIOA, SPI2_CS_ADC_Pin, GPIO_PIN_RESET);
@@ -878,7 +867,6 @@ void config_ADC2(uint8_t ADC_reg){
 }
 
 uint8_t * read_ADC(uint8_t ADC_reg){
-//void read_ADC(uint8_t ADC_reg){
 	uint8_t Read_ADC[1];
 
 	Read_ADC[0] = (ADC_ADDRESS << 6) | (ADC_reg << 2) | ADC_READ;
@@ -888,28 +876,26 @@ uint8_t * read_ADC(uint8_t ADC_reg){
 	HAL_SPI_Receive(&hspi2, (uint8_t *)ADC_RX_buffer, 3, HAL_MAX_DELAY);
 	HAL_GPIO_WritePin(GPIOA, SPI2_CS_ADC_Pin, GPIO_PIN_SET);
 
-	return ADC_RX_buffer; // Returns address of the array
+	return &ADC_RX_buffer[0]; // Returns address of the array
 }
 
 float voltage_ADC(uint8_t *ADC_RX_buffer_pointer){ // Converts value from read_ADC to float
 	float ADC_Vout;
-	//for ( i = 0; i < 3; i++ )   // Save buffer pointer to array
-	//	ADC_RX_buffer[i] = *(ADC_RX_buffer_pointer + i);
-
-	//ADC_RX_buffer[0] = 0x0; // Test: send 1.65
-	//ADC_RX_buffer[1] = 0x0;
-	//ADC_RX_buffer[2] = 0x40;
+	int raw_ADC;
+	uint8_t ADC_RX_buffer[3];
+	for ( i = 0; i < 3; i++ )   // Save buffer pointer to array
+		ADC_RX_buffer[i] = *(ADC_RX_buffer_pointer + i);
 
 	//Find out the sign
-	char sign = (ADC_RX_buffer[2] & 0x80); // and [1 0 0 0 0 0 0 0]
+	char sign = (ADC_RX_buffer[0] & 0x80); // and [1 0 0 0 0 0 0 0]
 
 	if (sign == 0x00){ // If positive, send
-		ADC_RX_buffer[2] = (ADC_RX_buffer[2] & 0x7F); // remove sign bit
-		raw_ADC = (ADC_RX_buffer[2] << 16) | (ADC_RX_buffer[1] << 8) | ADC_RX_buffer[0];
-		ADC_Vout = raw_ADC*3.3/8388608; // register * Vref / 23 bit resolution
+		raw_ADC = (ADC_RX_buffer[0] << 16) | (ADC_RX_buffer[1] << 8) | ADC_RX_buffer[2];
+		ADC_Vout = raw_ADC*3.3/8388608.0; // register * Vref / 23 bit resolution
 	}
 	else
 		ADC_Vout = 0; // if negative, then 0
+
 	return ADC_Vout;
 }
 /////////////////////////////////////////// End ADC /////////////////////////////////
