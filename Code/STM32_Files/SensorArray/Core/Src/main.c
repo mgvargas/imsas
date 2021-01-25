@@ -79,12 +79,10 @@ static void MX_SPI2_Init(void);
 uint8_t SPI_Data[2] = {0x1C, 0x03};
 uint8_t POTIA[2] = {0x07, 0xff};
 // ADC Values
-uint8_t *ADC_RX_buffer_pointer;//[3];// = {0x2, 0x00, 0x33, 0x33};
-uint8_t Read_ADC[1];
 uint8_t cmd_ADC[2];
 uint8_t ADC_RX_buffer[3];
 int raw_ADC;
-float ADC_Vout;
+//float ADC_Vout;
 int i;
 // Calibration
 int Potentiometer_values_A[10] = {10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000};
@@ -103,13 +101,11 @@ int main(void)
 {
 	/* USER CODE BEGIN 1 */
 	// Variable definition
-	uint8_t UART_Data[25] = "Test UART communication :";
+
+	//uint8_t UART_Data[25] = "Test UART communication :";
 
 	//uint16_t Res_value;
 
-
-	// USB
-	uint8_t usb_msg[20] = "Hello USB port!\n";
 	/* USER CODE END 1 */
 
 	/* MCU Configuration--------------------------------------------------------*/
@@ -156,12 +152,13 @@ int main(void)
 	/* ADC Output
 	 *
 	 *  Register CONFIG0: Address 0x1
-	 *    XX (if all 0, then 00 full shutdown   11 partial shutdown)		CONFIG0[7:6]
+	 *    XX -> 11(if all 0, then 00 full shutdown, 11 partial shutdown)	CONFIG0[7:6]
 	 *    CLK_SEL[1:0] 10 -> Internal RC Oscillator, no clock output        CONFIG0[5:4]
 	 *    CS_SEL[1:0] 00 ->  No current source is applied       			CONFIG0[3:2]
 	 *    ADC_MODE[1:0] 11 -> conversion, needs 256 DMCLK time to start     CONFIG0[1:0]
 	 *    				10 -> standby
 	 *    so: 0x23 for conversion mode, 0x22 for standby mode
+	 *    if XX is 11, then 0xE3 for conversion mode, 0xE2 for standby mode
 	 *
 	 *  Register CONFIG1: Address 0x2, leave as default (0x0C)
 	 *    OSR[3:0] = 0011 -> Data Rate (Hz) with MCLK = 4.9152 MHz is 4800
@@ -172,7 +169,7 @@ int main(void)
 	 *    AZ_MUX 0 no auto-zeroing
 	 *    RESERVED[1:0] 11
 	 *
-	 *  Register CONFIG3: Address 0x4  set to 0xC0
+	 *  Register CONFIG3: Address 0x4  set to 0xC0, (0x80 for One-shot conversion)
 	 *    CONV_MODE[1:0] = 11 -> = Continuous Conversion mode
 	 *    DATA_FORMAT[1:0] = 00 ->  the output register shows only the 24-bit value
 	 *    CRC_FORMAT 0 default
@@ -180,9 +177,14 @@ int main(void)
 	 *    EN_OFFCAL 0 -> Disable Digital Offset Calibration
 	 *    EN_GAINCAL 0 -> Disable Digital Gain Calibration
 	 *
+	 * Register IRQ: Address 0x5, set to 0x04 (does not require a pull-up resistor)
+	 *
 	 *  Register MUX: Address 0x6
 	 *    ADC A --- select CH0 -> MUX[7:4] 0000 and CH1 -> MUX[3:0] 0001  0x01
 	 *    ADC B --- select CH2 -> MUX[7:4] 0010 and CH3 -> MUX[3:0] 0011  0x23
+	 *
+	 *  Register LOCK REGISTER: Address 0xD, Write Access Password Entry Code
+	 *    0xA5 = Write access is allowed on the full register map
 	 *
 	 *  Register ADCDATA address 0x0 -> Latest A/D conversion data output value
 	 *
@@ -191,14 +193,24 @@ int main(void)
 	 */
 
 	// Configure ADC
-	config_ADC(0x01,0x22); // Standby mode
+	config_ADC(0x0D,0xA5); // Lock register: Write access is allowed on the full register map
+	//config_ADC(0x01,0xE2); // Standby mode
+	config_ADC(0x01,0xE3); // Conversion mode
 	config_ADC(0x04,0xC0); // Configure conversion and gain
-	config_ADC(0x06,ADC_B_Select); // Select ADC B
-	config_ADC(0x01,0x23); // Conversion mode
+	config_ADC(0x05,0x04); // Configure IRQ register, only a test
+	config_ADC(0x06,ADC_A_Select); // Select ADC B
+
+	//config_ADC2(0x07); // Scan register
 
 	//USB test
+	uint8_t usb_msg_A[15] = "USB Voltage A: ";
+	uint8_t usb_msg_B[15] = "Voltage B: ";
 	char txBuf[8];
 	uint8_t count = 1;
+	float test_voltage;
+
+	// ADC
+	uint8_t *ADC_RX_buffer_pointer;
 
 	/* USER CODE END 2 */
 
@@ -206,12 +218,40 @@ int main(void)
 	/* USER CODE BEGIN WHILE */
 	while (1)
 	{
-		//Read ADC value
+		//Read ADC value A and send via USB
+		config_ADC(0x6, ADC_A_Select);
+		HAL_Delay(100);
 		ADC_RX_buffer_pointer = read_ADC(0x00);
-		for ( i = 0; i < 3; i++ )   // Save buffer pointer to array
-			ADC_RX_buffer[i] = *(ADC_RX_buffer_pointer + i);
+		HAL_Delay(100);
+		test_voltage = voltage_ADC(ADC_RX_buffer_pointer);
 
-		config_ADC(0x6, ADC_A_Select); // Select ADC A
+		CDC_Transmit_FS(usb_msg_A, strlen((char *)usb_msg_A));
+		HAL_Delay(10);
+
+		sprintf(txBuf, "%.4f\n", test_voltage);
+
+		CDC_Transmit_FS((uint8_t *) txBuf, strlen(txBuf));
+
+		HAL_Delay(100);
+
+		//Read ADC value B
+		config_ADC(0x6, ADC_B_Select);
+		HAL_Delay(100);
+		ADC_RX_buffer_pointer = read_ADC(0x00);
+		HAL_Delay(100);
+		test_voltage = voltage_ADC(ADC_RX_buffer_pointer);
+
+		CDC_Transmit_FS(usb_msg_B, strlen((char *)usb_msg_B));
+		HAL_Delay(10);
+
+		sprintf(txBuf, "%.4f\n", test_voltage);
+
+		CDC_Transmit_FS((uint8_t *) txBuf, strlen(txBuf));
+
+		HAL_Delay(100);
+
+
+		/*config_ADC(0x6, ADC_A_Select); // Select ADC A
 		ADC_RX_buffer_pointer = read_ADC(0x00); // read last ADC value
 		for ( i = 0; i < 3; i++ )   // Save buffer pointer to array
 			ADC_RX_buffer[i] = *(ADC_RX_buffer_pointer + i);
@@ -220,11 +260,8 @@ int main(void)
 		config_ADC(0x6, ADC_B_Select); // Select ADC B
 		ADC_RX_buffer_pointer = read_ADC(0x00);
 		for ( i = 0; i < 3; i++ )   // Save buffer pointer to array
-			ADC_RX_buffer[i] = *(ADC_RX_buffer_pointer + i);
+			ADC_RX_buffer[i] = *(ADC_RX_buffer_pointer + i);*/
 
-		float test;
-		test = voltage_ADC(ADC_RX_buffer_pointer);
-		test = test+1;
 		/*Poti_Set_RDAC(1000, 'A');
 		Poti_Set_RDAC(1000, 'B');
 		Poti_Set_RDAC(20000, 'A');
@@ -238,22 +275,24 @@ int main(void)
 		HAL_GPIO_TogglePin(GPIOB,LED_STATUS_Pin);
 
 		// Send test message UART
-		HAL_UART_Transmit(&huart1, UART_Data,25,20); // Handle_type, data, length, timeout
+		/*HAL_UART_Transmit(&huart1, UART_Data,25,20); // Handle_type, data, length, timeout
 		HAL_Delay(200);
 		HAL_UART_Transmit(&huart1, ADC_RX_buffer, 3, 20);
 		//HAL_Delay(10);
-		//HAL_UART_Transmit(&huart1, Data,11,20); // Handle_type, data, length, timeout
+		//HAL_UART_Transmit(&huart1, Data,11,20); // Handle_type, data, length, timeout */
 
 		// Test USB
+		/*CDC_Transmit_FS(usb_msg_A, strlen((char *)usb_msg_A));
+		HAL_Delay(10);
+
 		CDC_Transmit_FS((uint8_t *) txBuf, strlen(txBuf));
 
-		sprintf(txBuf, "%u\r\n", count);
+		/*sprintf(txBuf, "%u\n", count);
 		count++;
 		if (count>100)
 			count = 1;
-		HAL_Delay(10);
-		CDC_Transmit_FS(usb_msg, strlen((char *)usb_msg));
-		HAL_Delay(10);
+
+		sprintf(txBuf, "%.4f\n", test_voltage);*/
 
 
 		/* USER CODE END WHILE */
@@ -743,6 +782,7 @@ uint16_t Poti_Set_RDAC(uint16_t resistance, unsigned char poti)
 void Poti_SPI_Write(unsigned char* data, unsigned char bytesNumber, unsigned char poti)
 {
 	uint8_t count = 0;
+	int len = 1; // strlen(data[count]), length of 1 char
 
 	if(poti == 'A')			// Select Poti A or B
 
@@ -752,7 +792,7 @@ void Poti_SPI_Write(unsigned char* data, unsigned char bytesNumber, unsigned cha
 
 	for(count = 0;count < bytesNumber;count++)// write instruction
 	{
-		HAL_UART_Transmit(&huart1, data[count],strlen(data[count]),20);
+		HAL_UART_Transmit(&huart1, &data[count], len, 20);
 		//SPI.transfer(data[count]);
 	}
 
@@ -780,6 +820,7 @@ void Poti_SPI_Read(unsigned char* data, unsigned char bytesNumber, unsigned char
 {
 	unsigned char writeData[4]  = {0, 0, 0, 0};
 	unsigned char count          = 0;
+	int len = 1; // strlen(writeData[0]), length of 1 char
 
 	for(count = 0;count <= bytesNumber;count++)
 	{
@@ -794,10 +835,11 @@ void Poti_SPI_Read(unsigned char* data, unsigned char bytesNumber, unsigned char
 	else
 		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_RESET);
 
-	HAL_UART_Transmit(&huart1, writeData[0], strlen(writeData[0]),20);
+	HAL_UART_Transmit(&huart1, &writeData[0], len, 20);
+
 
 	for(count = 1; count < bytesNumber + 1;count++) {
-		data[count - 1] = HAL_UART_Transmit(&huart1, writeData[count],strlen(writeData[count]),20);
+		data[count - 1] = HAL_UART_Transmit(&huart1, &writeData[count], len, 20);
 	}
 
 	if(poti == 'A')			// Select Poti A or B
@@ -821,33 +863,47 @@ void config_ADC(uint8_t ADC_reg, uint8_t command){
 	HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_SET);
 }
 
+void config_ADC2(uint8_t ADC_reg){
+	uint8_t cmd_ADC2[4];
+	cmd_ADC2[0] = (ADC_ADDRESS << 6) | (ADC_reg << 2) | ADC_WRITE;
+	cmd_ADC2[1] = 0x00;
+	cmd_ADC2[2] = 0x01;
+	cmd_ADC2[3] = 0x00;
+
+	HAL_GPIO_WritePin(GPIOA, SPI2_CS_ADC_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_RESET);
+	HAL_SPI_Transmit(&hspi2, (uint8_t *)cmd_ADC2, 4, HAL_MAX_DELAY);
+	HAL_GPIO_WritePin(GPIOA, SPI2_CS_ADC_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_SET);
+}
+
 uint8_t * read_ADC(uint8_t ADC_reg){
-	uint8_t ADC_RX_buffer[3];
-	//uint8_t Read_ADC[1];
+//void read_ADC(uint8_t ADC_reg){
+	uint8_t Read_ADC[1];
 
 	Read_ADC[0] = (ADC_ADDRESS << 6) | (ADC_reg << 2) | ADC_READ;
 
-	HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_RESET);  // Remove later
 	HAL_GPIO_WritePin(GPIOA, SPI2_CS_ADC_Pin, GPIO_PIN_RESET);
 	HAL_SPI_Transmit(&hspi2, (uint8_t *)Read_ADC, 1, HAL_MAX_DELAY);
 	HAL_SPI_Receive(&hspi2, (uint8_t *)ADC_RX_buffer, 3, HAL_MAX_DELAY);
 	HAL_GPIO_WritePin(GPIOA, SPI2_CS_ADC_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_SET);   // Remove later
+
 	return ADC_RX_buffer; // Returns address of the array
 }
 
-float voltage_ADC(uint8_t *ADC_RX_buffer_pointer){
+float voltage_ADC(uint8_t *ADC_RX_buffer_pointer){ // Converts value from read_ADC to float
+	float ADC_Vout;
+	//for ( i = 0; i < 3; i++ )   // Save buffer pointer to array
+	//	ADC_RX_buffer[i] = *(ADC_RX_buffer_pointer + i);
 
-	for ( i = 0; i < 3; i++ )   // Save buffer pointer to array
-		ADC_RX_buffer[i] = *(ADC_RX_buffer_pointer + i);
-	ADC_RX_buffer[0] = 0x0;
-	ADC_RX_buffer[1] = 0x0;
-	ADC_RX_buffer[2] = 0x40;
+	//ADC_RX_buffer[0] = 0x0; // Test: send 1.65
+	//ADC_RX_buffer[1] = 0x0;
+	//ADC_RX_buffer[2] = 0x40;
 
 	//Find out the sign
 	char sign = (ADC_RX_buffer[2] & 0x80); // and [1 0 0 0 0 0 0 0]
 
-	if (sign == 0x00){
+	if (sign == 0x00){ // If positive, send
 		ADC_RX_buffer[2] = (ADC_RX_buffer[2] & 0x7F); // remove sign bit
 		raw_ADC = (ADC_RX_buffer[2] << 16) | (ADC_RX_buffer[1] << 8) | ADC_RX_buffer[0];
 		ADC_Vout = raw_ADC*3.3/8388608; // register * Vref / 23 bit resolution
@@ -905,8 +961,8 @@ int balance_one_channel(unsigned char channel){
 	uint8_t raw_ADC;
 	float value_ADC;
 	// Read ADC
-	raw_ADC = read_ADC(0x00);
-	value_ADC = voltage_ADC((uint8_t *)raw_ADC);
+	raw_ADC = *read_ADC(0x00);
+	value_ADC = voltage_ADC(&raw_ADC);
 
 	// If the value is lower than the ref voltage, then the sensor output is higher than the poti output
 	// --> increase poti value (increase voltage) to balance the bridge
@@ -917,8 +973,8 @@ int balance_one_channel(unsigned char channel){
 			// Increase POTI
 			poti_value += 20;
 			Poti_Set_RDAC(poti_value, channel);
-			raw_ADC = read_ADC(0x00);
-			value_ADC = voltage_ADC((uint8_t *)raw_ADC);
+			raw_ADC = *read_ADC(0x00);
+			value_ADC = voltage_ADC(&raw_ADC);
 		}
 	}
 	// If the value is higher than the ref voltage, then the sensor output is lower than the poti output
@@ -929,8 +985,8 @@ int balance_one_channel(unsigned char channel){
 			// Decrease POTI
 			poti_value -= 20;
 			Poti_Set_RDAC(poti_value, channel);
-			raw_ADC = read_ADC(0x00);
-			value_ADC = voltage_ADC(raw_ADC);
+			raw_ADC = *read_ADC(0x00);
+			value_ADC = voltage_ADC(&raw_ADC);
 		}
 	}
 	return poti_value;
@@ -948,12 +1004,12 @@ void read_sensor(int sensor){
 	mux_channel(sensor);
 	// For A
 	config_ADC(0x6, ADC_A_Select);
-	raw_ADC = read_ADC(0x00);
-	Sensor_values_A[sensor] = voltage_ADC(raw_ADC);
+	raw_ADC = *read_ADC(0x00);
+	Sensor_values_A[sensor] = voltage_ADC(&raw_ADC);
 	// For B
 	config_ADC(0x6, ADC_B_Select);
-	raw_ADC = read_ADC(0x00);
-	Sensor_values_B[sensor] = voltage_ADC(raw_ADC);
+	raw_ADC = *read_ADC(0x00);
+	Sensor_values_B[sensor] = voltage_ADC(&raw_ADC);
 }
 
 /* USER CODE END 4 */

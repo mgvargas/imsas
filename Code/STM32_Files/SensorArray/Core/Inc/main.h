@@ -59,14 +59,17 @@ uint16_t Poti_Set_RDAC(uint16_t resistance, unsigned char poti);
 typedef enum {
    ADC_ADDRESS = 0x01,          	/* Address of the ADC */
    ADC_WRITE = 0x02,            	/* Incremental Write Starting at Register Address */
-   ADC_READ = 0x01, 				/* Incremental Read Starting at Register Address */
-   ADC_A_Select = 0x01,				/* if sent to address 6, selects ADC A */
+   ADC_READ = 0x01, 				/* Static Read, Register Address is read continuously*/
+   ADC_start = 0x1010,				/* Send cdm 00 + ADC_start as address */
+   ADC_A_Select = 0x01,				/* if sent to address 6, selects ADC A - 0x01 for differential mode,  08 for the other*/
    ADC_B_Select = 0x23,				/* if sent to address 6, selects ADC B */
    Array_mode = 0x10,				/* Sensor array mode */
    Single_mode = 0x200,				/* Single array mode */
 } adc_commands;
 void config_ADC(uint8_t ADC_reg, uint8_t command);
+void config_ADC2(uint8_t ADC_reg);
 uint8_t * read_ADC(uint8_t ADC_reg);
+//void read_ADC(uint8_t ADC_reg);
 float voltage_ADC(uint8_t *ADC_RX_buffer_pointer);
 ////////////////////////////////// End ADC /////////////////////////////////
 
