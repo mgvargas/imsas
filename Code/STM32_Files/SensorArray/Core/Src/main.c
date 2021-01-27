@@ -201,7 +201,7 @@ int main(void)
 	config_ADC(0x05,0x04); // Configure IRQ register, only a test
 	config_ADC(0x06,ADC_A_Select); // Select ADC B
 
-	config_ADC2(0x07); // Scan register
+	//config_ADC2(0x07); // Scan register
 
 	//USB test
 	uint8_t usb_msg_A[15] = "USB Voltage A: ";
