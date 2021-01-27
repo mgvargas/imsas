@@ -168,14 +168,14 @@ namespace WindowsFormsTest
             try
             {
                 ComboBoxPort.SelectedIndex = i;
-                ButtonConnect.Enabled = true;
+                //ButtonConnect.Enabled = true;
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Com port not detected", "Warning !!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 ComboBoxPort.Text = "";
                 ComboBoxPort.Items.Clear();
-                ButtonConnect.Enabled = false;
+                //ButtonConnect.Enabled = false;
                 ButtonStartRecording.Enabled = false;
                 return;
             }
@@ -215,18 +215,38 @@ namespace WindowsFormsTest
 
         private void RadioButtonA_CheckedChanged(object sender, EventArgs e)
         {
+            ButtonConnect.Enabled = true;
             dataGridView2.Visible = false;
             dataGridView1.Visible = true;
             chart1.Visible = true;
             chart2.Visible = false;
+            LabelSensor1.Text = "A1";
+            LabelSensor2.Text = "A2";
+            LabelSensor3.Text = "A3";
+            LabelSensor4.Text = "A4";
+            LabelSensor5.Text = "A4";
+            LabelSensor6.Text = "A6";
+            LabelSensor7.Text = "A7";
+            LabelSensor8.Text = "A8";
+            LabelSensor9.Text = "A9";
         }
 
         private void RadioButtonB_CheckedChanged(object sender, EventArgs e)
         {
+            ButtonConnect.Enabled = true;
             dataGridView1.Visible = false;
             dataGridView2.Visible = true;
             chart2.Visible = true;
             chart1.Visible = false;
+            LabelSensor1.Text = "B1";
+            LabelSensor2.Text = "B2";
+            LabelSensor3.Text = "B3";
+            LabelSensor4.Text = "B4";
+            LabelSensor5.Text = "B5";
+            LabelSensor6.Text = "B6";
+            LabelSensor7.Text = "B7";
+            LabelSensor8.Text = "B8";
+            LabelSensor9.Text = "B9";
         }
 
         private void ButtonDisconnect_Click(object sender, EventArgs e)
@@ -243,6 +263,7 @@ namespace WindowsFormsTest
             TimerSerial.Stop();
             TimerDataLogRecord.Stop();
             ButtonSaveToExcel.Enabled = true;
+            ButtonStartRecording.Enabled = false;
             ButtonStopRecording.Enabled = false;
             SerialPort1.Close();
         }
@@ -320,6 +341,20 @@ namespace WindowsFormsTest
                     }
                 }
                 dataGridView1.Rows.Clear();
+
+                if (RadioButtonA.Checked && ButtonDisconnect.Enabled == false)
+                {
+                    LabelSensor1.Text = "A1" ;
+                    LabelSensor2.Text = "A2" ;
+                    LabelSensor3.Text = "A3" ;
+                    LabelSensor4.Text = "A4" ;
+                    LabelSensor5.Text = "A4" ;
+                    LabelSensor6.Text = "A6" ;
+                    LabelSensor7.Text = "A7" ;
+                    LabelSensor8.Text = "A8" ;
+                    LabelSensor9.Text = "A9" ;
+                }
+
             }
 
             else
@@ -376,6 +411,18 @@ namespace WindowsFormsTest
                     }
                 }
                 dataGridView2.Rows.Clear();
+                if (RadioButtonB.Checked && ButtonDisconnect.Enabled == false)
+                {
+                    LabelSensor1.Text = "B1";
+                    LabelSensor2.Text = "B2";
+                    LabelSensor3.Text = "B3";
+                    LabelSensor4.Text = "B4";
+                    LabelSensor5.Text = "B5";
+                    LabelSensor6.Text = "B6";
+                    LabelSensor7.Text = "B7";
+                    LabelSensor8.Text = "B8";
+                    LabelSensor9.Text = "B9";
+                }
             }
         }
 
