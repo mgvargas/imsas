@@ -329,7 +329,7 @@ namespace WindowsFormsTest
 
         private void RadioButtonA_CheckedChanged(object sender, EventArgs e)
         {
-            RadioButtonA1B1.Visible = false;
+            RadioButtonA1B1.Enabled = false;
             ButtonConnect.Enabled = true; 
             dataGridView2.Visible = false;
             dataGridView3.Visible = false;
@@ -354,7 +354,7 @@ namespace WindowsFormsTest
         }
         private void RadioButtonB_CheckedChanged(object sender, EventArgs e)
         {
-            RadioButtonA1B1.Visible = false;
+            RadioButtonA1B1.Enabled = false;
             ButtonConnect.Enabled = true;
             dataGridView1.Visible = false;
             dataGridView3.Visible = false;
@@ -381,7 +381,7 @@ namespace WindowsFormsTest
 
         private void RadioButtonAB_CheckedChanged(object sender, EventArgs e)
         {
-            RadioButtonA1B1.Visible = false;
+            RadioButtonA1B1.Enabled = false;
             ButtonConnect.Enabled = true;
             dataGridView1.Visible = false;
             dataGridView2.Visible = false;
@@ -433,9 +433,9 @@ namespace WindowsFormsTest
 
         private void RadioButtonA1B1_CheckedChanged(object sender, EventArgs e)
         {
-            RadioButtonA.Visible = false;
-            RadioButtonB.Visible = false;
-            RadioButtonAB.Visible = false;
+            RadioButtonA.Enabled = false;
+            RadioButtonB.Enabled = false;
+            RadioButtonAB.Enabled = false;
             ButtonConnect.Enabled = true;
             dataGridView2.Visible = false;
             dataGridView3.Visible = false;
@@ -478,13 +478,13 @@ namespace WindowsFormsTest
             SerialPort1.Close();
             if (RadioButtonA.Checked || RadioButtonB.Checked || RadioButtonAB.Checked)
             {
-                RadioButtonA1B1.Visible = true;
+                RadioButtonA1B1.Enabled = true;
             }
             else
             {
-                RadioButtonA.Visible = true;
-                RadioButtonAB.Visible = true;
-                RadioButtonB.Visible = true;
+                RadioButtonA.Enabled = true;
+                RadioButtonAB.Enabled = true;
+                RadioButtonB.Enabled = true;
             }
         }
 
@@ -1283,13 +1283,15 @@ namespace WindowsFormsTest
                     StrSerialInRam = TB.Lines[0].Substring(0, 2);
                     if (StrSerialInRam == "SA")
                     {
-                        A_1_Val = TB.Lines[0].Substring(2);
+                        A_1 = TB.Lines[0];
+                        A_1_Val = A_1.Substring(2);
                     }
                     A_1 = "";
                     StrSerialInRam = TB.Lines[1].Substring(0, 2);
                     if (StrSerialInRam == "SB")
                     {
-                        B_1_Val = TB.Lines[1].Substring(2);
+                        B_1 = TB.Lines[1];
+                        B_1_Val = B_1.Substring(2);
                     }
                     B_1 = "";
                 }
