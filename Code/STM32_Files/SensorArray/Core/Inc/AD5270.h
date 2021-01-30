@@ -63,6 +63,7 @@ extern "C" {
         NO_OP_cmd           =  0x0000,  ///< 16 bit no data
         WRITE_RDAC          =  0x04,    ///< Write to the RDAC Register
         READ_RDAC           =  0x08,    ///< Read from the RDAC Register
+		MASK_RDAC			=  0x03,	///< Masks first 2 bites of data
         STORE_50TP          =  0x0C,    ///< Store RDAC setting to 50-TP
         SW_RST              =  0x10,    ///< Software reset to last memory location
         READ_50TP_CONTENTS  =  0x14,    ///< Read the last memory contents

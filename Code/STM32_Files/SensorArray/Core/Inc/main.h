@@ -78,6 +78,10 @@ int balance_one_channel(unsigned char channel);
 void calibrate_potis();
 ////////////////////////////////// End Calibration ///////////////////////////
 
+////////////////////////////////// Read Sensors ///////////////////////////
+void read_single_sensor();
+////////////////////////////////// End Read Sensors ///////////////////////////
+
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
