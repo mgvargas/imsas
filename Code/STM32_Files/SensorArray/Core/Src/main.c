@@ -204,8 +204,8 @@ int main(void)
 	//config_ADC2(0x07); // Scan register
 
 	//USB test
-	uint8_t usb_msg_A[15] = "USB Voltage A: ";
-	uint8_t usb_msg_B[15] = "Voltage B: ";
+	uint8_t usb_msg_A[15] = "SA1 "; //"USB Voltage A: ";
+	uint8_t usb_msg_B[15] = "SA2 "; //"Voltage B: ";
 	char txBuf[8];
 	uint8_t count = 1;
 	float test_voltage;
@@ -250,6 +250,71 @@ int main(void)
 		CDC_Transmit_FS((uint8_t *) txBuf, strlen(txBuf));
 
 		HAL_Delay(100);
+
+		/*CDC_Transmit_FS("SA3 ", 4);
+		HAL_Delay(10);
+		CDC_Transmit_FS((uint8_t *) txBuf, strlen(txBuf));
+		HAL_Delay(10);
+		CDC_Transmit_FS("SA4 ", 4);
+		HAL_Delay(10);
+		CDC_Transmit_FS((uint8_t *) txBuf, strlen(txBuf));
+		HAL_Delay(10);
+		CDC_Transmit_FS("SA5 ", 4);
+		HAL_Delay(10);
+		CDC_Transmit_FS((uint8_t *) txBuf, strlen(txBuf));
+		HAL_Delay(10);
+		CDC_Transmit_FS("SA6 ", 4);
+		HAL_Delay(10);
+		CDC_Transmit_FS((uint8_t *) txBuf, strlen(txBuf));
+		HAL_Delay(10);
+		CDC_Transmit_FS("SA7 ", 4);
+		HAL_Delay(10);
+		CDC_Transmit_FS((uint8_t *) txBuf, strlen(txBuf));
+		HAL_Delay(10);
+		CDC_Transmit_FS("SA8 ", 4);
+		HAL_Delay(10);
+		CDC_Transmit_FS((uint8_t *) txBuf, strlen(txBuf));
+		HAL_Delay(10);
+		CDC_Transmit_FS("SA9 ", 4);
+		HAL_Delay(10);
+		CDC_Transmit_FS((uint8_t *) txBuf, strlen(txBuf));
+		HAL_Delay(10);
+		CDC_Transmit_FS("SB1 ", 4);
+		HAL_Delay(10);
+		CDC_Transmit_FS((uint8_t *) txBuf, strlen(txBuf));
+		HAL_Delay(10);
+		CDC_Transmit_FS("SB2 ", 4);
+		HAL_Delay(10);
+		CDC_Transmit_FS((uint8_t *) txBuf, strlen(txBuf));
+		HAL_Delay(10);
+		CDC_Transmit_FS("SB3 ", 4);
+		HAL_Delay(10);
+		CDC_Transmit_FS((uint8_t *) txBuf, strlen(txBuf));
+		HAL_Delay(10);
+		CDC_Transmit_FS("SB4 ", 4);
+		HAL_Delay(10);
+		CDC_Transmit_FS((uint8_t *) txBuf, strlen(txBuf));
+		HAL_Delay(10);
+		CDC_Transmit_FS("SB5 ", 4);
+		HAL_Delay(10);
+		CDC_Transmit_FS((uint8_t *) txBuf, strlen(txBuf));
+		HAL_Delay(10);
+		CDC_Transmit_FS("SB6 ", 4);
+		HAL_Delay(10);
+		CDC_Transmit_FS((uint8_t *) txBuf, strlen(txBuf));
+		HAL_Delay(10);
+		CDC_Transmit_FS("SB7 ", 4);
+		HAL_Delay(10);
+		CDC_Transmit_FS((uint8_t *) txBuf, strlen(txBuf));
+		HAL_Delay(10);
+		CDC_Transmit_FS("SB8 ", 4);
+		HAL_Delay(10);
+		CDC_Transmit_FS((uint8_t *) txBuf, strlen(txBuf));
+		HAL_Delay(10);
+		CDC_Transmit_FS("SB9 ", 4);
+		HAL_Delay(10);
+		CDC_Transmit_FS((uint8_t *) txBuf, strlen(txBuf));
+		HAL_Delay(10);
 
 		/*Poti_Set_RDAC(1000, 'A');
 		Poti_Set_RDAC(1000, 'B');
