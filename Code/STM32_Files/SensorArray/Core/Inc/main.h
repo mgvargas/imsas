@@ -45,12 +45,10 @@ typedef enum {
    UART_WRITE
 } enWriteData;
 
-void Poti_SPI_Init(void);
-//extern void Poti_SPI_Write(unsigned char* data, unsigned char bytesNumber, unsigned char poti);
-//extern void Poti_SPI_Read(unsigned char* data, unsigned char bytesNumber, unsigned char poti);
+/*void Poti_SPI_Init(void);
 void Poti_SPI_Write(unsigned char* data, unsigned char bytesNumber, unsigned char poti);
 void Poti_SPI_Read(unsigned char* data, unsigned char bytesNumber, unsigned char poti);
-uint16_t Poti_Set_RDAC(uint16_t resistance, unsigned char poti);
+uint16_t Poti_Set_RDAC(uint16_t resistance, unsigned char poti);*/
 
 ////////////////////////////////// END Digital Potentiometer /////////////////////////////////
 
@@ -66,11 +64,7 @@ typedef enum {
    Array_mode = 0x10,				/* Sensor array mode */
    Single_mode = 0x200,				/* Single array mode */
 } adc_commands;
-void config_ADC(uint8_t ADC_reg, uint8_t command);
-void config_ADC2(uint8_t ADC_reg);
-uint8_t * read_ADC(uint8_t ADC_reg);
-//void read_ADC(uint8_t ADC_reg);
-float voltage_ADC(uint8_t *ADC_RX_buffer_pointer);
+
 ////////////////////////////////// End ADC /////////////////////////////////
 
 ////////////////////////////////// Calibration ///////////////////////////

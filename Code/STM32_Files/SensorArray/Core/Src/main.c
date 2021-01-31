@@ -6,11 +6,11 @@
  ******************************************************************************
  * @attention
  *
- * Measurement board for an array of 9 sensors, each one with two half Wheatstone
- * bridges (Channel A and B). The sensors outputs are connected to a multiplexer
- *
- * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
- * All rights reserved.</center></h2>
+ * Measurement board for an array of 9 artificial hair flow sensors, each one with
+ * two half Wheatstone bridges (Channel A and B). The sensors outputs are connected
+ * to a multiplexer (CD74HC4067), compared with the Vout of a digital potentiometer
+ * and amplified. The amplified output is read with an ADC (MCP3561), the measurements
+ * are sent to an STM32F405 microcontroller.
  *
  * This software component is licensed by ST under BSD 3-Clause license,
  * the "License"; You may not use this file except in compliance with the
@@ -27,11 +27,12 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "CD74HC4067.h"		// Multiplexer
-#include "AD5270.h"
+#include "AD5270.h"			// Digital potentiometer
+#include "ADC.h"			// ADC
+#include "calibration.h"
 #include "math.h"
 #include "usbd_cdc_if.h"
 #include "string.h"
-
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -79,13 +80,11 @@ static void MX_SPI2_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 /////////////////////////// Global Variables //////////////////////////////////
-uint8_t SPI_Data[2] = {0x1C, 0x03};
-uint8_t POTIA[2] = {0x07, 0xff};
+//uint8_t POTIA[2] = {0x07, 0xff};
 // ADC Values
-uint8_t cmd_ADC[2];
+//uint8_t cmd_ADC[2];
 uint8_t ADC_RX_buffer[3];
 int raw_ADC;
-//float ADC_Vout;
 int i;
 // Calibration
 int Potentiometer_values_A[10] = {10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000};
@@ -222,8 +221,8 @@ int main(void)
 		// Mode single sensor
 		if (HAL_GPIO_ReadPin(GPIOC, Switch_Mode_Pin)){
 			HAL_GPIO_WritePin(GPIOB, LED_STATUS_Pin, GPIO_PIN_SET);
-			Poti_Set_RDAC(Potentiometer_values_A[0], 'A');
-			Poti_Set_RDAC(Potentiometer_values_B[0], 'B');
+			//Poti_Set_RDAC(Potentiometer_values_A[0], 'A');
+			//Poti_Set_RDAC(Potentiometer_values_B[0], 'B');
 			read_single_sensor();
 		}
 		//Mode sensor array
@@ -621,10 +620,10 @@ static void MX_GPIO_Init(void)
 	}
 }*/
 
-// Converts a given integer x to string str[].
-// d is the number of digits required in the output.
-// If d is more than the number of digits in x,
-// then 0s are added at the beginning.
+/* Converts a given integer x to string str[].
+ - d is the number of digits required in the output.
+ - if d is more than the number of digits in x,
+ then 0s are added at the beginning. */
 /*int intToStr(int x, char str[], int d)
 {
 	int i = 0;
@@ -671,332 +670,6 @@ static void MX_GPIO_Init(void)
 
 ////////////////////////////////// Switch: Array or single sensor mode ///////////////////
 
-
-////////////////////////////////// Digital Potentiometer /////////////////////////////////
-/**
-   @brief SPI initialization
-   @return none
- **/
-void Poti_SPI_Init(void)
-{
-	//pinMode(AD5270_CS_PIN, OUTPUT); // Set CS pin for ADT7310 as output
-	//digitalWrite(AD5270_CS_PIN, HIGH);
-	HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_RESET); // Poti A
-	HAL_SPI_Transmit(&hspi1, (uint8_t *)SPI_Data, 2, HAL_MAX_DELAY);
-	HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_SET);
-	HAL_Delay(1);
-	HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_RESET); // Poti B
-	HAL_SPI_Transmit(&hspi1, (uint8_t *)SPI_Data, 2, HAL_MAX_DELAY);
-	HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_SET);
-	HAL_Delay(200);
-
-}
-
-uint16_t Poti_Set_RDAC(uint16_t resistance, unsigned char poti)
-{
-	// Sets new resistance value to specified AD5270 poti (A or B)
-	uint16_t RDAC_val = AD5270_CalcRDAC(resistance);
-	uint8_t RDAC[2];
-
-	//RDAC_Value = (float)((RDAC_val * MAX_RESISTANCE) / 1024.0); // inverse operation to get actual resistance in the RDAC
-
-	RDAC[1] = RDAC_val & 0xff;
-	//RDAC[0] = ((RDAC_val >> 8) & WRITE_RDAC);// 0x04);
-	RDAC[0] = (((RDAC_val >> 8) & MASK_RDAC) | WRITE_RDAC);
-
-	if(poti == 'A'){			// Select Poti A or B
-		HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_RESET);
-		HAL_SPI_Transmit(&hspi1, (uint8_t *)RDAC, 2, HAL_MAX_DELAY);
-		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_SET);
-		HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_SET);}
-	else{
-		HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_RESET);
-		HAL_SPI_Transmit(&hspi1, (uint8_t *)RDAC, 2, HAL_MAX_DELAY);
-		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_SET);
-		HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_SET);}
-
-	HAL_Delay(300);
-
-	return (uint16_t)resistance;
-}
-
-/***************************************************************************
- * @brief Writes data to SPI.
- *
- * @param data - Write data buffer:
- *               - first byte is the chip select number;
- *               - from the second byte onwards are located data bytes to write.
- * @param bytesNumber - Number of bytes to write.
- * @param poti - Select potentiometer A or B.
- *
- * @return Number of written bytes.
- *******************************************************************************/
-void Poti_SPI_Write(unsigned char* data, unsigned char bytesNumber, unsigned char poti)
-{
-	uint8_t count = 0;
-	int len = 1; // strlen(data[count]), length of 1 char
-
-	if(poti == 'A')			// Select Poti A or B
-
-		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_RESET);
-	else
-		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_RESET);
-
-	for(count = 0;count < bytesNumber;count++)// write instruction
-	{
-		HAL_UART_Transmit(&huart1, &data[count], len, 20);
-		//SPI.transfer(data[count]);
-	}
-
-	if(poti == 'A')			// Select Poti A or B
-		//digitalWrite(AD5270_CS_PIN, HIGH);
-		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_SET);
-	else
-		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_SET);
-	//}
-
-}
-/***************************************************************************//**
- * @brief Reads data from SPI.
- *
- * @param data - As an input parameter, data represents the write buffer:
- *               - first byte is the chip select number;
- *               - from the second byte onwards are located data bytes to write.
- *               As an output parameter, data represents the read buffer:
- *               - from the first byte onwards are located the read data bytes.
- * @param bytesNumber - Number of bytes to write.
- *
- * @return Number of written bytes.
- *******************************************************************************/
-void Poti_SPI_Read(unsigned char* data, unsigned char bytesNumber, unsigned char poti)
-{
-	unsigned char writeData[4]  = {0, 0, 0, 0};
-	unsigned char count          = 0;
-	int len = 1; // strlen(writeData[0]), length of 1 char
-
-	for(count = 0;count <= bytesNumber;count++)
-	{
-		if(count == 0)
-			writeData[count] = data[count];
-		else
-			writeData[count] = 0xAA;    /* dummy value */
-	}
-
-	if(poti == 'A')			// Select Poti A or B
-		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_RESET);
-	else
-		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_RESET);
-
-	HAL_UART_Transmit(&huart1, &writeData[0], len, 20);
-
-
-	for(count = 1; count < bytesNumber + 1;count++) {
-		data[count - 1] = HAL_UART_Transmit(&huart1, &writeData[count], len, 20);
-	}
-
-	if(poti == 'A')			// Select Poti A or B
-		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_SET);
-	else
-		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_SET);
-	//}
-}
-
-////////////////////////////////// END Digital Potentiometer /////////////////////////////////
-
-//////////////////////////////////////////// ADC /////////////////////////////////
-void config_ADC(uint8_t ADC_reg, uint8_t command){
-	cmd_ADC[0] = (ADC_ADDRESS << 6) | (ADC_reg << 2) | ADC_WRITE;
-	cmd_ADC[1] = command;
-
-	HAL_GPIO_WritePin(GPIOA, SPI2_CS_ADC_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_RESET);
-	HAL_SPI_Transmit(&hspi2, (uint8_t *)cmd_ADC, 2, HAL_MAX_DELAY);
-	HAL_GPIO_WritePin(GPIOA, SPI2_CS_ADC_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_SET);
-	//HAL_Delay(50);
-}
-
-void config_ADC2(uint8_t ADC_reg){
-	uint8_t cmd_ADC2[4];
-	cmd_ADC2[0] = (ADC_ADDRESS << 6) | (ADC_reg << 2) | ADC_WRITE;
-	cmd_ADC2[1] = 0x00;
-	cmd_ADC2[2] = 0x00;
-	cmd_ADC2[3] = 0x00;
-
-	HAL_GPIO_WritePin(GPIOA, SPI2_CS_ADC_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_RESET);
-	HAL_SPI_Transmit(&hspi2, (uint8_t *)cmd_ADC2, 4, HAL_MAX_DELAY);
-	HAL_GPIO_WritePin(GPIOA, SPI2_CS_ADC_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_SET);
-}
-
-uint8_t * read_ADC(uint8_t ADC_reg){
-	uint8_t Read_ADC[1];
-
-	Read_ADC[0] = (ADC_ADDRESS << 6) | (ADC_reg << 2) | ADC_READ;
-
-	HAL_GPIO_WritePin(GPIOA, SPI2_CS_ADC_Pin, GPIO_PIN_RESET);
-	HAL_SPI_Transmit(&hspi2, (uint8_t *)Read_ADC, 1, HAL_MAX_DELAY);
-	HAL_SPI_Receive(&hspi2, (uint8_t *)ADC_RX_buffer, 3, HAL_MAX_DELAY);
-	HAL_GPIO_WritePin(GPIOA, SPI2_CS_ADC_Pin, GPIO_PIN_SET);
-
-	return &ADC_RX_buffer[0]; // Returns address of the array
-}
-
-float voltage_ADC(uint8_t *ADC_RX_buffer_pointer){ // Converts value from read_ADC to float
-	float ADC_Vout;
-	int raw_ADC;
-	uint8_t ADC_RX_buffer[3];
-	for ( i = 0; i < 3; i++ )   // Save buffer pointer to array
-		ADC_RX_buffer[i] = *(ADC_RX_buffer_pointer + i);
-
-	//Find out the sign
-	char sign = (ADC_RX_buffer[0] & 0x80); // and [1 0 0 0 0 0 0 0]
-
-	if (sign == 0x00){ // If positive, send
-		raw_ADC = (ADC_RX_buffer[0] << 16) | (ADC_RX_buffer[1] << 8) | ADC_RX_buffer[2];
-		ADC_Vout = raw_ADC*3.3/8388608.0; // register * Vref / 23 bit resolution
-	}
-	else
-		ADC_Vout = 0; // if negative, then 0
-
-	return ADC_Vout;
-}
-/////////////////////////////////////////// End ADC /////////////////////////////////
-
-////////////////////////////////////////////// Calibration ///////////////////////////////////
-/* Calibrate the potentiometers to get a balanced output from the bridge, reads all 9 channels
- * and changes the value of the poti until the ADC gets the reference voltage as input */
-void calibrate_potis(){
-	//uint16_t mode;
-	int poti_value;
-	char *usb_msg = malloc(15);
-
-	if (HAL_GPIO_ReadPin(GPIOC, Switch_Mode_Pin)){
-		//mode = Single_mode;
-		mux_channel(0);
-		strcpy(usb_msg, "Calibrating A\n");
-
-		// For channel A
-		CDC_Transmit_FS((uint8_t *)usb_msg, strlen((char *)usb_msg));
-		config_ADC(0x6, ADC_A_Select);
-		poti_value = balance_one_channel('A');
-		Potentiometer_values_A[0] = poti_value;
-		sprintf(usb_msg, "%i\n", poti_value);
-
-		// For channel B
-		strcpy(usb_msg, "Calibrating B\n");
-		CDC_Transmit_FS((uint8_t *)usb_msg, strlen((char *)usb_msg));
-		config_ADC(0x6, ADC_B_Select);
-		poti_value = balance_one_channel('B');
-		Potentiometer_values_B[0] = poti_value;
-
-		strcpy(usb_msg, "Finished\n");
-		CDC_Transmit_FS((uint8_t *)usb_msg, strlen((char *)usb_msg));
-	}
-
-	else {
-		//mode = Array_mode;
-		// Loop through the 9 sensors
-		strcpy(usb_msg, "Calibrate Array\n");
-		CDC_Transmit_FS((uint8_t *)usb_msg, strlen((char *)usb_msg));
-		for (i=1; i <= 9; i = i+1){
-			mux_channel(i);
-			// For channel A
-			config_ADC(0x6, ADC_A_Select);
-			HAL_Delay(100);
-			poti_value = balance_one_channel('A');
-			Potentiometer_values_A[i] = poti_value;
-
-			// For channel B
-			config_ADC(0x6, ADC_B_Select);
-			HAL_Delay(100);
-			poti_value = balance_one_channel('B');
-			Potentiometer_values_B[i] = poti_value;
-		}
-		strcpy(usb_msg, "Finished\n");
-		CDC_Transmit_FS((uint8_t *)usb_msg, strlen((char *)usb_msg));
-
-	}
-}
-
-int balance_one_channel(unsigned char channel){
-	float Vref= 1.65;
-	int poti_value = 10000;
-	uint8_t *raw_ADC;
-	float value_ADC;
-	char *usb_msg = malloc(20);
-	strcpy(usb_msg, "Poti out of range\n");
-
-	// Read ADC
-	raw_ADC = read_ADC(0x00);
-	value_ADC = voltage_ADC(raw_ADC);
-	HAL_Delay(10);
-	raw_ADC = read_ADC(0x00);
-	value_ADC = voltage_ADC(raw_ADC);
-
-	// If the value is lower than the ref voltage, then the sensor output is higher than the poti output
-	// --> increase poti value (increase voltage) to balance the bridge
-	if (value_ADC < Vref)
-	{
-		while (value_ADC <= (Vref+.015)) // +- 15mV
-		{
-			// Increase POTI
-			if ((Vref - value_ADC) > 0.4)
-				poti_value += 400;
-			else if ((Vref - value_ADC) > 0.2)
-				poti_value += 200;
-			else
-				poti_value += 20;
-
-			if (poti_value > 20000){ // if poti cannot increase more, break
-				CDC_Transmit_FS((uint8_t *)usb_msg, strlen((char *)usb_msg));
-				HAL_Delay(10);
-				break;
-			}
-			Poti_Set_RDAC(poti_value, channel);
-			raw_ADC = read_ADC(0x00);
-			value_ADC = voltage_ADC(raw_ADC);
-			HAL_Delay(5);
-		}
-	}
-	// If the value is higher than the ref voltage, then the sensor output is lower than the poti output
-	// --> decrease poti value (decrease voltage) to balance the bridge
-	else{
-		//while ( (value_ADC <= (Vref+.0015)) && (value_ADC >= (Vref-.0015)) ) // +- 1.5mV
-		while (value_ADC >= (Vref-.015)) // +- 15mV
-		{
-			// Decrease POTI
-			if ((value_ADC - Vref) > 1.5)
-				poti_value -= 800;
-			else if ((value_ADC - Vref) > 0.55)
-				poti_value -= 200;
-			else if ((value_ADC - Vref) > 0.2)
-				poti_value -= 60;
-			else
-				poti_value -= 20;
-
-			if (poti_value < 0){ // if poti cannot decrease more, break
-				CDC_Transmit_FS((uint8_t *)usb_msg, strlen((char *)usb_msg));
-				HAL_Delay(10);
-				break;
-			}
-			Poti_Set_RDAC(poti_value, channel);
-			raw_ADC = read_ADC(0x00);
-			value_ADC = voltage_ADC(raw_ADC);
-			HAL_Delay(5);
-		}
-	}
-	return poti_value;
-
-}
-//////////////////////////////////////////// End Calibration /////////////////////////////////
 
 void read_sensor(int sensor){
 	uint8_t *raw_ADC;
