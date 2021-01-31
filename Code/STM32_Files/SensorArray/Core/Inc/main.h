@@ -32,9 +32,17 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+////////////////////////////////// Commands over USB /////////////////////////////////
+#define MAX_USB_BUFFER_LENGTH		256
 
-void Float_to_uint(float n, char* res, int afterpoint);
-int intToStr(int x, char str[], int d);
+typedef struct usb_buffer{
+	uint8_t data [MAX_USB_BUFFER_LENGTH-1];
+	uint8_t new_data; // = 0;
+	uint32_t length;// = 0;
+}usb_buffer;
+
+uint8_t usb_data_reset(void);
+////////////////////////////////// END Commands over USB /////////////////////////////////
 
 ////////////////////////////////// Digital Potentiometer /////////////////////////////////
 
@@ -45,13 +53,7 @@ typedef enum {
    UART_WRITE
 } enWriteData;
 
-/*void Poti_SPI_Init(void);
-void Poti_SPI_Write(unsigned char* data, unsigned char bytesNumber, unsigned char poti);
-void Poti_SPI_Read(unsigned char* data, unsigned char bytesNumber, unsigned char poti);
-uint16_t Poti_Set_RDAC(uint16_t resistance, unsigned char poti);*/
-
 ////////////////////////////////// END Digital Potentiometer /////////////////////////////////
-
 
 ////////////////////////////////// ADC /////////////////////////////////
 typedef enum {
@@ -66,11 +68,6 @@ typedef enum {
 } adc_commands;
 
 ////////////////////////////////// End ADC /////////////////////////////////
-
-////////////////////////////////// Calibration ///////////////////////////
-int balance_one_channel(unsigned char channel);
-void calibrate_potis();
-////////////////////////////////// End Calibration ///////////////////////////
 
 ////////////////////////////////// Read Sensors ///////////////////////////
 void read_single_sensor();

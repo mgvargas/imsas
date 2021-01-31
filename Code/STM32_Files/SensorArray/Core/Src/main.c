@@ -21,13 +21,13 @@
  */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
+#include "AD5270.h"			// Digital potentiometer
 #include "main.h"
 #include "usb_device.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "CD74HC4067.h"		// Multiplexer
-#include "AD5270.h"			// Digital potentiometer
 #include "ADC.h"			// ADC
 #include "calibration.h"
 #include "math.h"
@@ -61,7 +61,7 @@ SPI_HandleTypeDef hspi2;
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
-
+usb_buffer usb_data;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -103,10 +103,7 @@ int main(void)
 {
 	/* USER CODE BEGIN 1 */
 	// Variable definition
-
 	//uint8_t UART_Data[25] = "Test UART communication :";
-
-	//uint16_t Res_value;
 
 	/* USER CODE END 1 */
 
@@ -141,58 +138,13 @@ int main(void)
 	HAL_Delay(200);
 
 
-	/* ADC Output
-	 *
-	 *  Register CONFIG0: Address 0x1
-	 *    XX -> 11(if all 0, then 00 full shutdown, 11 partial shutdown)	CONFIG0[7:6]
-	 *    CLK_SEL[1:0] 10 -> Internal RC Oscillator, no clock output        CONFIG0[5:4]
-	 *    CS_SEL[1:0] 00 ->  No current source is applied       			CONFIG0[3:2]
-	 *    ADC_MODE[1:0] 11 -> conversion, needs 256 DMCLK time to start     CONFIG0[1:0]
-	 *    				10 -> standby
-	 *    so: 0x23 for conversion mode, 0x22 for standby mode
-	 *    if XX is 11, then 0xE3 for conversion mode, 0xE2 for standby mode
-	 *
-	 *  Register CONFIG1: Address 0x2, leave as default (0x0C)
-	 *    OSR[3:0] = 0011 -> Data Rate (Hz) with MCLK = 4.9152 MHz is 4800
-	 *
-	 *  Register CONFIG2: Address 0x3, leave as default (0x8B)
-	 *    BOOST[1:0] 10
-	 *    Gain[2:0] = 001 -> gain 1
-	 *    AZ_MUX 0 no auto-zeroing
-	 *    RESERVED[1:0] 11
-	 *
-	 *  Register CONFIG3: Address 0x4  set to 0xC0, (0x80 for One-shot conversion)
-	 *    CONV_MODE[1:0] = 11 -> = Continuous Conversion mode
-	 *    DATA_FORMAT[1:0] = 00 ->  the output register shows only the 24-bit value
-	 *    CRC_FORMAT 0 default
-	 *    EN_CRCCOM 0 default
-	 *    EN_OFFCAL 0 -> Disable Digital Offset Calibration
-	 *    EN_GAINCAL 0 -> Disable Digital Gain Calibration
-	 *
-	 * Register IRQ: Address 0x5, set to 0x04 (does not require a pull-up resistor)
-	 *
-	 *  Register MUX: Address 0x6
-	 *    ADC A --- select CH0 -> MUX[7:4] 0000 and CH1 -> MUX[3:0] 0001  0x01
-	 *    ADC B --- select CH2 -> MUX[7:4] 0010 and CH3 -> MUX[3:0] 0011  0x23
-	 *
-	 *  Register LOCK REGISTER: Address 0xD, Write Access Password Entry Code
-	 *    0xA5 = Write access is allowed on the full register map
-	 *
-	 *  Register ADCDATA address 0x0 -> Latest A/D conversion data output value
-	 *
-	 *  Send a command 01 (ADC address) 0001 (register) 10 (write)  -> 0x46
-	 *
-	 */
-
 	// Configure ADC
 	config_ADC(0x0D,0xA5); // Lock register: Write access is allowed on the full register map
-	//config_ADC(0x01,0xE2); // Standby mode
 	config_ADC(0x01,0xE3); // Conversion mode
 	config_ADC(0x02,0x1C); // Oversampling rate
 	config_ADC(0x04,0xC0); // Configure conversion and gain
 	config_ADC(0x05,0x04); // Configure IRQ register, only a test
-	config_ADC(0x06,ADC_A_Select); // Select ADC B
-
+	config_ADC(0x06,ADC_A_Select); // Select ADC A
 	config_ADC2(0x07); // Scan register
 
 	//USB test
@@ -200,7 +152,6 @@ int main(void)
 	uint8_t usb_msg_B[15] = "SB "; //"Voltage B: ";
 	char txBuf[8];
 	//uint8_t count = 1;
-	float test_voltage;
 
 	// ADC
 	uint8_t *ADC_RX_buffer_pointer;*/
@@ -216,20 +167,26 @@ int main(void)
 		// Start SPI communication with Digital Poti (AD5270) SPI1_CS_POTIA_Pin
 		Poti_SPI_Init(); // Initialize digital potentiometer
 		HAL_Delay(100);
-		calibrate_potis();
+		//calibrate_potis();
 
 		// Mode single sensor
 		if (HAL_GPIO_ReadPin(GPIOC, Switch_Mode_Pin)){
 			HAL_GPIO_WritePin(GPIOB, LED_STATUS_Pin, GPIO_PIN_SET);
 			//Poti_Set_RDAC(Potentiometer_values_A[0], 'A');
 			//Poti_Set_RDAC(Potentiometer_values_B[0], 'B');
-			read_single_sensor();
+			//read_single_sensor();
 		}
-		//Mode sensor array
+		// Mode sensor array
 		else
 			HAL_GPIO_WritePin(GPIOB, LED_STATUS_Pin, GPIO_PIN_RESET);
 
+		// Check if a new command came over USB
+		if(usb_data.new_data == 1)
+		{
+			decode_command(&usb_data.data[0]);
+			usb_data_reset();
 		}
+		HAL_Delay(200);
 
 		//Blink a LED
 		/*HAL_GPIO_TogglePin(GPIOB,LED_STATUS_Pin);
@@ -255,10 +212,11 @@ int main(void)
 			count = 1;
 
 		sprintf(txBuf, "%.4f\n", test_voltage);*/
+	}
 
-		/* USER CODE END WHILE */
+	/* USER CODE END WHILE */
 
-		/* USER CODE BEGIN 3 */
+	/* USER CODE BEGIN 3 */
 
 	/* USER CODE END 3 */
 }
@@ -607,69 +565,8 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
-// Reverses a string 'str' of length 'len'
-/*void reverse(char* str, int len)
-{
-	int i = 0, j = len - 1, temp;
-	while (i < j) {
-		temp = str[i];
-		str[i] = str[j];
-		str[j] = temp;
-		i++;
-		j--;
-	}
-}*/
 
-/* Converts a given integer x to string str[].
- - d is the number of digits required in the output.
- - if d is more than the number of digits in x,
- then 0s are added at the beginning. */
-/*int intToStr(int x, char str[], int d)
-{
-	int i = 0;
-	while (x) {
-		str[i++] = (x % 10) + '0';
-		x = x / 10;
-	}
-
-	// If number of digits required is more, then
-	// add 0s at the beginning
-	while (i < d)
-		str[i++] = '0';
-
-	reverse(str, i);
-	str[i] = '\0';
-	return i;
-}
-*/
-
-// Converts a floating-point/double number to a string.
-/*void Float_to_uint(float n, char* res, int afterpoint)
-{
-	// Extract integer part
-	int ipart = (int)n;
-
-	// Extract floating part
-	float fpart = n - (float)ipart;
-
-	// convert integer part to string
-	int i = intToStr(ipart, res, 0);
-
-	// check for display option after point
-	if (afterpoint != 0) {
-		res[i] = '.'; // add dot
-
-		// Get the value of fraction part upto given no.
-		// of points after dot. The third parameter
-		// is needed to handle cases like 233.007
-		fpart = fpart * pow(10, afterpoint);
-
-		intToStr((int)fpart, res + i + 1, afterpoint);
-	}
-}*/
-
-////////////////////////////////// Switch: Array or single sensor mode ///////////////////
-
+////////////////////////////////// Read: Array or single sensor mode ///////////////////
 
 void read_sensor(int sensor){
 	uint8_t *raw_ADC;
@@ -732,6 +629,28 @@ void read_single_sensor(){
 		}
 	}
 }
+//////////////////////////////////  End Read: Array or single sensor mode ///////////////////
+
+////////////////////////////////// Command over USB ///////////////////
+void CDC_ReceiveCallBack(uint8_t *buf, uint32_t len)
+{
+	memcpy(usb_data.data, buf, len);
+	usb_data.new_data = 1;
+	usb_data.length = len;
+}
+
+uint8_t usb_data_reset(void)
+{
+	uint32_t i = 0;
+
+	for(i = 0; i<MAX_USB_BUFFER_LENGTH; i++)
+	{
+		usb_data.data[i] = 0;
+	}
+	usb_data.new_data = 0;
+	return 1;
+}
+////////////////////////////////// END Command over USB ///////////////////
 
 /* USER CODE END 4 */
 

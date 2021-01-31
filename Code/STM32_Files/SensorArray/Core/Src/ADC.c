@@ -5,7 +5,59 @@
 *   @author   Minerva Vargas
 *
 ********************************************************************************/
-
+	/* ADC Output
+	 *
+	 *  Register CONFIG0: Address 0x1
+	 *    XX -> 11(if all 0, then 00 full shutdown, 11 partial shutdown)	CONFIG0[7:6]
+	 *    CLK_SEL[1:0] 10 -> Internal RC Oscillator, no clock output        CONFIG0[5:4]
+	 *    CS_SEL[1:0] 00 ->  No current source is applied       			CONFIG0[3:2]
+	 *    ADC_MODE[1:0] 11 -> conversion, needs 256 DMCLK time to start     CONFIG0[1:0]
+	 *    				10 -> standby
+	 *    so: 0x23 for conversion mode, 0x22 for standby mode
+	 *    if XX is 11, then 0xE3 for conversion mode, 0xE2 for standby mode (better!)
+	 *
+	 *  Register CONFIG1: Address 0x2, leave as default (0x0C)
+	 *    OSR[3:0] = 0011 -> Data Rate (Hz) with MCLK = 4.9152 MHz is 4800
+	 *
+	 *  Register CONFIG2: Address 0x3, leave as default (0x8B)
+	 *    BOOST[1:0] 10
+	 *    Gain[2:0] = 001 -> gain 1
+	 *    AZ_MUX 0 no auto-zeroing
+	 *    RESERVED[1:0] 11
+	 *
+	 *  Register CONFIG3: Address 0x4  set to 0xC0, (0x80 for One-shot conversion)
+	 *    CONV_MODE[1:0] = 11 -> = Continuous Conversion mode
+	 *    DATA_FORMAT[1:0] = 00 ->  the output register shows only the 24-bit value
+	 *    CRC_FORMAT 0 default
+	 *    EN_CRCCOM 0 default
+	 *    EN_OFFCAL 0 -> Disable Digital Offset Calibration
+	 *    EN_GAINCAL 0 -> Disable Digital Gain Calibration
+	 *
+	 * Register IRQ: Address 0x5, set to 0x04 (does not require a pull-up resistor)
+	 *
+	 *  Register MUX: Address 0x6
+	 *    ADC A --- select CH0 -> MUX[7:4] 0000 and CH1 -> MUX[3:0] 0001  0x01
+	 *    ADC B --- select CH2 -> MUX[7:4] 0010 and CH3 -> MUX[3:0] 0011  0x23
+	 *
+	 *  Register LOCK REGISTER: Address 0xD, Write Access Password Entry Code
+	 *    0xA5 = Write access is allowed on the full register map
+	 *
+	 *  Register ADCDATA address 0x0 -> Latest A/D conversion data output value
+	 *
+	 *  Send a command 01 (ADC address) 0001 (register) 10 (write)  -> 0x46
+	 *
+	 *  Configuration example:
+	 *
+	 * config_ADC(0x0D,0xA5); // Lock register: Write access is allowed on the full register map
+	 * //config_ADC(0x01,0xE2); // Standby mode
+	 * config_ADC(0x01,0xE3); // Conversion mode
+	 * config_ADC(0x02,0x1C); // Oversampling rate
+	 * config_ADC(0x04,0xC0); // Configure conversion and gain
+	 * config_ADC(0x05,0x04); // Configure IRQ register, only a test
+	 * config_ADC(0x06,ADC_A_Select); // Select ADC A
+	 * config_ADC2(0x07); // Scan register
+	 *
+	 */
 
 #include "ADC.h"
 #include "AD5270.h"
