@@ -55,6 +55,8 @@ namespace WindowsFormsTest
                     chart1.Series[0].Points.RemoveAt(0);
                 }
                 chart1.ChartAreas[0].AxisY.Maximum = 3.5;
+                chart1.ChartAreas[0].AxisY.Interval = 0.1;
+
 
                 chart1.Series["A2"].Points.AddY(0);
                 if (chart1.Series[1].Points.Count == Limit)
@@ -109,6 +111,7 @@ namespace WindowsFormsTest
                     chart2.Series[0].Points.RemoveAt(0);
                 }
                 chart2.ChartAreas[0].AxisY.Maximum = 3.5;
+                chart2.ChartAreas[0].AxisY.Interval = 0.1;
 
                 chart2.Series["B2"].Points.AddY(0);
                 if (chart2.Series[1].Points.Count == Limit)
@@ -163,6 +166,7 @@ namespace WindowsFormsTest
                     chart3.Series[0].Points.RemoveAt(0);
                 }
                 chart3.ChartAreas[0].AxisY.Maximum = 3.5;
+                chart3.ChartAreas[0].AxisY.Interval = 0.1;
 
                 chart3.Series["A2"].Points.AddY(0);
                 if (chart3.Series[1].Points.Count == Limit)
@@ -263,6 +267,7 @@ namespace WindowsFormsTest
                     chart4.Series[0].Points.RemoveAt(0);
                 }
                 chart4.ChartAreas[0].AxisY.Maximum = 3.5;
+                chart4.ChartAreas[0].AxisY.Interval = 0.1;
 
                 chart4.Series["B1"].Points.AddY(0);
                 if (chart4.Series[1].Points.Count == Limit)
@@ -517,6 +522,7 @@ namespace WindowsFormsTest
                         chart1.Series[0].Points.RemoveAt(0);
                     }
                     chart1.ChartAreas[0].AxisY.Maximum = 3.5;
+                    chart1.ChartAreas[0].AxisY.Interval = 0.1;
 
                     chart1.Series["A2"].Points.AddY(0);
                     if (chart1.Series[1].Points.Count == Limit)
@@ -587,6 +593,7 @@ namespace WindowsFormsTest
                         chart2.Series[0].Points.RemoveAt(0);
                     }
                     chart2.ChartAreas[0].AxisY.Maximum = 3.5;
+                    chart2.ChartAreas[0].AxisY.Interval = 0.1;
 
                     chart2.Series["B2"].Points.AddY(0);
                     if (chart2.Series[1].Points.Count == Limit)
@@ -654,6 +661,7 @@ namespace WindowsFormsTest
                         chart3.Series[0].Points.RemoveAt(0);
                     }
                     chart3.ChartAreas[0].AxisY.Maximum = 3.5;
+                    chart3.ChartAreas[0].AxisY.Interval = 0.1;
 
                     chart3.Series["A2"].Points.AddY(0);
                     if (chart3.Series[1].Points.Count == Limit)
@@ -795,6 +803,7 @@ namespace WindowsFormsTest
                         chart4.Series[0].Points.RemoveAt(0);
                     }
                     chart4.ChartAreas[0].AxisY.Maximum = 3.5;
+                    chart4.ChartAreas[0].AxisY.Interval = 0.1;
 
                     chart4.Series["B1"].Points.AddY(0);
                     if (chart4.Series[1].Points.Count == Limit)
@@ -1100,7 +1109,7 @@ namespace WindowsFormsTest
             else if (RadioButtonAB.Checked)
             {
                 dataGridView3.Rows.Add(new string[] { dataGridView3.RowCount.ToString(), Sen1A_Log, Sen2A_Log, Sen3A_Log, Sen4A_Log, Sen5A_Log, Sen6A_Log, Sen7A_Log, Sen8A_Log, Sen9A_Log, Sen1B_Log, Sen2B_Log, Sen3B_Log, Sen4B_Log, Sen5B_Log, Sen6B_Log, Sen7B_Log, Sen8B_Log, Sen9B_Log, DT.ToLongTimeString() });
-                this.dataGridView3.FirstDisplayedScrollingRowIndex = this.dataGridView2.RowCount - 1;
+                this.dataGridView3.FirstDisplayedScrollingRowIndex = this.dataGridView3.RowCount - 1;
 
                 chart3.Series["A1"].Points.AddXY(DateTime.Now.ToLongTimeString(), Sen1A_Log);
                 if (chart3.Series[0].Points.Count == Limit)
