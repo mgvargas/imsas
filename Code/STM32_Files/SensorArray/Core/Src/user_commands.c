@@ -16,8 +16,9 @@ uint8_t msg_err_empty[26] = "Error: Parameter mismatch\n";
 //----------------------------------------------------------------------------------------------------
 uint8_t cmd_test(uint8_t id, uint8_t *buffer)
 {
-
-	CDC_Transmit_FS("Function cmd_test called \n", 30);
+	char *usb_msg = malloc(30);
+	strcpy(usb_msg, "Function cmd_test called \n");
+	CDC_Transmit_FS((uint8_t *)usb_msg, 30);
 	HAL_Delay(10);
 	if(command_table[id].nr_param != get_command_parameter(buffer))
 	{
@@ -53,7 +54,9 @@ uint8_t cmd_get_poti(uint8_t id, uint8_t *buffer)
 //----------------------------------------------------------------------------------------------------
 uint8_t cmd_test2(uint8_t id, uint8_t *buffer)
 {
-	CDC_Transmit_FS("Function cmd_test2 called \n", 30);
+	char *usb_msg = malloc(30);
+	strcpy(usb_msg, "Function cmd_test3 called \n");
+	CDC_Transmit_FS((uint8_t *)usb_msg, 30);
 	HAL_Delay(10);
 	if(command_table[id].nr_param != get_command_parameter(buffer))
 	{
@@ -66,7 +69,9 @@ uint8_t cmd_test2(uint8_t id, uint8_t *buffer)
 //----------------------------------------------------------------------------------------------------
 uint8_t cmd_test3(uint8_t id, uint8_t *buffer)
 {
-	CDC_Transmit_FS("Function cmd_test3 called \n", 30);
+	char *usb_msg = malloc(30);
+	strcpy(usb_msg, "Function cmd_test3 called \n");
+	CDC_Transmit_FS((uint8_t *)usb_msg, 30);
 	HAL_Delay(10);
 	if(command_table[id].nr_param != get_command_parameter(buffer))
 	{

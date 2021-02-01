@@ -5,29 +5,28 @@
 *
 ********************************************************************************/
 #include "AD5270.h"
-#include "main.h"
 #include "usb_device.h"
-extern SPI_HandleTypeDef hspi1;
+
 extern UART_HandleTypeDef huart1;
 
 ////////////////////////////////// Digital Potentiometer AD5270 /////////////////////////////////
 /*
    Brief SPI initialization. Sends {0x1C, 0x03} to start communication
    return none
- */
-void Poti_SPI_Init(void)
+*/
+void Poti_SPI_Init(SPI_HandleTypeDef *hspi1)
 {
 	uint8_t SPI_Data[2] = {0x1C, 0x03};
 
 	HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_RESET); // Poti A
-	HAL_SPI_Transmit(&hspi1, (uint8_t *)SPI_Data, 2, HAL_MAX_DELAY);
+	HAL_SPI_Transmit(hspi1, (uint8_t *)SPI_Data, 2, HAL_MAX_DELAY);
 	HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_SET);
 	HAL_Delay(1);
 	HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_RESET); // Poti B
-	HAL_SPI_Transmit(&hspi1, (uint8_t *)SPI_Data, 2, HAL_MAX_DELAY);
+	HAL_SPI_Transmit(hspi1, (uint8_t *)SPI_Data, 2, HAL_MAX_DELAY);
 	HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_SET);
 	HAL_Delay(200);
@@ -38,7 +37,7 @@ void Poti_SPI_Init(void)
     - resistance: Value between 0 and 20,000, in Ohms, increase in steps of 20
     - poti: selects between potentiometer 'A' and 'B'
  */
-uint16_t Poti_Set_RDAC(uint16_t resistance, unsigned char poti)
+uint16_t Poti_Set_RDAC(uint16_t resistance, unsigned char poti, SPI_HandleTypeDef *hspi1)
 {
 	// Sets new resistance value to specified AD5270 poti (A or B)
 	uint16_t RDAC_val = AD5270_CalcRDAC(resistance);
@@ -52,13 +51,13 @@ uint16_t Poti_Set_RDAC(uint16_t resistance, unsigned char poti)
 	if(poti == 'A'){			// Select Poti A or B
 		HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_RESET);
-		HAL_SPI_Transmit(&hspi1, (uint8_t *)RDAC, 2, HAL_MAX_DELAY);
+		HAL_SPI_Transmit(hspi1, (uint8_t *)RDAC, 2, HAL_MAX_DELAY);
 		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_SET);}
 	else{
 		HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_RESET);
-		HAL_SPI_Transmit(&hspi1, (uint8_t *)RDAC, 2, HAL_MAX_DELAY);
+		HAL_SPI_Transmit(hspi1, (uint8_t *)RDAC, 2, HAL_MAX_DELAY);
 		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_SET);}
 
@@ -92,15 +91,13 @@ void Poti_SPI_Write(unsigned char* data, unsigned char bytesNumber, unsigned cha
 	for(count = 0;count < bytesNumber;count++)// write instruction
 	{
 		HAL_UART_Transmit(&huart1, &data[count], len, 20);
-		//SPI.transfer(data[count]);
 	}
 
 	if(poti == 'A')			// Select Poti A or B
-		//digitalWrite(AD5270_CS_PIN, HIGH);
 		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_SET);
 	else
 		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_SET);
-	//}
+
 
 }
 /***************************************************************************//**
