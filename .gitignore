@@ -11,5 +11,7 @@
 *.d
 **/.metadata
 **/.settings
+*.sch-bak
+*.dcm
 Reference_manual_stm32f405
 STM32_Files_____For_ref_only

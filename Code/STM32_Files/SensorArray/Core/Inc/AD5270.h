@@ -1,54 +1,14 @@
 /**
 *   @file     AD5270.h
 *   @brief    Header file for AD5270 rheostat
-*   @author   Analog Devices Inc.
-*
-* https://github.com/analogdevicesinc/arduino/tree/master/Arduino%20Uno%20R3/examples/CN0396_example
-*
-********************************************************************************
-* Copyright 2016(c) Analog Devices, Inc.
-*
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions are met:
-*  - Redistributions of source code must retain the above copyright
-*    notice, this list of conditions and the following disclaimer.
-*  - Redistributions in binary form must reproduce the above copyright
-*    notice, this list of conditions and the following disclaimer in
-*    the documentation and/or other materials provided with the
-*    distribution.
-*  - Neither the name of Analog Devices, Inc. nor the names of its
-*    contributors may be used to endorse or promote products derived
-*    from this software without specific prior written permission.
-*  - The use of this software may or may not infringe the patent rights
-*    of one or more patent holders.  This license does not release you
-*    from the requirement that you obtain separate licenses from these
-*    patent holders to use this software.
-*  - Use of the software either in source or binary form, must be run
-*    on or directly connected to an Analog Devices Inc. component.
-*
-* THIS SOFTWARE IS PROVIDED BY ANALOG DEVICES "AS IS" AND ANY EXPRESS OR
-* IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, NON-INFRINGEMENT,
-* MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-* IN NO EVENT SHALL ANALOG DEVICES BE LIABLE FOR ANY DIRECT, INDIRECT,
-* INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-* LIMITED TO, INTELLECTUAL PROPERTY RIGHTS, PROCUREMENT OF SUBSTITUTE GOODS OR
-* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-* CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-* OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-* OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*   @author   Analog Devices Inc. & Minerva Vargas
 *
 ********************************************************************************/
 
 #ifndef AD5270_H
 #define AD5270_H
 
-#include <stdint.h>
-
-/*#ifdef  __cplusplus
-extern "C" {
-#endif*/
+#include "stdint.h"
 
 #define MAX_RESISTANCE                    20000
 #define WRITE_OPERATION_50TP_TIMEOUT      350
@@ -59,20 +19,9 @@ extern "C" {
 
     /// AD5270 commands
     typedef enum {
-        NO_OP               =  0x00,    ///< No data
-        NO_OP_cmd           =  0x0000,  ///< 16 bit no data
         WRITE_RDAC          =  0x04,    ///< Write to the RDAC Register
         READ_RDAC           =  0x08,    ///< Read from the RDAC Register
-        STORE_50TP          =  0x0C,    ///< Store RDAC setting to 50-TP
-        SW_RST              =  0x10,    ///< Software reset to last memory location
-        READ_50TP_CONTENTS  =  0x14,    ///< Read the last memory contents
-        READ_50TP_ADDRESS   =  0x18,    ///< Read the last memory address
-        WRITE_CTRL_REG      =  0x1C,    ///< Write to the control Register
-        READ_CTRL_REG       =  0x20,    ///< Read from the control Register
-        SW_SHUTDOWN         =  0x24,    ///< Software shutdown (0) - Normal, (1) - Shutdown
-        HI_Zupper           =  0x80,    ///< Get the SDO line ready for High Z
-        HI_Zlower           =  0x01,    ///< Puts AD5270 into High Z mode
-        HI_Z_Cmd            =  0x8001   ///< Puts AD5270 into High Z mode*/
+		MASK_RDAC			=  0x03,	///< Masks first 2 bites of data
     } AD5270Commands_t;
 
     typedef enum {
@@ -80,30 +29,12 @@ extern "C" {
         SHUTDOWN_MODE = 1
     } AD5270Modes_t;
 
-    typedef enum {
-        PROGRAM_50TP_ENABLE = 1,
-        RDAC_WRITE_PROTECT = 2,
-        R_PERFORMANCE_ENABLE = 4,
-        MEMORY_PROGRAM_SUCCESFUL = 8
-    } AD5270ControlRegisterBits_t;
-
-
     uint16_t AD5270_CalcRDAC(uint16_t resistance);
-    uint16_t AD5270_WriteRDAC(uint16_t resistance, unsigned char poti);
-    float AD5270_read_RDAC(unsigned char poti);
-    float AD5270_ReadRDAC(unsigned char poti);
-    void AD5270_Set_SDO_HiZ(unsigned char poti);
-    void AD5270_Enable_50TP_Programming(unsigned char poti);
-    void AD5270_Store_50TP(unsigned char poti);
-    void AD5270_Disable_50TP_Programming(unsigned char poti);
-    uint8_t AD5270_Read_50TP_LastAddress(unsigned char poti);
-    void AD5270_ResetRDAC(unsigned char poti);
-    void AD5270_ChangeMode(AD5270Modes_t mode, unsigned char poti);
-    uint16_t AD5270_ReadReg(uint8_t comman, unsigned char potid);
-    void AD5270_WriteReg(uint8_t command, uint16_t value, unsigned char poti);
 
-/*#ifdef  __cplusplus
-}
-#endif // __cplusplus*/
+    void Poti_SPI_Init(void);
+    void Poti_SPI_Write(unsigned char* data, unsigned char bytesNumber, unsigned char poti);
+    void Poti_SPI_Read(unsigned char* data, unsigned char bytesNumber, unsigned char poti);
+    uint16_t Poti_Set_RDAC(uint16_t resistance, unsigned char poti);
+
 
 #endif

@@ -1,8 +1,15 @@
-/*
-  Multiplexer.cpp - Library for using the CD74HC4067 multiplexer.
-  April 18, 2016.
-  LGPL 3.0
-*/
+/**						IMSAS, Minerva Vargas
+ *
+ ******************************************************************************
+ * @file           : Multiplexer.c
+ * @brief          : Library for using the CD74HC4067 multiplexer.
+ ******************************************************************************
+ *
+ * Selects the same channel for both multiplexors (A and B)
+ *
+ ******************************************************************************
+ */
+
 
 #include "main.h"
 #include "CD74HC4067.h"
