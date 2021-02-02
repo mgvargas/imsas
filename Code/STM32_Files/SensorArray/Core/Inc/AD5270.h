@@ -9,6 +9,7 @@
 #define AD5270_H
 
 #include "stdint.h"
+#include "stm32f4xx_hal.h"
 
 #define MAX_RESISTANCE                    20000
 #define WRITE_OPERATION_50TP_TIMEOUT      350
@@ -31,10 +32,10 @@
 
     uint16_t AD5270_CalcRDAC(uint16_t resistance);
 
-    void Poti_SPI_Init(void);
+    void Poti_SPI_Init(SPI_HandleTypeDef *hspi1);
     void Poti_SPI_Write(unsigned char* data, unsigned char bytesNumber, unsigned char poti);
     void Poti_SPI_Read(unsigned char* data, unsigned char bytesNumber, unsigned char poti);
-    uint16_t Poti_Set_RDAC(uint16_t resistance, unsigned char poti);
+    uint16_t Poti_Set_RDAC(uint16_t resistance, unsigned char poti, SPI_HandleTypeDef *hspi1);
 
 
 #endif

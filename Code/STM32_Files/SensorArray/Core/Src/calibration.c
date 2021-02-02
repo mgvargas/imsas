@@ -13,7 +13,7 @@ extern int Potentiometer_values_B[];
 ////////////////////////////////////////////// Calibration ///////////////////////////////////
 /* Calibrate the potentiometers to get a balanced output from the bridge, reads all 9 channels
  * and changes the value of the poti until the ADC gets the reference voltage as input */
-void calibrate_potis(){
+void calibrate_potis(SPI_HandleTypeDef *hspi1){
 	int poti_value;
 	int i;
 	char *usb_msg = malloc(15);
@@ -26,7 +26,7 @@ void calibrate_potis(){
 		// For channel A
 		CDC_Transmit_FS((uint8_t *)usb_msg, strlen((char *)usb_msg));
 		config_ADC(0x6, ADC_A_Select);
-		poti_value = balance_one_channel('A');
+		poti_value = balance_one_channel('A', hspi1);
 		Potentiometer_values_A[0] = poti_value;
 		sprintf(usb_msg, "%i\n", poti_value);
 
@@ -34,7 +34,7 @@ void calibrate_potis(){
 		strcpy(usb_msg, "Calibrating B\n");
 		CDC_Transmit_FS((uint8_t *)usb_msg, strlen((char *)usb_msg));
 		config_ADC(0x6, ADC_B_Select);
-		poti_value = balance_one_channel('B');
+		poti_value = balance_one_channel('B', hspi1);
 		Potentiometer_values_B[0] = poti_value;
 
 		strcpy(usb_msg, "Finished\n");
@@ -54,7 +54,7 @@ void calibrate_potis(){
 			sprintf(usb_msg, "A%i\n", i);
 			CDC_Transmit_FS((uint8_t *)usb_msg, strlen((char *)usb_msg));
 			HAL_Delay(10);
-			//poti_value = balance_one_channel('A');
+			poti_value = balance_one_channel('A', hspi1);
 			poti_value = 200;
 			Potentiometer_values_A[i] = poti_value;
 		}
@@ -66,7 +66,7 @@ void calibrate_potis(){
 			sprintf(usb_msg, "B%i\n", i);
 			CDC_Transmit_FS((uint8_t *)usb_msg, strlen((char *)usb_msg));
 			HAL_Delay(10);
-			poti_value = balance_one_channel('B');
+			poti_value = balance_one_channel('B', hspi1);
 			Potentiometer_values_B[i] = poti_value;
 		}
 		strcpy(usb_msg, "Finished\n");
@@ -75,7 +75,7 @@ void calibrate_potis(){
 	}
 }
 
-int balance_one_channel(unsigned char channel){
+int balance_one_channel(unsigned char channel, SPI_HandleTypeDef *hspi1){
 	float Vref= 1.65;
 	int poti_value = 10000;
 	uint8_t *raw_ADC;
@@ -97,10 +97,12 @@ int balance_one_channel(unsigned char channel){
 		while (value_ADC <= (Vref+.015)) // +- 15mV
 		{
 			// Increase POTI
-			if ((Vref - value_ADC) > 0.4)
-				poti_value += 400;
-			else if ((Vref - value_ADC) > 0.2)
+			if ((Vref - value_ADC) > 1.4)
+				poti_value += 800;
+			else if ((Vref - value_ADC) > 0.55)
 				poti_value += 200;
+			else if ((Vref - value_ADC) > 0.4)
+				poti_value += 60;
 			else
 				poti_value += 20;
 
@@ -109,7 +111,7 @@ int balance_one_channel(unsigned char channel){
 				HAL_Delay(10);
 				return 0;
 			}
-			Poti_Set_RDAC(poti_value, channel);
+			Poti_Set_RDAC(poti_value, channel, hspi1);
 			raw_ADC = read_ADC(0x00);
 			value_ADC = voltage_ADC(raw_ADC);
 			HAL_Delay(5);
@@ -126,7 +128,7 @@ int balance_one_channel(unsigned char channel){
 				poti_value -= 800;
 			else if ((value_ADC - Vref) > 0.55)
 				poti_value -= 200;
-			else if ((value_ADC - Vref) > 0.2)
+			else if ((value_ADC - Vref) > 0.3)
 				poti_value -= 60;
 			else
 				poti_value -= 20;
@@ -136,7 +138,7 @@ int balance_one_channel(unsigned char channel){
 				HAL_Delay(20);
 				return 0;
 			}
-			Poti_Set_RDAC(poti_value, channel);
+			Poti_Set_RDAC(poti_value, channel, hspi1);
 			raw_ADC = read_ADC(0x00);
 			value_ADC = voltage_ADC(raw_ADC);
 			HAL_Delay(5);
