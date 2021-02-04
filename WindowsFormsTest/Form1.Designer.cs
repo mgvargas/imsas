@@ -191,6 +191,7 @@ namespace WindowsFormsTest
             this.LabelSensor12 = new System.Windows.Forms.Label();
             this.LabelSensor11 = new System.Windows.Forms.Label();
             this.LabelSensor10 = new System.Windows.Forms.Label();
+            this.ButtonSaveCSV = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBoxConnectionInd)).BeginInit();
             this.GroupBoxAandB.SuspendLayout();
@@ -476,8 +477,9 @@ namespace WindowsFormsTest
             // 
             // groupBox4
             // 
-            this.groupBox4.Controls.Add(this.ProgressBarProcess);
             this.groupBox4.Controls.Add(this.ButtonSaveToExcel);
+            this.groupBox4.Controls.Add(this.ButtonSaveCSV);
+            this.groupBox4.Controls.Add(this.ProgressBarProcess);
             this.groupBox4.Location = new System.Drawing.Point(447, 106);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(278, 87);
@@ -499,9 +501,9 @@ namespace WindowsFormsTest
             // 
             this.ButtonSaveToExcel.Location = new System.Drawing.Point(0, 18);
             this.ButtonSaveToExcel.Name = "ButtonSaveToExcel";
-            this.ButtonSaveToExcel.Size = new System.Drawing.Size(278, 67);
+            this.ButtonSaveToExcel.Size = new System.Drawing.Size(140, 67);
             this.ButtonSaveToExcel.TabIndex = 0;
-            this.ButtonSaveToExcel.Text = "Save to MS Excel";
+            this.ButtonSaveToExcel.Text = "Save To MS Excel";
             this.ButtonSaveToExcel.UseVisualStyleBackColor = true;
             this.ButtonSaveToExcel.Click += new System.EventHandler(this.ButtonSaveToExcel_Click);
             // 
@@ -1505,6 +1507,16 @@ namespace WindowsFormsTest
             this.LabelSensor10.Text = "A1";
             this.LabelSensor10.Visible = false;
             // 
+            // ButtonSaveCSV
+            // 
+            this.ButtonSaveCSV.Location = new System.Drawing.Point(139, 18);
+            this.ButtonSaveCSV.Name = "ButtonSaveCSV";
+            this.ButtonSaveCSV.Size = new System.Drawing.Size(139, 67);
+            this.ButtonSaveCSV.TabIndex = 2;
+            this.ButtonSaveCSV.Text = "Save To CSV";
+            this.ButtonSaveCSV.UseVisualStyleBackColor = true;
+            this.ButtonSaveCSV.Click += new System.EventHandler(this.ButtonSaveCSV_Click);
+            // 
             // Form1
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -1665,6 +1677,7 @@ namespace WindowsFormsTest
         private System.Windows.Forms.DataGridViewTextBoxColumn TIME_A1B1;
         private System.Windows.Forms.DataGridViewTextBoxColumn DATE_A1B1;
         private System.Windows.Forms.DataVisualization.Charting.Chart chart4;
+        private System.Windows.Forms.Button ButtonSaveCSV;
     }
 }
 
