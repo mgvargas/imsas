@@ -103,8 +103,9 @@ namespace WindowsFormsTest
             this.ButtonStopRecording = new System.Windows.Forms.Button();
             this.ButtonStartRecording = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.ProgressBarProcess = new System.Windows.Forms.ProgressBar();
             this.ButtonSaveToExcel = new System.Windows.Forms.Button();
+            this.ButtonSaveCSV = new System.Windows.Forms.Button();
+            this.ProgressBarProcess = new System.Windows.Forms.ProgressBar();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.No = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -191,7 +192,6 @@ namespace WindowsFormsTest
             this.LabelSensor12 = new System.Windows.Forms.Label();
             this.LabelSensor11 = new System.Windows.Forms.Label();
             this.LabelSensor10 = new System.Windows.Forms.Label();
-            this.ButtonSaveCSV = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBoxConnectionInd)).BeginInit();
             this.GroupBoxAandB.SuspendLayout();
@@ -488,15 +488,6 @@ namespace WindowsFormsTest
             this.groupBox4.Text = "Export";
             this.groupBox4.Enter += new System.EventHandler(this.groupBox4_Enter);
             // 
-            // ProgressBarProcess
-            // 
-            this.ProgressBarProcess.Location = new System.Drawing.Point(0, 66);
-            this.ProgressBarProcess.Maximum = 10;
-            this.ProgressBarProcess.Name = "ProgressBarProcess";
-            this.ProgressBarProcess.Size = new System.Drawing.Size(277, 15);
-            this.ProgressBarProcess.TabIndex = 1;
-            this.ProgressBarProcess.Visible = false;
-            // 
             // ButtonSaveToExcel
             // 
             this.ButtonSaveToExcel.Location = new System.Drawing.Point(0, 18);
@@ -506,6 +497,25 @@ namespace WindowsFormsTest
             this.ButtonSaveToExcel.Text = "Save To MS Excel";
             this.ButtonSaveToExcel.UseVisualStyleBackColor = true;
             this.ButtonSaveToExcel.Click += new System.EventHandler(this.ButtonSaveToExcel_Click);
+            // 
+            // ButtonSaveCSV
+            // 
+            this.ButtonSaveCSV.Location = new System.Drawing.Point(139, 18);
+            this.ButtonSaveCSV.Name = "ButtonSaveCSV";
+            this.ButtonSaveCSV.Size = new System.Drawing.Size(139, 67);
+            this.ButtonSaveCSV.TabIndex = 2;
+            this.ButtonSaveCSV.Text = "Save To CSV";
+            this.ButtonSaveCSV.UseVisualStyleBackColor = true;
+            this.ButtonSaveCSV.Click += new System.EventHandler(this.ButtonSaveCSV_Click);
+            // 
+            // ProgressBarProcess
+            // 
+            this.ProgressBarProcess.Location = new System.Drawing.Point(0, 66);
+            this.ProgressBarProcess.Maximum = 10;
+            this.ProgressBarProcess.Name = "ProgressBarProcess";
+            this.ProgressBarProcess.Size = new System.Drawing.Size(277, 15);
+            this.ProgressBarProcess.TabIndex = 1;
+            this.ProgressBarProcess.Visible = false;
             // 
             // groupBox5
             // 
@@ -1506,16 +1516,6 @@ namespace WindowsFormsTest
             this.LabelSensor10.TabIndex = 0;
             this.LabelSensor10.Text = "A1";
             this.LabelSensor10.Visible = false;
-            // 
-            // ButtonSaveCSV
-            // 
-            this.ButtonSaveCSV.Location = new System.Drawing.Point(139, 18);
-            this.ButtonSaveCSV.Name = "ButtonSaveCSV";
-            this.ButtonSaveCSV.Size = new System.Drawing.Size(139, 67);
-            this.ButtonSaveCSV.TabIndex = 2;
-            this.ButtonSaveCSV.Text = "Save To CSV";
-            this.ButtonSaveCSV.UseVisualStyleBackColor = true;
-            this.ButtonSaveCSV.Click += new System.EventHandler(this.ButtonSaveCSV_Click);
             // 
             // Form1
             // 

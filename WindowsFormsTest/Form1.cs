@@ -31,9 +31,9 @@ namespace WindowsFormsTest
         private string S1A_Val, S2A_Val, S3A_Val, S4A_Val, S5A_Val, S6A_Val, S7A_Val, S8A_Val, S9A_Val;
         private string S1B_Val, S2B_Val, S3B_Val, S4B_Val, S5B_Val, S6B_Val, S7B_Val, S8B_Val, S9B_Val;
         private string Sen_A, Sen_B;
-        private string A_1, B_1,A_1_Val,B_1_Val;
+        private string A_1, B_1, A_1_Val, B_1_Val;
 
-        
+
 
         public Form1()
         {
@@ -337,7 +337,7 @@ namespace WindowsFormsTest
         private void RadioButtonA_CheckedChanged(object sender, EventArgs e)
         {
             RadioButtonA1B1.Enabled = false;
-            ButtonConnect.Enabled = true; 
+            ButtonConnect.Enabled = true;
             dataGridView2.Visible = false;
             dataGridView3.Visible = false;
             dataGridView4.Visible = false;
@@ -502,7 +502,7 @@ namespace WindowsFormsTest
             ButtonStopRecording.Enabled = true;
             ButtonSaveToExcel.Enabled = false;
             ButtonSaveCSV.Enabled = false;
-            TimerDataLogRecord.Start();   
+            TimerDataLogRecord.Start();
         }
 
         private void ButtonStopRecording_Click(object sender, EventArgs e)
@@ -862,69 +862,102 @@ namespace WindowsFormsTest
 
             if (RadioButtonA.Checked)
             {
-                for (i = 0; i <= dataGridView1.Columns.Count - 1; i++)
+                if (dataGridView1.Rows.Count > 0)
                 {
-                    xlWorkSheet.Cells[1, i + 1] = dataGridView1.Columns[i].HeaderText;
-                }
-                for (i = 0; i <= dataGridView1.RowCount - 1; i++)
-                {
-                    for (j = 0; j <= dataGridView1.ColumnCount - 1; j++)
+                    for (i = 0; i <= dataGridView1.Columns.Count - 1; i++)
                     {
-                        DataGridViewCell cell = dataGridView1[j, i];
-                        xlWorkSheet.Cells[i + 2, j + 1] = cell.Value;
+                        xlWorkSheet.Cells[1, i + 1] = dataGridView1.Columns[i].HeaderText;
                     }
+                    for (i = 0; i <= dataGridView1.RowCount - 1; i++)
+                    {
+                        for (j = 0; j <= dataGridView1.ColumnCount - 1; j++)
+                        {
+                            DataGridViewCell cell = dataGridView1[j, i];
+                            xlWorkSheet.Cells[i + 2, j + 1] = cell.Value;
+                        }
+                    }
+                    xlWorkSheet.Columns.AutoFit();
+                    FilePathAndName = path + @"\" + "Sensor-A" + "-" + DateTime.Now.ToString("HH mm") + "-" + DateTime.Now.Day + "-" + DateTime.Now.Month + "-" + DateTime.Now.Year + ".xlsx";
                 }
-                FilePathAndName = path + @"\" + "Sensor-A" + "-" + DateTime.Now.ToString("HH mm") + "-" + DateTime.Now.Day + "-" + DateTime.Now.Month + "-" + DateTime.Now.Year + ".xlsx";
+                else
+                {
+                    MessageBox.Show("No Record To Export !!!", "Info");
+                }
             }
             else if (RadioButtonB.Checked)
             {
-                for (i = 0; i <= dataGridView2.Columns.Count - 1; i++)
+                if (dataGridView2.Rows.Count > 0)
                 {
-                    xlWorkSheet.Cells[1, i + 1] = dataGridView2.Columns[i].HeaderText;
-                }
-                for (i = 0; i <= dataGridView2.RowCount - 1; i++)
-                {
-                    for (j = 0; j <= dataGridView2.ColumnCount - 1; j++)
+                    for (i = 0; i <= dataGridView2.Columns.Count - 1; i++)
                     {
-                        DataGridViewCell cell = dataGridView2[j, i];
-                        xlWorkSheet.Cells[i + 2, j + 1] = cell.Value;
+                        xlWorkSheet.Cells[1, i + 1] = dataGridView2.Columns[i].HeaderText;
                     }
+                    for (i = 0; i <= dataGridView2.RowCount - 1; i++)
+                    {
+                        for (j = 0; j <= dataGridView2.ColumnCount - 1; j++)
+                        {
+                            DataGridViewCell cell = dataGridView2[j, i];
+                            xlWorkSheet.Cells[i + 2, j + 1] = cell.Value;
+                        }
+                    }
+                    xlWorkSheet.Columns.AutoFit();
+                    FilePathAndName = path + @"\" + "Sensor-B" + "-" + DateTime.Now.ToString("HH mm") + "-" + DateTime.Now.Day + "-" + DateTime.Now.Month + "-" + DateTime.Now.Year + ".xlsx";
                 }
-                FilePathAndName = path + @"\" + "Sensor-B" + "-" + DateTime.Now.ToString("HH mm") + "-" + DateTime.Now.Day + "-" + DateTime.Now.Month + "-" + DateTime.Now.Year + ".xlsx";
+                else
+                {
+                    MessageBox.Show("No Record To Export !!!", "Info");
+                }
+
             }
 
             else if (RadioButtonAB.Checked)
             {
-                for (i = 0; i <= dataGridView3.Columns.Count - 1; i++)
+                if (dataGridView3.Rows.Count > 0)
                 {
-                    xlWorkSheet.Cells[1, i + 1] = dataGridView3.Columns[i].HeaderText;
-                }
-                for (i = 0; i <= dataGridView3.RowCount - 1; i++)
-                {
-                    for (j = 0; j <= dataGridView3.ColumnCount - 1; j++)
+                    for (i = 0; i <= dataGridView3.Columns.Count - 1; i++)
                     {
-                        DataGridViewCell cell = dataGridView3[j, i];
-                        xlWorkSheet.Cells[i + 2, j + 1] = cell.Value;
+                        xlWorkSheet.Cells[1, i + 1] = dataGridView3.Columns[i].HeaderText;
                     }
+                    for (i = 0; i <= dataGridView3.RowCount - 1; i++)
+                    {
+                        for (j = 0; j <= dataGridView3.ColumnCount - 1; j++)
+                        {
+                            DataGridViewCell cell = dataGridView3[j, i];
+                            xlWorkSheet.Cells[i + 2, j + 1] = cell.Value;
+                        }
+                    }
+                    xlWorkSheet.Columns.AutoFit();
+                    FilePathAndName = path + @"\" + "Sensor-AB" + "-" + DateTime.Now.ToString("HH mm") + "-" + DateTime.Now.Day + "-" + DateTime.Now.Month + "-" + DateTime.Now.Year + ".xlsx";
                 }
-                FilePathAndName = path + @"\" + "Sensor-AB" + "-" + DateTime.Now.ToString("HH mm") + "-" + DateTime.Now.Day + "-" + DateTime.Now.Month + "-" + DateTime.Now.Year + ".xlsx";
+                else
+                {
+                    MessageBox.Show("No Record To Export !!!", "Info");
+                }
             }
 
             else
             {
-                for (i = 0; i <= dataGridView4.Columns.Count - 1; i++)
+                if (dataGridView4.Rows.Count > 0)
                 {
-                    xlWorkSheet.Cells[1, i + 1] = dataGridView4.Columns[i].HeaderText;
-                }
-                for (i = 0; i <= dataGridView4.RowCount - 1; i++)
-                {
-                    for (j = 0; j <= dataGridView4.ColumnCount - 1; j++)
+                    for (i = 0; i <= dataGridView4.Columns.Count - 1; i++)
                     {
-                        DataGridViewCell cell = dataGridView4[j, i];
-                        xlWorkSheet.Cells[i + 2, j + 1] = cell.Value;
+                        xlWorkSheet.Cells[1, i + 1] = dataGridView4.Columns[i].HeaderText;
                     }
+                    for (i = 0; i <= dataGridView4.RowCount - 1; i++)
+                    {
+                        for (j = 0; j <= dataGridView4.ColumnCount - 1; j++)
+                        {
+                            DataGridViewCell cell = dataGridView4[j, i];
+                            xlWorkSheet.Cells[i + 2, j + 1] = cell.Value;
+                        }
+                    }
+                    xlWorkSheet.Columns.AutoFit();
+                    FilePathAndName = path + @"\" + "Sensor-A1B1" + "-" + DateTime.Now.ToString("HH mm") + "-" + DateTime.Now.Day + "-" + DateTime.Now.Month + "-" + DateTime.Now.Year + ".xlsx";
                 }
-                FilePathAndName = path + @"\" + "Sensor-A1B1" + "-" + DateTime.Now.ToString("HH mm") + "-" + DateTime.Now.Day + "-" + DateTime.Now.Month + "-" + DateTime.Now.Year + ".xlsx";
+                else
+                {
+                    MessageBox.Show("No Record To Export !!!", "Info");
+                }
             }
 
             ProgressBarProcess.Value = 8;
@@ -944,7 +977,7 @@ namespace WindowsFormsTest
 
             ProgressBarProcess.Value = 10;
 
-            MessageBox.Show("Successfully saved" + "\r\n" + "File are saved at : " + FilePathAndName,"Info");
+            MessageBox.Show("Successfully saved" + "\r\n" + "File are saved at : " + FilePathAndName, "Info");
 
             ProgressBarProcess.Visible = false;
 
@@ -1015,7 +1048,7 @@ namespace WindowsFormsTest
                             }
                             catch (Exception ex)
                             {
-                                MessageBox.Show("Error :" + ex.Message);
+                                
                             }
                         }
                     }
@@ -1077,7 +1110,7 @@ namespace WindowsFormsTest
                             }
                             catch (Exception ex)
                             {
-                                MessageBox.Show("Error :" + ex.Message);
+                                
                             }
                         }
                     }                   
@@ -1139,7 +1172,7 @@ namespace WindowsFormsTest
                             }
                             catch (Exception ex)
                             {
-                                MessageBox.Show("Error :" + ex.Message);
+                               
                             }
                         }
                     }                    
@@ -1201,7 +1234,7 @@ namespace WindowsFormsTest
                             }
                             catch (Exception ex)
                             {
-                                MessageBox.Show("Error :" + ex.Message);
+                                
                             }
                         }
                     }
@@ -1529,8 +1562,10 @@ namespace WindowsFormsTest
                         S7A_Val = valA[6];
                         S8A_Val = valA[7];
                         S9A_Val = valA[8];
+                        //Sen_A = "";
 
                     }
+                   
                     Sen_A = "";
                     StrSerialInRam = TB.Lines[1].Substring(0, 2);
                     if (StrSerialInRam == "SB")
@@ -1546,6 +1581,7 @@ namespace WindowsFormsTest
                         S7B_Val = valB[6];
                         S8B_Val = valB[7];
                         S9B_Val = valB[8];
+                        //Sen_B = "";
                     }
                     Sen_B = "";
                 }
@@ -1563,6 +1599,7 @@ namespace WindowsFormsTest
                     {
                         A_1 = TB.Lines[0];
                         A_1_Val = A_1.Substring(2);
+                        //A_1 = "";
                     }
                     A_1 = "";
                     StrSerialInRam = TB.Lines[1].Substring(0, 2);
@@ -1570,6 +1607,7 @@ namespace WindowsFormsTest
                     {
                         B_1 = TB.Lines[1];
                         B_1_Val = B_1.Substring(2);
+                        //B_1 = "";
                     }
                     B_1 = "";
                 }
@@ -1634,7 +1672,7 @@ namespace WindowsFormsTest
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error :" + ex.Message);
+                
             }
         }  
 
