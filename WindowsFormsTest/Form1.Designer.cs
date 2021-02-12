@@ -222,9 +222,9 @@ namespace WindowsFormsTest
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.ComboBoxPort);
             this.groupBox1.Controls.Add(this.ButtonScanPort);
-            this.groupBox1.Location = new System.Drawing.Point(12, 12);
+            this.groupBox1.Location = new System.Drawing.Point(12, 14);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(429, 88);
+            this.groupBox1.Size = new System.Drawing.Size(429, 86);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Connection";
@@ -482,7 +482,7 @@ namespace WindowsFormsTest
             this.groupBox4.Controls.Add(this.ProgressBarProcess);
             this.groupBox4.Location = new System.Drawing.Point(447, 106);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(278, 87);
+            this.groupBox4.Size = new System.Drawing.Size(283, 87);
             this.groupBox4.TabIndex = 3;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Export";
@@ -500,9 +500,9 @@ namespace WindowsFormsTest
             // 
             // ButtonSaveCSV
             // 
-            this.ButtonSaveCSV.Location = new System.Drawing.Point(139, 18);
+            this.ButtonSaveCSV.Location = new System.Drawing.Point(141, 18);
             this.ButtonSaveCSV.Name = "ButtonSaveCSV";
-            this.ButtonSaveCSV.Size = new System.Drawing.Size(139, 67);
+            this.ButtonSaveCSV.Size = new System.Drawing.Size(142, 67);
             this.ButtonSaveCSV.TabIndex = 2;
             this.ButtonSaveCSV.Text = "Save To CSV";
             this.ButtonSaveCSV.UseVisualStyleBackColor = true;
@@ -513,7 +513,7 @@ namespace WindowsFormsTest
             this.ProgressBarProcess.Location = new System.Drawing.Point(0, 66);
             this.ProgressBarProcess.Maximum = 10;
             this.ProgressBarProcess.Name = "ProgressBarProcess";
-            this.ProgressBarProcess.Size = new System.Drawing.Size(277, 15);
+            this.ProgressBarProcess.Size = new System.Drawing.Size(283, 15);
             this.ProgressBarProcess.TabIndex = 1;
             this.ProgressBarProcess.Visible = false;
             // 
@@ -527,7 +527,7 @@ namespace WindowsFormsTest
             this.groupBox5.Controls.Add(this.dataGridView4);
             this.groupBox5.Location = new System.Drawing.Point(12, 199);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(718, 481);
+            this.groupBox5.Size = new System.Drawing.Size(718, 484);
             this.groupBox5.TabIndex = 4;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Data Grid View(Real-Time/Second)";
@@ -555,7 +555,7 @@ namespace WindowsFormsTest
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersWidth = 51;
             this.dataGridView1.RowTemplate.Height = 24;
-            this.dataGridView1.Size = new System.Drawing.Size(707, 454);
+            this.dataGridView1.Size = new System.Drawing.Size(707, 457);
             this.dataGridView1.TabIndex = 0;
             // 
             // No
@@ -665,7 +665,7 @@ namespace WindowsFormsTest
             this.dataGridView2.Name = "dataGridView2";
             this.dataGridView2.RowHeadersWidth = 51;
             this.dataGridView2.RowTemplate.Height = 24;
-            this.dataGridView2.Size = new System.Drawing.Size(707, 454);
+            this.dataGridView2.Size = new System.Drawing.Size(707, 457);
             this.dataGridView2.TabIndex = 1;
             // 
             // dataGridViewTextBoxColumn1
@@ -783,7 +783,7 @@ namespace WindowsFormsTest
             this.dataGridView3.Name = "dataGridView3";
             this.dataGridView3.RowHeadersWidth = 51;
             this.dataGridView3.RowTemplate.Height = 24;
-            this.dataGridView3.Size = new System.Drawing.Size(707, 454);
+            this.dataGridView3.Size = new System.Drawing.Size(707, 457);
             this.dataGridView3.TabIndex = 2;
             // 
             // NoAB
@@ -934,7 +934,7 @@ namespace WindowsFormsTest
             this.dataGridView4.Name = "dataGridView4";
             this.dataGridView4.RowHeadersWidth = 51;
             this.dataGridView4.RowTemplate.Height = 24;
-            this.dataGridView4.Size = new System.Drawing.Size(707, 454);
+            this.dataGridView4.Size = new System.Drawing.Size(707, 457);
             this.dataGridView4.TabIndex = 3;
             // 
             // No_A1B1
@@ -978,7 +978,7 @@ namespace WindowsFormsTest
             this.groupBox6.Controls.Add(this.chart4);
             this.groupBox6.Location = new System.Drawing.Point(818, 13);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(952, 668);
+            this.groupBox6.Size = new System.Drawing.Size(952, 670);
             this.groupBox6.TabIndex = 5;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Graph (Real-Time/Second)";
@@ -1040,7 +1040,7 @@ namespace WindowsFormsTest
             this.chart1.Series.Add(series7);
             this.chart1.Series.Add(series8);
             this.chart1.Series.Add(series9);
-            this.chart1.Size = new System.Drawing.Size(940, 640);
+            this.chart1.Size = new System.Drawing.Size(940, 642);
             this.chart1.TabIndex = 0;
             this.chart1.Text = "chart1";
             // 
@@ -1101,7 +1101,7 @@ namespace WindowsFormsTest
             this.chart2.Series.Add(series16);
             this.chart2.Series.Add(series17);
             this.chart2.Series.Add(series18);
-            this.chart2.Size = new System.Drawing.Size(940, 640);
+            this.chart2.Size = new System.Drawing.Size(940, 642);
             this.chart2.TabIndex = 1;
             this.chart2.Text = "chart2";
             // 
@@ -1207,7 +1207,7 @@ namespace WindowsFormsTest
             this.chart3.Series.Add(series34);
             this.chart3.Series.Add(series35);
             this.chart3.Series.Add(series36);
-            this.chart3.Size = new System.Drawing.Size(942, 641);
+            this.chart3.Size = new System.Drawing.Size(942, 643);
             this.chart3.TabIndex = 2;
             this.chart3.Text = "chart3";
             // 
@@ -1233,7 +1233,7 @@ namespace WindowsFormsTest
             series38.Name = "B1";
             this.chart4.Series.Add(series37);
             this.chart4.Series.Add(series38);
-            this.chart4.Size = new System.Drawing.Size(940, 640);
+            this.chart4.Size = new System.Drawing.Size(940, 642);
             this.chart4.TabIndex = 3;
             this.chart4.Text = "chart4";
             // 
@@ -1265,9 +1265,9 @@ namespace WindowsFormsTest
             this.groupBox7.Controls.Add(this.RadioButtonAB);
             this.groupBox7.Controls.Add(this.RadioButtonB);
             this.groupBox7.Controls.Add(this.RadioButtonA);
-            this.groupBox7.Location = new System.Drawing.Point(447, 12);
+            this.groupBox7.Location = new System.Drawing.Point(447, 14);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(278, 88);
+            this.groupBox7.Size = new System.Drawing.Size(283, 86);
             this.groupBox7.TabIndex = 7;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Selection";
