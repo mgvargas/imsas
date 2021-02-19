@@ -7,8 +7,6 @@
 #include "main.h"
 #include "calibration.h"
 
-extern int Potentiometer_values_A[];
-extern int Potentiometer_values_B[];
 
 ////////////////////////////////////////////// Calibration ///////////////////////////////////
 /* Calibrate the potentiometers to get a balanced output from the bridge, reads all 9 channels
@@ -55,7 +53,6 @@ void calibrate_potis(SPI_HandleTypeDef *hspi1){
 			CDC_Transmit_FS((uint8_t *)usb_msg, strlen((char *)usb_msg));
 			HAL_Delay(10);
 			poti_value = balance_one_channel('A', hspi1);
-			poti_value = 200;
 			Potentiometer_values_A[i] = poti_value;
 		}
 		// For channel B
@@ -97,9 +94,9 @@ int balance_one_channel(unsigned char channel, SPI_HandleTypeDef *hspi1){
 		while (value_ADC <= (Vref+.015)) // +- 15mV
 		{
 			// Increase POTI
-			if ((Vref - value_ADC) > 1.4)
+			if ((Vref - value_ADC) > 1.2)
 				poti_value += 800;
-			else if ((Vref - value_ADC) > 0.55)
+			else if ((Vref - value_ADC) > 0.8)
 				poti_value += 200;
 			else if ((Vref - value_ADC) > 0.4)
 				poti_value += 60;
@@ -109,7 +106,7 @@ int balance_one_channel(unsigned char channel, SPI_HandleTypeDef *hspi1){
 			if (poti_value > 20000){ // if poti cannot increase more, break
 				CDC_Transmit_FS((uint8_t *)usb_msg, strlen((char *)usb_msg));
 				HAL_Delay(10);
-				return 0;
+				return 10000;
 			}
 			Poti_Set_RDAC(poti_value, channel, hspi1);
 			raw_ADC = read_ADC(0x00);
@@ -124,11 +121,11 @@ int balance_one_channel(unsigned char channel, SPI_HandleTypeDef *hspi1){
 		while (value_ADC >= (Vref-.015)) // +- 15mV
 		{
 			// Decrease POTI
-			if ((value_ADC - Vref) > 1.5)
+			if ((value_ADC - Vref) > 1.2)
 				poti_value -= 800;
-			else if ((value_ADC - Vref) > 0.55)
+			else if ((value_ADC - Vref) > 0.8)
 				poti_value -= 200;
-			else if ((value_ADC - Vref) > 0.3)
+			else if ((value_ADC - Vref) > 0.4)
 				poti_value -= 60;
 			else
 				poti_value -= 20;
@@ -136,7 +133,7 @@ int balance_one_channel(unsigned char channel, SPI_HandleTypeDef *hspi1){
 			if (poti_value < 0){ // if poti cannot decrease more, break
 				CDC_Transmit_FS((uint8_t *)usb_msg, strlen((char *)usb_msg));
 				HAL_Delay(20);
-				return 0;
+				return 10000;
 			}
 			Poti_Set_RDAC(poti_value, channel, hspi1);
 			raw_ADC = read_ADC(0x00);

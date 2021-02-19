@@ -88,8 +88,8 @@ uint8_t ADC_RX_buffer[3];
 int raw_ADC;
 int i;
 // Calibration
-int Potentiometer_values_A[10] = {10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000};
-int Potentiometer_values_B[10] = {10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000};
+//int Potentiometer_values_A[10] = {10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000};
+//int Potentiometer_values_B[10] = {10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000};
 // Read sensors
 float Sensor_values_A[10];
 float Sensor_values_B[10];
@@ -138,7 +138,6 @@ int main(void)
 	mux_channel(0);  // Select mux channel (for both mux)
 	HAL_Delay(200);
 
-
 	// Configure ADC
 	config_ADC(0x0D,0xA5); // Lock register: Write access is allowed on the full register map
 	config_ADC(0x01,0xE3); // Conversion mode
@@ -148,14 +147,7 @@ int main(void)
 	config_ADC(0x06,ADC_A_Select); // Select ADC A
 	config_ADC2(0x07); // Scan register
 
-	//USB test
-	/*uint8_t usb_msg_A[15] = "SA "; //"USB Voltage A: ";
-	uint8_t usb_msg_B[15] = "SB "; //"Voltage B: ";
-	char txBuf[8];
-	//uint8_t count = 1;
 
-	// ADC
-	uint8_t *ADC_RX_buffer_pointer;*/
 	HAL_Delay(100);
 
 
@@ -173,26 +165,20 @@ int main(void)
 		// Mode single sensor
 		if (HAL_GPIO_ReadPin(GPIOC, Switch_Mode_Pin)){
 			HAL_GPIO_WritePin(GPIOB, LED_STATUS_Pin, GPIO_PIN_SET);
-			//Poti_Set_RDAC(Potentiometer_values_A[0], 'A', &hspi1);
-			//Poti_Set_RDAC(Potentiometer_values_B[0], 'B', &hspi1);
 			read_single_sensor();
 		}
 		// Mode sensor array
-		else
+		else{
 			HAL_GPIO_WritePin(GPIOB, LED_STATUS_Pin, GPIO_PIN_RESET);
-
+			read_sensor_array();
+		}
 		// Check if a new command came over USB
 		if(usb_data.new_data == 1)
 		{
 			decode_command(&usb_data.data[0]);
 			usb_data_reset();
 		}
-		HAL_Delay(200);
-
-		//Blink a LED
-		/*HAL_GPIO_TogglePin(GPIOB,LED_STATUS_Pin);
-		HAL_Delay(100);
-		HAL_GPIO_TogglePin(GPIOB,LED_STATUS_Pin);*/
+		HAL_Delay(20);
 
 		// Send test message UART
 		/*HAL_UART_Transmit(&huart1, UART_Data,25,20); // Handle_type, data, length, timeout
@@ -201,11 +187,6 @@ int main(void)
 		//HAL_Delay(10);
 		//HAL_UART_Transmit(&huart1, Data,11,20); // Handle_type, data, length, timeout */
 
-		// Test USB
-		/*CDC_Transmit_FS(usb_msg_A, strlen((char *)usb_msg_A));
-		HAL_Delay(10);
-
-		CDC_Transmit_FS((uint8_t *) txBuf, strlen(txBuf));*/
 
 	}
 
@@ -563,32 +544,104 @@ static void MX_GPIO_Init(void)
 
 ////////////////////////////////// Read: Array or single sensor mode ///////////////////
 
-void read_sensor(int sensor){
-	uint8_t *raw_ADC;
+void read_sensor_array(void){
+	/*uint8_t usb_msg_A[2] = "SA"; //"USB Voltage A: ";
+	uint8_t usb_msg_B[2] = "SB"; //"Voltage B: ";
+	char txBuf[10];
+	char txBufB[10];*/
+	uint8_t usb_array_A[10] = "Array_A [ ";
+	uint8_t usb_array_B[10] = "Array_B [ ";
+	char send_A[75];
+	char send_B[75];
+	uint8_t *ADC_RX_buffer_pointer;
+	int sensor;
 
-	// Set calibrated potentiometer values
-	Poti_Set_RDAC(Potentiometer_values_A[sensor], 'A', &hspi1);
-	Poti_Set_RDAC(Potentiometer_values_B[sensor], 'B', &hspi1);
+	while(1){
+		char *posA = send_A;
 
-	mux_channel(sensor);
-	// For A
-	config_ADC(0x6, ADC_A_Select);
-	raw_ADC = read_ADC(0x00);
-	Sensor_values_A[sensor] = voltage_ADC(raw_ADC);
-	// For B
-	config_ADC(0x6, ADC_B_Select);
-	raw_ADC = read_ADC(0x00);
-	Sensor_values_B[sensor] = voltage_ADC(raw_ADC);
+		// For channel A
+		config_ADC(0x6, ADC_A_Select);
+		for (sensor=1; sensor <= 9; sensor++){
+			// Set calibrated potentiometer values
+			Poti_Set_RDAC(Potentiometer_values_A[sensor], 'A', &hspi1);
+			mux_channel(sensor);
+			HAL_Delay(30);
+			//Read ADC
+			ADC_RX_buffer_pointer = read_ADC(0x00);
+			Sensor_values_A[sensor] = voltage_ADC(ADC_RX_buffer_pointer);
+
+			/*CDC_Transmit_FS(usb_msg_A, strlen((char *)usb_msg_A));
+			HAL_Delay(10);
+			sprintf(txBuf, "%i %.4f\n", sensor, Sensor_values_A[sensor]);
+			CDC_Transmit_FS((uint8_t *) txBuf, strlen(txBuf));*/
+
+			if (sensor<9)
+				posA += sprintf(posA, "%.4f, ", Sensor_values_A[sensor]);
+			else
+				posA += sprintf(posA, "%.4f]\n", Sensor_values_A[sensor]);
+		}
+		// Send array
+		CDC_Transmit_FS(usb_array_A, strlen((char *)usb_array_A));
+		HAL_Delay(10);
+		CDC_Transmit_FS((uint8_t *) send_A, strlen(send_A));
+		HAL_Delay(20);
+
+		// For channel B
+		char *posB = send_B;
+		config_ADC(0x6, ADC_B_Select);
+		for (sensor=1; sensor <= 9; sensor++){
+			// Set calibrated potentiometer values
+			Poti_Set_RDAC(Potentiometer_values_B[sensor], 'B', &hspi1);
+			mux_channel(sensor);
+			HAL_Delay(30);
+			//Read ADC
+			ADC_RX_buffer_pointer = read_ADC(0x00);
+			Sensor_values_B[sensor] = voltage_ADC(ADC_RX_buffer_pointer);
+
+			// Send single values over USB
+			/*CDC_Transmit_FS(usb_msg_B, strlen((char *)usb_msg_B));
+			HAL_Delay(10);
+			sprintf(txBufB, "%i %.4f\n", sensor, Sensor_values_B[sensor]);
+			CDC_Transmit_FS((uint8_t *) txBufB, strlen(txBufB));
+			HAL_Delay(10);*/
+
+			if (sensor<9)
+				posB += sprintf(posB, "%.4f, ", Sensor_values_B[sensor]);
+			else
+				posB += sprintf(posB, "%.4f]\n", Sensor_values_B[sensor]);
+		}
+		// Send array B
+		//CDC_Transmit_FS((uint8_t *)usb_array_B, strlen((char *)usb_array_B));
+		CDC_Transmit_FS((uint8_t *)"Array_B [ ", 10);
+		HAL_Delay(10);
+		CDC_Transmit_FS((uint8_t *) send_B, strlen(send_B));
+		HAL_Delay(10);
+
+		//Switch between single sensor and array mode
+		if ((HAL_GPIO_ReadPin(GPIOC, Switch_Mode_Pin)) != 0){
+				break;}
+
+		// Check if a new command came over USB
+		if(usb_data.new_data == 1)
+		{
+			decode_command(&usb_data.data[0]);
+			usb_data_reset();
+		}
+	}
 }
 
 void read_single_sensor(){
-	uint8_t usb_msg_A[15] = "SA "; //"USB Voltage A: ";
-	uint8_t usb_msg_B[15] = "SB "; //"Voltage B: ";
+	uint8_t usb_msg_A[3] = "SA "; //"USB Voltage A: ";
+	uint8_t usb_msg_B[3] = "SB "; //"Voltage B: ";
 	char txBuf[8];
-	float test_voltage;
+	float measured_voltage;
 
 	// ADC
 	uint8_t *ADC_RX_buffer_pointer;
+
+	mux_channel(0);
+	Poti_Set_RDAC(Potentiometer_values_A[0], 'A', &hspi1);
+	Poti_Set_RDAC(Potentiometer_values_B[0], 'B', &hspi1);
 
 	while(1){
 		//Read ADC value A and send via USB
@@ -596,11 +649,11 @@ void read_single_sensor(){
 		HAL_Delay(50);
 		ADC_RX_buffer_pointer = read_ADC(0x00);
 		HAL_Delay(10);
-		test_voltage = voltage_ADC(ADC_RX_buffer_pointer);
+		measured_voltage = voltage_ADC(ADC_RX_buffer_pointer);
 
 		CDC_Transmit_FS(usb_msg_A, strlen((char *)usb_msg_A));
 		HAL_Delay(10);
-		sprintf(txBuf, "%.4f\n", test_voltage);
+		sprintf(txBuf, "%.4f\n", measured_voltage);
 
 		CDC_Transmit_FS((uint8_t *) txBuf, strlen(txBuf));
 
@@ -611,16 +664,24 @@ void read_single_sensor(){
 		HAL_Delay(50);
 		ADC_RX_buffer_pointer = read_ADC(0x00);
 		HAL_Delay(10);
-		test_voltage = voltage_ADC(ADC_RX_buffer_pointer);
+		measured_voltage = voltage_ADC(ADC_RX_buffer_pointer);
 
 		CDC_Transmit_FS(usb_msg_B, strlen((char *)usb_msg_B));
 		HAL_Delay(10);
-		sprintf(txBuf, "%.4f\n", test_voltage);
+		sprintf(txBuf, "%.4f\n", measured_voltage);
 		CDC_Transmit_FS((uint8_t *) txBuf, strlen(txBuf));
 		HAL_Delay(10);
 
 		if ((HAL_GPIO_ReadPin(GPIOC, Switch_Mode_Pin)) != 1){
 			break;
+
+		// Check if a new command came over USB
+		if(usb_data.new_data == 1)
+		{
+			decode_command(&usb_data.data[0]);
+			usb_data_reset();
+		}
+
 		}
 	}
 }

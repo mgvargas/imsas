@@ -52,7 +52,8 @@ typedef enum {
    UART_WRITE_IN_INT,               /* Write data while in an interrupt routine */
    UART_WRITE
 } enWriteData;
-
+int Potentiometer_values_A[10];// = {10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000};
+int Potentiometer_values_B[10];// = {10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000};
 ////////////////////////////////// END Digital Potentiometer /////////////////////////////////
 
 ////////////////////////////////// ADC /////////////////////////////////
@@ -70,7 +71,8 @@ typedef enum {
 ////////////////////////////////// End ADC /////////////////////////////////
 
 ////////////////////////////////// Read Sensors ///////////////////////////
-void read_single_sensor();
+void read_single_sensor(void);
+void read_sensor_array(void);
 ////////////////////////////////// End Read Sensors ///////////////////////////
 
 /* USER CODE END Includes */
