@@ -87,9 +87,7 @@ static void MX_SPI2_Init(void);
 uint8_t ADC_RX_buffer[3];
 int raw_ADC;
 int i;
-// Calibration
-//int Potentiometer_values_A[10] = {10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000};
-//int Potentiometer_values_B[10] = {10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000};
+
 // Read sensors
 float Sensor_values_A[10];
 float Sensor_values_B[10];
@@ -545,77 +543,61 @@ static void MX_GPIO_Init(void)
 ////////////////////////////////// Read: Array or single sensor mode ///////////////////
 
 void read_sensor_array(void){
-	/*uint8_t usb_msg_A[2] = "SA"; //"USB Voltage A: ";
-	uint8_t usb_msg_B[2] = "SB"; //"Voltage B: ";
-	char txBuf[10];
-	char txBufB[10];*/
-	uint8_t usb_array_A[10] = "Array_A [ ";
-	uint8_t usb_array_B[10] = "Array_B [ ";
-	char send_A[75];
-	char send_B[75];
+	char usb_array_A[85] = "Array_A ";
+	char usb_array_B[85] = "Array_B ";
+	char values_A[75];
+	char values_B[75];
 	uint8_t *ADC_RX_buffer_pointer;
 	int sensor;
 
 	while(1){
-		char *posA = send_A;
+		char *posA = values_A;
 
 		// For channel A
 		config_ADC(0x6, ADC_A_Select);
 		for (sensor=1; sensor <= 9; sensor++){
 			// Set calibrated potentiometer values
-			Poti_Set_RDAC(Potentiometer_values_A[sensor], 'A', &hspi1);
 			mux_channel(sensor);
-			HAL_Delay(30);
+			Poti_Set_RDAC(Potentiometer_values_A[sensor], 'A', &hspi1);
+			//HAL_Delay(10);
 			//Read ADC
 			ADC_RX_buffer_pointer = read_ADC(0x00);
 			Sensor_values_A[sensor] = voltage_ADC(ADC_RX_buffer_pointer);
 
-			/*CDC_Transmit_FS(usb_msg_A, strlen((char *)usb_msg_A));
-			HAL_Delay(10);
-			sprintf(txBuf, "%i %.4f\n", sensor, Sensor_values_A[sensor]);
-			CDC_Transmit_FS((uint8_t *) txBuf, strlen(txBuf));*/
-
+			// Save value as string array
 			if (sensor<9)
 				posA += sprintf(posA, "%.4f, ", Sensor_values_A[sensor]);
 			else
-				posA += sprintf(posA, "%.4f]\n", Sensor_values_A[sensor]);
+				posA += sprintf(posA, "%.4f\n", Sensor_values_A[sensor]);
 		}
 		// Send array
-		CDC_Transmit_FS(usb_array_A, strlen((char *)usb_array_A));
-		HAL_Delay(10);
-		CDC_Transmit_FS((uint8_t *) send_A, strlen(send_A));
-		HAL_Delay(20);
+		strcat(usb_array_A, values_A);
+		CDC_Transmit_FS((uint8_t *) usb_array_A, strlen(usb_array_A));
+		strcpy(usb_array_A, "Array_A "); // Reset string value
 
 		// For channel B
-		char *posB = send_B;
+		char *posB = values_B;
 		config_ADC(0x6, ADC_B_Select);
 		for (sensor=1; sensor <= 9; sensor++){
 			// Set calibrated potentiometer values
-			Poti_Set_RDAC(Potentiometer_values_B[sensor], 'B', &hspi1);
 			mux_channel(sensor);
-			HAL_Delay(30);
+			Poti_Set_RDAC(Potentiometer_values_B[sensor], 'B', &hspi1);
+			//HAL_Delay(10);
+
 			//Read ADC
 			ADC_RX_buffer_pointer = read_ADC(0x00);
 			Sensor_values_B[sensor] = voltage_ADC(ADC_RX_buffer_pointer);
 
-			// Send single values over USB
-			/*CDC_Transmit_FS(usb_msg_B, strlen((char *)usb_msg_B));
-			HAL_Delay(10);
-			sprintf(txBufB, "%i %.4f\n", sensor, Sensor_values_B[sensor]);
-			CDC_Transmit_FS((uint8_t *) txBufB, strlen(txBufB));
-			HAL_Delay(10);*/
-
+			// Save value as string array
 			if (sensor<9)
 				posB += sprintf(posB, "%.4f, ", Sensor_values_B[sensor]);
 			else
-				posB += sprintf(posB, "%.4f]\n", Sensor_values_B[sensor]);
+				posB += sprintf(posB, "%.4f\n", Sensor_values_B[sensor]);
 		}
 		// Send array B
-		//CDC_Transmit_FS((uint8_t *)usb_array_B, strlen((char *)usb_array_B));
-		CDC_Transmit_FS((uint8_t *)"Array_B [ ", 10);
-		HAL_Delay(10);
-		CDC_Transmit_FS((uint8_t *) send_B, strlen(send_B));
-		HAL_Delay(10);
+		strcat(usb_array_B, values_B);
+		CDC_Transmit_FS((uint8_t *) usb_array_B, strlen(usb_array_B));
+		strcpy(usb_array_B, "Array_B "); // Reset string value
 
 		//Switch between single sensor and array mode
 		if ((HAL_GPIO_ReadPin(GPIOC, Switch_Mode_Pin)) != 0){
@@ -631,12 +613,10 @@ void read_sensor_array(void){
 }
 
 void read_single_sensor(){
-	uint8_t usb_msg_A[3] = "SA "; //"USB Voltage A: ";
-	uint8_t usb_msg_B[3] = "SB "; //"Voltage B: ";
+	char usb_msg_A[10] = "SA ";
+	char usb_msg_B[10] = "SB ";
 	char txBuf[8];
 	float measured_voltage;
-
-	// ADC
 	uint8_t *ADC_RX_buffer_pointer;
 
 	mux_channel(0);
@@ -646,31 +626,28 @@ void read_single_sensor(){
 	while(1){
 		//Read ADC value A and send via USB
 		config_ADC(0x6, ADC_A_Select);
-		HAL_Delay(50);
+		HAL_Delay(20);
 		ADC_RX_buffer_pointer = read_ADC(0x00);
-		HAL_Delay(10);
 		measured_voltage = voltage_ADC(ADC_RX_buffer_pointer);
 
-		CDC_Transmit_FS(usb_msg_A, strlen((char *)usb_msg_A));
-		HAL_Delay(10);
 		sprintf(txBuf, "%.4f\n", measured_voltage);
+		strcat(usb_msg_A, txBuf);
+		CDC_Transmit_FS((uint8_t *) usb_msg_A, strlen(usb_msg_A));
 
-		CDC_Transmit_FS((uint8_t *) txBuf, strlen(txBuf));
-
-		HAL_Delay(50);
+		strcpy(usb_msg_A, "SA "); // Reset string value
 
 		//Read ADC value B
 		config_ADC(0x6, ADC_B_Select);
-		HAL_Delay(50);
+		HAL_Delay(20);
 		ADC_RX_buffer_pointer = read_ADC(0x00);
-		HAL_Delay(10);
 		measured_voltage = voltage_ADC(ADC_RX_buffer_pointer);
 
-		CDC_Transmit_FS(usb_msg_B, strlen((char *)usb_msg_B));
-		HAL_Delay(10);
 		sprintf(txBuf, "%.4f\n", measured_voltage);
-		CDC_Transmit_FS((uint8_t *) txBuf, strlen(txBuf));
-		HAL_Delay(10);
+		strcat(usb_msg_B, txBuf);
+		CDC_Transmit_FS((uint8_t *) usb_msg_B, strlen(usb_msg_B));
+
+		strcpy(usb_msg_B, "SB "); // Reset string value
+
 
 		if ((HAL_GPIO_ReadPin(GPIOC, Switch_Mode_Pin)) != 1){
 			break;

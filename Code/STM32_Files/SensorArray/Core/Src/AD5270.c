@@ -61,7 +61,7 @@ uint16_t Poti_Set_RDAC(uint16_t resistance, unsigned char poti, SPI_HandleTypeDe
 		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_SET);}
 
-	HAL_Delay(200);
+	HAL_Delay(2);
 
 	return (uint16_t)resistance;
 }
