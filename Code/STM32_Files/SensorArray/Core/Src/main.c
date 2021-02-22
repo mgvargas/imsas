@@ -139,7 +139,7 @@ int main(void)
 	// Configure ADC
 	config_ADC(0x0D,0xA5); // Lock register: Write access is allowed on the full register map
 	config_ADC(0x01,0xE3); // Conversion mode
-	config_ADC(0x02,0x1C); // Oversampling rate
+	config_ADC(0x02,0x0C); // Oversampling rate
 	config_ADC(0x04,0xC0); // Configure conversion and gain
 	config_ADC(0x05,0x04); // Configure IRQ register, only a test
 	config_ADC(0x06,ADC_A_Select); // Select ADC A
@@ -433,7 +433,7 @@ static void MX_SPI2_Init(void)
   hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi2.Init.NSS = SPI_NSS_SOFT;
-  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;
+  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
   hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -540,7 +540,7 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 
 
-////////////////////////////////// Read: Array or single sensor mode ///////////////////
+////////////////////////////////// Read sensor: Array or single sensor mode ///////////////////
 
 void read_sensor_array(void){
 	char usb_array_A[85] = "Array_A ";
@@ -555,11 +555,12 @@ void read_sensor_array(void){
 
 		// For channel A
 		config_ADC(0x6, ADC_A_Select);
+		//HAL_Delay(5);
 		for (sensor=1; sensor <= 9; sensor++){
 			// Set calibrated potentiometer values
 			mux_channel(sensor);
 			Poti_Set_RDAC(Potentiometer_values_A[sensor], 'A', &hspi1);
-			//HAL_Delay(10);
+
 			//Read ADC
 			ADC_RX_buffer_pointer = read_ADC(0x00);
 			Sensor_values_A[sensor] = voltage_ADC(ADC_RX_buffer_pointer);
@@ -578,13 +579,13 @@ void read_sensor_array(void){
 		// For channel B
 		char *posB = values_B;
 		config_ADC(0x6, ADC_B_Select);
+		//HAL_Delay(5);
 		for (sensor=1; sensor <= 9; sensor++){
 			// Set calibrated potentiometer values
 			mux_channel(sensor);
 			Poti_Set_RDAC(Potentiometer_values_B[sensor], 'B', &hspi1);
-			//HAL_Delay(10);
 
-			//Read ADC
+			//Read ADC (average 6 readings)
 			ADC_RX_buffer_pointer = read_ADC(0x00);
 			Sensor_values_B[sensor] = voltage_ADC(ADC_RX_buffer_pointer);
 
@@ -626,7 +627,7 @@ void read_single_sensor(){
 	while(1){
 		//Read ADC value A and send via USB
 		config_ADC(0x6, ADC_A_Select);
-		HAL_Delay(20);
+		HAL_Delay(2);
 		ADC_RX_buffer_pointer = read_ADC(0x00);
 		measured_voltage = voltage_ADC(ADC_RX_buffer_pointer);
 
@@ -638,7 +639,7 @@ void read_single_sensor(){
 
 		//Read ADC value B
 		config_ADC(0x6, ADC_B_Select);
-		HAL_Delay(20);
+		HAL_Delay(2);
 		ADC_RX_buffer_pointer = read_ADC(0x00);
 		measured_voltage = voltage_ADC(ADC_RX_buffer_pointer);
 

@@ -74,17 +74,18 @@ void calibrate_potis(SPI_HandleTypeDef *hspi1){
 
 int balance_one_channel(unsigned char channel, SPI_HandleTypeDef *hspi1){
 	float Vref= 1.65;
-	int poti_value = 10000;
+	int poti_value = 10000, n;
 	uint8_t *raw_ADC;
 	float value_ADC;
 	char *usb_msg = malloc(20);
 	strcpy(usb_msg, "Poti out of range\n");
+	char txBuf[50];
 
 	// Read ADC
 	raw_ADC = read_ADC(0x00);
 	value_ADC = voltage_ADC(raw_ADC);
-	HAL_Delay(10);
-	raw_ADC = read_ADC(0x00);
+	HAL_Delay(5);
+	raw_ADC= read_ADC(0x00);
 	value_ADC = voltage_ADC(raw_ADC);
 
 	// If the value is lower than the ref voltage, then the sensor output is higher than the poti output
@@ -94,53 +95,82 @@ int balance_one_channel(unsigned char channel, SPI_HandleTypeDef *hspi1){
 		while (value_ADC <= (Vref+.015)) // +- 15mV
 		{
 			// Increase POTI
-			if ((Vref - value_ADC) > 1.2)
-				poti_value += 800;
-			else if ((Vref - value_ADC) > 0.8)
-				poti_value += 200;
-			else if ((Vref - value_ADC) > 0.4)
+			if ((Vref - value_ADC) > 1.5)
+				poti_value += 300;
+			else if ((Vref - value_ADC) > 0.9)
+				poti_value += 100;
+			else if ((Vref - value_ADC) > 0.5)
 				poti_value += 60;
 			else
 				poti_value += 20;
 
 			if (poti_value > 20000){ // if poti cannot increase more, break
 				CDC_Transmit_FS((uint8_t *)usb_msg, strlen((char *)usb_msg));
-				HAL_Delay(10);
-				return 10000;
+				HAL_Delay(5);
+				return 20000;
 			}
 			Poti_Set_RDAC(poti_value, channel, hspi1);
-			raw_ADC = read_ADC(0x00);
+			// Read ADC value
+			raw_ADC= read_ADC(0x00);
 			value_ADC = voltage_ADC(raw_ADC);
-			HAL_Delay(5);
+
+			if (value_ADC > (Vref+.3)){ // if it goes to far
+				sprintf(txBuf, "Poti: %i, V: %.3f -> ", poti_value, value_ADC);
+				CDC_Transmit_FS((uint8_t *)txBuf, strlen((char *)txBuf));
+				poti_value -= 10000;
+				if (poti_value < 0)
+					poti_value = 0;
+				Poti_Set_RDAC(poti_value, channel, hspi1);
+				raw_ADC = read_ADC(0x00);
+				value_ADC = voltage_ADC(raw_ADC);
+				sprintf(txBuf, "Poti: %i, V: %.3f \n", poti_value, value_ADC);
+				CDC_Transmit_FS((uint8_t *)txBuf, strlen((char *)txBuf));
+			}
+
 		}
 	}
 	// If the value is higher than the ref voltage, then the sensor output is lower than the poti output
 	// --> decrease poti value (decrease voltage) to balance the bridge
 	else{
-		//while ( (value_ADC <= (Vref+.0015)) && (value_ADC >= (Vref-.0015)) ) // +- 1.5mV
 		while (value_ADC >= (Vref-.015)) // +- 15mV
 		{
 			// Decrease POTI
-			if ((value_ADC - Vref) > 1.2)
-				poti_value -= 800;
-			else if ((value_ADC - Vref) > 0.8)
-				poti_value -= 200;
-			else if ((value_ADC - Vref) > 0.4)
+			if ((value_ADC - Vref) > 1.5)
+				poti_value -= 300;
+			else if ((value_ADC - Vref) > 0.9)
+				poti_value -= 100;
+			else if ((value_ADC - Vref) > 0.5)
 				poti_value -= 60;
 			else
 				poti_value -= 20;
 
 			if (poti_value < 0){ // if poti cannot decrease more, break
 				CDC_Transmit_FS((uint8_t *)usb_msg, strlen((char *)usb_msg));
-				HAL_Delay(20);
-				return 10000;
+				HAL_Delay(5);
+				return 0;
 			}
 			Poti_Set_RDAC(poti_value, channel, hspi1);
-			raw_ADC = read_ADC(0x00);
+			// Read ADC value
+			raw_ADC= read_ADC(0x00);
 			value_ADC = voltage_ADC(raw_ADC);
-			HAL_Delay(5);
+
+			if (value_ADC < (Vref-.3)){ // if it goes to far
+				sprintf(txBuf, "Poti: %i, V: %.3f -> ", poti_value, value_ADC);
+				CDC_Transmit_FS((uint8_t *)txBuf, strlen((char *)txBuf));
+				poti_value += 10000;
+				if (poti_value > 20000)
+					poti_value = 20000;
+				Poti_Set_RDAC(poti_value, channel, hspi1);
+				raw_ADC = read_ADC(0x00);
+				value_ADC = voltage_ADC(raw_ADC);
+				sprintf(txBuf, "Poti: %i, V: %.3f \n", poti_value, value_ADC);
+				CDC_Transmit_FS((uint8_t *)txBuf, strlen((char *)txBuf));
+			}
 		}
 	}
+	sprintf(txBuf, "Poti: %i, V: %.3f \n", poti_value, value_ADC);
+	CDC_Transmit_FS((uint8_t *)txBuf, strlen((char *)txBuf));
+	HAL_Delay(5);
 	return poti_value;
 }
 //////////////////////////////////////////// End Calibration /////////////////////////////////
