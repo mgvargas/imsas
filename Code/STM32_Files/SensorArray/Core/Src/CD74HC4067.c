@@ -46,5 +46,5 @@ void mux_channel(int channel)
 	HAL_GPIO_WritePin(GPIOC, MUXB_S1_Pin, _g_channel_truth_table[channel][1]);
 	HAL_GPIO_WritePin(GPIOC, MUXB_S2_Pin, _g_channel_truth_table[channel][2]);
 	HAL_GPIO_WritePin(GPIOC, MUXB_S3_Pin, _g_channel_truth_table[channel][3]);
-
+	HAL_Delay(1);
 }
