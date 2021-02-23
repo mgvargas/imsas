@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -32,8 +33,6 @@ namespace WindowsFormsTest
         private string S1B_Val, S2B_Val, S3B_Val, S4B_Val, S5B_Val, S6B_Val, S7B_Val, S8B_Val, S9B_Val;
         private string Sen_A, Sen_B;
         private string A_1, B_1, A_1_Val, B_1_Val;
-
-
 
         public Form1()
         {
@@ -1509,6 +1508,7 @@ namespace WindowsFormsTest
             }
             else
             {
+                TimerDataLogRecord.Interval = 1;
                 dataGridView4.Rows.Add(new string[] { dataGridView4.RowCount.ToString(), A_1_Log, B_1_Log, DT.ToLongTimeString(), DT.ToString("dd-MM-yyyy") });
                 this.dataGridView4.FirstDisplayedScrollingRowIndex = this.dataGridView4.RowCount - 1;
 
@@ -1548,12 +1548,12 @@ namespace WindowsFormsTest
                     TB.Multiline = true;
                     TB.Text = StrSerialIn;
 
-                    StrSerialInRam = TB.Lines[0].Substring(0, 2);
-                    if (StrSerialInRam == "SA")
+                    StrSerialInRam = TB.Lines[0].Substring(0, 8);
+                    if (StrSerialInRam == "Array_A ")
                     {
                         Sen_A = TB.Lines[0];
                         string[] valA = Sen_A.Split(',');
-                        S1A_Val = valA[0].Substring(2);
+                        S1A_Val = valA[0].Substring(8);
                         S2A_Val = valA[1];
                         S3A_Val = valA[2];
                         S4A_Val = valA[3];
@@ -1567,12 +1567,12 @@ namespace WindowsFormsTest
                     }
                    
                     Sen_A = "";
-                    StrSerialInRam = TB.Lines[1].Substring(0, 2);
-                    if (StrSerialInRam == "SB")
+                    StrSerialInRam = TB.Lines[1].Substring(0, 8);
+                    if (StrSerialInRam == "Array_B ")
                     {
                         Sen_B = TB.Lines[1];
                         string[] valB = Sen_B.Split(',');
-                        S1B_Val = valB[0].Substring(2);
+                        S1B_Val = valB[0].Substring(8);
                         S2B_Val = valB[1];
                         S3B_Val = valB[2];
                         S4B_Val = valB[3];
@@ -1587,6 +1587,8 @@ namespace WindowsFormsTest
                 }
                 else
                 {
+
+                    TimerSerial.Interval = 1;
                     string StrSerialIn = SerialPort1.ReadExisting();
                     string StrSerialInRam;
 
