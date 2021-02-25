@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -32,8 +33,6 @@ namespace WindowsFormsTest
         private string S1B_Val, S2B_Val, S3B_Val, S4B_Val, S5B_Val, S6B_Val, S7B_Val, S8B_Val, S9B_Val;
         private string Sen_A, Sen_B;
         private string A_1, B_1, A_1_Val, B_1_Val;
-
-
 
         public Form1()
         {
@@ -1302,6 +1301,7 @@ namespace WindowsFormsTest
 
             if (RadioButtonA.Checked)
             {
+                
                 dataGridView1.Rows.Add(new string[] { dataGridView1.RowCount.ToString(), Sen1A_Log, Sen2A_Log, Sen3A_Log, Sen4A_Log, Sen5A_Log, Sen6A_Log, Sen7A_Log, Sen8A_Log, Sen9A_Log, DT.ToLongTimeString(), DT.ToString("dd-MM-yyyy") });
                 this.dataGridView1.FirstDisplayedScrollingRowIndex = this.dataGridView1.RowCount - 1;
 
@@ -1356,6 +1356,7 @@ namespace WindowsFormsTest
 
             else if (RadioButtonB.Checked)
             {
+                
                 dataGridView2.Rows.Add(new string[] { dataGridView2.RowCount.ToString(), Sen1B_Log, Sen2B_Log, Sen3B_Log, Sen4B_Log, Sen5B_Log, Sen6B_Log, Sen7B_Log, Sen8B_Log, Sen9B_Log, DT.ToLongTimeString(), DT.ToString("dd-MM-yyyy") });
                 this.dataGridView2.FirstDisplayedScrollingRowIndex = this.dataGridView2.RowCount - 1;
 
@@ -1410,6 +1411,7 @@ namespace WindowsFormsTest
 
             else if (RadioButtonAB.Checked)
             {
+                
                 dataGridView3.Rows.Add(new string[] { dataGridView3.RowCount.ToString(), Sen1A_Log, Sen2A_Log, Sen3A_Log, Sen4A_Log, Sen5A_Log, Sen6A_Log, Sen7A_Log, Sen8A_Log, Sen9A_Log, Sen1B_Log, Sen2B_Log, Sen3B_Log, Sen4B_Log, Sen5B_Log, Sen6B_Log, Sen7B_Log, Sen8B_Log, Sen9B_Log, DT.ToLongTimeString() });
                 this.dataGridView3.FirstDisplayedScrollingRowIndex = this.dataGridView3.RowCount - 1;
 
@@ -1509,6 +1511,7 @@ namespace WindowsFormsTest
             }
             else
             {
+                
                 dataGridView4.Rows.Add(new string[] { dataGridView4.RowCount.ToString(), A_1_Log, B_1_Log, DT.ToLongTimeString(), DT.ToString("dd-MM-yyyy") });
                 this.dataGridView4.FirstDisplayedScrollingRowIndex = this.dataGridView4.RowCount - 1;
 
@@ -1540,7 +1543,7 @@ namespace WindowsFormsTest
 
                 if (RadioButtonA.Checked || RadioButtonB.Checked || RadioButtonAB.Checked)
                 {
-
+                    TimerSerial.Interval = 1;
                     string StrSerialIn = SerialPort1.ReadExisting();
                     string StrSerialInRam;
 
@@ -1548,12 +1551,12 @@ namespace WindowsFormsTest
                     TB.Multiline = true;
                     TB.Text = StrSerialIn;
 
-                    StrSerialInRam = TB.Lines[0].Substring(0, 2);
-                    if (StrSerialInRam == "SA")
+                    StrSerialInRam = TB.Lines[0].Substring(0, 8);
+                    if (StrSerialInRam == "Array_A ")
                     {
                         Sen_A = TB.Lines[0];
                         string[] valA = Sen_A.Split(',');
-                        S1A_Val = valA[0].Substring(2);
+                        S1A_Val = valA[0].Substring(8);
                         S2A_Val = valA[1];
                         S3A_Val = valA[2];
                         S4A_Val = valA[3];
@@ -1567,12 +1570,12 @@ namespace WindowsFormsTest
                     }
                    
                     Sen_A = "";
-                    StrSerialInRam = TB.Lines[1].Substring(0, 2);
-                    if (StrSerialInRam == "SB")
+                    StrSerialInRam = TB.Lines[1].Substring(0, 8);
+                    if (StrSerialInRam == "Array_B ")
                     {
                         Sen_B = TB.Lines[1];
                         string[] valB = Sen_B.Split(',');
-                        S1B_Val = valB[0].Substring(2);
+                        S1B_Val = valB[0].Substring(8);
                         S2B_Val = valB[1];
                         S3B_Val = valB[2];
                         S4B_Val = valB[3];
@@ -1587,6 +1590,8 @@ namespace WindowsFormsTest
                 }
                 else
                 {
+
+                    
                     string StrSerialIn = SerialPort1.ReadExisting();
                     string StrSerialInRam;
 

@@ -1239,12 +1239,12 @@ namespace WindowsFormsTest
             // 
             // TimerSerial
             // 
-            this.TimerSerial.Interval = 1000;
+            this.TimerSerial.Interval = 1;
             this.TimerSerial.Tick += new System.EventHandler(this.TimerSerial_Tick);
             // 
             // TimerDataLogRecord
             // 
-            this.TimerDataLogRecord.Interval = 1000;
+            this.TimerDataLogRecord.Interval = 1;
             this.TimerDataLogRecord.Tick += new System.EventHandler(this.TimerDataLogRecord_Tick);
             // 
             // RadioButtonA
