@@ -33,6 +33,8 @@ namespace WindowsFormsTest
         private string S1B_Val, S2B_Val, S3B_Val, S4B_Val, S5B_Val, S6B_Val, S7B_Val, S8B_Val, S9B_Val;
         private string Sen_A, Sen_B;
         private string A_1, B_1, A_1_Val, B_1_Val;
+        private string dataSend;
+        public Thread DataLog;
 
         public Form1()
         {
@@ -47,6 +49,8 @@ namespace WindowsFormsTest
             ButtonStartRecording.Enabled = false;
             ButtonStopRecording.Enabled = false;
             ComboBoxBaudRate.SelectedIndex = 3;
+
+            CheckForIllegalCrossThreadCalls = false;
 
             for (var i = 0; i <= 30; i += 1)
             {
@@ -291,18 +295,15 @@ namespace WindowsFormsTest
             try
             {
                 ComboBoxPort.SelectedIndex = i;
-                //ButtonConnect.Enabled = true;
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Com port not detected", "Warning !!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 ComboBoxPort.Text = "";
                 ComboBoxPort.Items.Clear();
-                //ButtonConnect.Enabled = false;
                 ButtonStartRecording.Enabled = false;
                 return;
             }
-
             ComboBoxPort.DroppedDown = true;
         }
         private void ButtonConnect_Click(object sender, EventArgs e)
@@ -314,9 +315,7 @@ namespace WindowsFormsTest
             {
                 SerialPort1.Open();
             }
-
             TimerSerial.Start();
-
             ComboBoxPort.Enabled = false;
             label1.Enabled = false;
             ComboBoxBaudRate.Enabled = false;
@@ -439,6 +438,8 @@ namespace WindowsFormsTest
 
         private void RadioButtonA1B1_CheckedChanged(object sender, EventArgs e)
         {
+            SendData.Enabled = false;
+            ClearDataSend.Enabled = false;
             RadioButtonA.Enabled = false;
             RadioButtonB.Enabled = false;
             RadioButtonAB.Enabled = false;
@@ -501,7 +502,9 @@ namespace WindowsFormsTest
             ButtonStopRecording.Enabled = true;
             ButtonSaveToExcel.Enabled = false;
             ButtonSaveCSV.Enabled = false;
+            //DataLog = new Thread(TimerDataLogRecord);
             TimerDataLogRecord.Start();
+            
         }
 
         private void ButtonStopRecording_Click(object sender, EventArgs e)
@@ -830,8 +833,6 @@ namespace WindowsFormsTest
                 }
             }
         }
-
-
         private void ButtonSaveToExcel_Click(object sender, EventArgs e)
         {
             ButtonSaveToExcel.Height = 37;
@@ -1252,6 +1253,21 @@ namespace WindowsFormsTest
             ButtonStartRecording.Enabled = true;
         }
 
+        private void SendData_Click(object sender, EventArgs e)
+        {
+            if (SerialPort1.IsOpen)
+            {
+                dataSend = textBox1.Text;
+                SerialPort1.Write(dataSend);
+            }
+        }
+
+        private void ClearDataSend_Click(object sender, EventArgs e)
+        {
+            textBox2.Clear();
+            textBox1.Clear();
+        }
+
         private void releaseObject(object obj)
         {
             try
@@ -1536,14 +1552,13 @@ namespace WindowsFormsTest
                 PictureBoxRecordInd.Visible = true;
             }
         }
-
         private void TimerSerial_Tick(object sender, EventArgs e)
         {
             try {
 
                 if (RadioButtonA.Checked || RadioButtonB.Checked || RadioButtonAB.Checked)
                 {
-                    TimerSerial.Interval = 1;
+                    
                     string StrSerialIn = SerialPort1.ReadExisting();
                     string StrSerialInRam;
 
@@ -1551,6 +1566,11 @@ namespace WindowsFormsTest
                     TB.Multiline = true;
                     TB.Text = StrSerialIn;
 
+                    StrSerialInRam = TB.Lines[0];
+                    if (StrSerialInRam.Contains("Poti"))
+                    {
+                        textBox2.Text = StrSerialInRam;
+                    }
                     StrSerialInRam = TB.Lines[0].Substring(0, 8);
                     if (StrSerialInRam == "Array_A ")
                     {
@@ -1565,11 +1585,13 @@ namespace WindowsFormsTest
                         S7A_Val = valA[6];
                         S8A_Val = valA[7];
                         S9A_Val = valA[8];
-                        //Sen_A = "";
-
                     }
-                   
                     Sen_A = "";
+                    StrSerialInRam = TB.Lines[1];
+                    if (StrSerialInRam.Contains("Poti"))
+                    {
+                        textBox2.Text = StrSerialInRam;
+                    }
                     StrSerialInRam = TB.Lines[1].Substring(0, 8);
                     if (StrSerialInRam == "Array_B ")
                     {
@@ -1583,15 +1605,17 @@ namespace WindowsFormsTest
                         S6B_Val = valB[5];
                         S7B_Val = valB[6];
                         S8B_Val = valB[7];
-                        S9B_Val = valB[8];
-                        //Sen_B = "";
+                        S9B_Val = valB[8];                        
                     }
                     Sen_B = "";
+                    StrSerialInRam = TB.Lines[2];
+                    if (StrSerialInRam.Contains("Poti"))
+                    {
+                        textBox2.Text = StrSerialInRam;
+                    }
                 }
                 else
-                {
-
-                    
+                {  
                     string StrSerialIn = SerialPort1.ReadExisting();
                     string StrSerialInRam;
 
@@ -1603,8 +1627,7 @@ namespace WindowsFormsTest
                     if (StrSerialInRam == "SA")
                     {
                         A_1 = TB.Lines[0];
-                        A_1_Val = A_1.Substring(2);
-                        //A_1 = "";
+                        A_1_Val = A_1.Substring(2);                       
                     }
                     A_1 = "";
                     StrSerialInRam = TB.Lines[1].Substring(0, 2);
@@ -1612,7 +1635,6 @@ namespace WindowsFormsTest
                     {
                         B_1 = TB.Lines[1];
                         B_1_Val = B_1.Substring(2);
-                        //B_1 = "";
                     }
                     B_1 = "";
                 }
