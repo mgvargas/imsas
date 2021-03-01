@@ -1321,7 +1321,7 @@ namespace WindowsFormsTest
                 dataGridView1.Rows.Add(new string[] { dataGridView1.RowCount.ToString(), Sen1A_Log, Sen2A_Log, Sen3A_Log, Sen4A_Log, Sen5A_Log, Sen6A_Log, Sen7A_Log, Sen8A_Log, Sen9A_Log, DT.ToString("hh.mm.ss.ffffff"), DT.ToString("dd-MM-yyyy") });
                 this.dataGridView1.FirstDisplayedScrollingRowIndex = this.dataGridView1.RowCount - 1;
 
-                chart1.Series["A1"].Points.AddXY(DateTime.Now.ToLongTimeString(), Sen1A_Log);
+                chart1.Series["A1"].Points.AddXY(DateTime.Now.ToString("hh.mm.ss.fff"), Sen1A_Log);
                 if (chart1.Series[0].Points.Count == Limit)
                 {
                     chart1.Series[0].Points.RemoveAt(0);
@@ -1376,7 +1376,7 @@ namespace WindowsFormsTest
                 dataGridView2.Rows.Add(new string[] { dataGridView2.RowCount.ToString(), Sen1B_Log, Sen2B_Log, Sen3B_Log, Sen4B_Log, Sen5B_Log, Sen6B_Log, Sen7B_Log, Sen8B_Log, Sen9B_Log, DT.ToString("hh.mm.ss.ffffff"), DT.ToString("dd-MM-yyyy") });
                 this.dataGridView2.FirstDisplayedScrollingRowIndex = this.dataGridView2.RowCount - 1;
 
-                chart2.Series["B1"].Points.AddXY(DateTime.Now.ToLongTimeString(), Sen1B_Log);
+                chart2.Series["B1"].Points.AddXY(DateTime.Now.ToString("hh.mm.ss.fff"), Sen1B_Log);
                 if (chart2.Series[0].Points.Count == Limit)
                 {
                     chart2.Series[0].Points.RemoveAt(0);
@@ -1431,7 +1431,7 @@ namespace WindowsFormsTest
                 dataGridView3.Rows.Add(new string[] { dataGridView3.RowCount.ToString(), Sen1A_Log, Sen2A_Log, Sen3A_Log, Sen4A_Log, Sen5A_Log, Sen6A_Log, Sen7A_Log, Sen8A_Log, Sen9A_Log, Sen1B_Log, Sen2B_Log, Sen3B_Log, Sen4B_Log, Sen5B_Log, Sen6B_Log, Sen7B_Log, Sen8B_Log, Sen9B_Log, DT.ToString("hh.mm.ss.ffffff") });
                 this.dataGridView3.FirstDisplayedScrollingRowIndex = this.dataGridView3.RowCount - 1;
 
-                chart3.Series["A1"].Points.AddXY(DateTime.Now.ToLongTimeString(), Sen1A_Log);
+                chart3.Series["A1"].Points.AddXY(DateTime.Now.ToString("hh.mm.ss.fff"), Sen1A_Log);
                 if (chart3.Series[0].Points.Count == Limit)
                 {
                     chart3.Series[0].Points.RemoveAt(0);
@@ -1531,7 +1531,7 @@ namespace WindowsFormsTest
                 dataGridView4.Rows.Add(new string[] { dataGridView4.RowCount.ToString(), A_1_Log, B_1_Log, DT.ToString("hh.mm.ss.ffffff"), DT.ToString("dd-MM-yyyy") });
                 this.dataGridView4.FirstDisplayedScrollingRowIndex = this.dataGridView4.RowCount - 1;
 
-                chart4.Series["A1"].Points.AddXY(DateTime.Now.ToLongTimeString(), A_1_Log);
+                chart4.Series["A1"].Points.AddXY(DateTime.Now.ToString("hh.mm.ss.fff"), A_1_Log);
                 if (chart4.Series[0].Points.Count == Limit)
                 {
                     chart4.Series[0].Points.RemoveAt(0);
