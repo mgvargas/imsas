@@ -32,9 +32,17 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+////////////////////////////////// Commands over USB /////////////////////////////////
+#define MAX_USB_BUFFER_LENGTH		256
 
-void Float_to_uint(float n, char* res, int afterpoint);
-int intToStr(int x, char str[], int d);
+typedef struct usb_buffer{
+	uint8_t data [MAX_USB_BUFFER_LENGTH-1];
+	uint8_t new_data; // = 0;
+	uint32_t length;// = 0;
+}usb_buffer;
+
+uint8_t usb_data_reset(void);
+////////////////////////////////// END Commands over USB /////////////////////////////////
 
 ////////////////////////////////// Digital Potentiometer /////////////////////////////////
 
@@ -44,16 +52,9 @@ typedef enum {
    UART_WRITE_IN_INT,               /* Write data while in an interrupt routine */
    UART_WRITE
 } enWriteData;
-
-void Poti_SPI_Init(void);
-//extern void Poti_SPI_Write(unsigned char* data, unsigned char bytesNumber, unsigned char poti);
-//extern void Poti_SPI_Read(unsigned char* data, unsigned char bytesNumber, unsigned char poti);
-void Poti_SPI_Write(unsigned char* data, unsigned char bytesNumber, unsigned char poti);
-void Poti_SPI_Read(unsigned char* data, unsigned char bytesNumber, unsigned char poti);
-uint16_t Poti_Set_RDAC(uint16_t resistance, unsigned char poti);
-
+int Potentiometer_values_A[10];// = {10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000};
+int Potentiometer_values_B[10];// = {10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000};
 ////////////////////////////////// END Digital Potentiometer /////////////////////////////////
-
 
 ////////////////////////////////// ADC /////////////////////////////////
 typedef enum {
@@ -66,17 +67,13 @@ typedef enum {
    Array_mode = 0x10,				/* Sensor array mode */
    Single_mode = 0x200,				/* Single array mode */
 } adc_commands;
-void config_ADC(uint8_t ADC_reg, uint8_t command);
-void config_ADC2(uint8_t ADC_reg);
-uint8_t * read_ADC(uint8_t ADC_reg);
-//void read_ADC(uint8_t ADC_reg);
-float voltage_ADC(uint8_t *ADC_RX_buffer_pointer);
+
 ////////////////////////////////// End ADC /////////////////////////////////
 
-////////////////////////////////// Calibration ///////////////////////////
-int balance_one_channel(unsigned char channel);
-void calibrate_potis();
-////////////////////////////////// End Calibration ///////////////////////////
+////////////////////////////////// Read Sensors ///////////////////////////
+void read_single_sensor(void);
+void read_sensor_array(void);
+////////////////////////////////// End Read Sensors ///////////////////////////
 
 /* USER CODE END Includes */
 

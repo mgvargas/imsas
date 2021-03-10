@@ -1,8 +1,10 @@
-/*
-  Multiplexer.h - Library for using the CD74HC4067 multiplexer.
-  April 18, 2016.
-  LGPL 3.0
-*/
+/**						IMSAS, Minerva Vargas
+ *
+ ******************************************************************************
+ * @file           : Multiplexer.h
+ * @brief          : Library for using the CD74HC4067 multiplexer.
+ ******************************************************************************
+ */
 
 #ifndef CD74HC4067_h
 #define CD74HC4067_h

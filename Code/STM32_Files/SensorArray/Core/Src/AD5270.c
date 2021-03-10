@@ -1,45 +1,149 @@
-/**
+/**							Digital Potentiometer
 *   @file     AD5270.c
 *   @brief    Source file for AD5270 rheostat
-*   @author   Analog Devices Inc.
-*
-********************************************************************************
-* Copyright 2016(c) Analog Devices, Inc.
-*
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions are met:
-*  - Redistributions of source code must retain the above copyright
-*    notice, this list of conditions and the following disclaimer.
-*  - Redistributions in binary form must reproduce the above copyright
-*    notice, this list of conditions and the following disclaimer in
-*    the documentation and/or other materials provided with the
-*    distribution.
-*  - Neither the name of Analog Devices, Inc. nor the names of its
-*    contributors may be used to endorse or promote products derived
-*    from this software without specific prior written permission.
-*  - The use of this software may or may not infringe the patent rights
-*    of one or more patent holders.  This license does not release you
-*    from the requirement that you obtain separate licenses from these
-*    patent holders to use this software.
-*  - Use of the software either in source or binary form, must be run
-*    on or directly connected to an Analog Devices Inc. component.
-*
-* THIS SOFTWARE IS PROVIDED BY ANALOG DEVICES "AS IS" AND ANY EXPRESS OR
-* IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, NON-INFRINGEMENT,
-* MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-* IN NO EVENT SHALL ANALOG DEVICES BE LIABLE FOR ANY DIRECT, INDIRECT,
-* INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-* LIMITED TO, INTELLECTUAL PROPERTY RIGHTS, PROCUREMENT OF SUBSTITUTE GOODS OR
-* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-* CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-* OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-* OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*   @author   Minerva Vargas
 *
 ********************************************************************************/
 #include "AD5270.h"
-#include "main.h"
+#include "usb_device.h"
+
+extern UART_HandleTypeDef huart1;
+
+////////////////////////////////// Digital Potentiometer AD5270 /////////////////////////////////
+/*
+   Brief SPI initialization. Sends {0x1C, 0x03} to start communication
+   return none
+*/
+void Poti_SPI_Init(SPI_HandleTypeDef *hspi1)
+{
+	uint8_t SPI_Data[2] = {0x1C, 0x03};
+
+	HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_RESET); // Poti A
+	HAL_SPI_Transmit(hspi1, (uint8_t *)SPI_Data, 2, HAL_MAX_DELAY);
+	HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_SET);
+	HAL_Delay(1);
+	HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_RESET); // Poti B
+	HAL_SPI_Transmit(hspi1, (uint8_t *)SPI_Data, 2, HAL_MAX_DELAY);
+	HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_SET);
+	HAL_Delay(200);
+
+}
+/*
+   Sets a given resistance value for the potentiometer_
+    - resistance: Value between 0 and 20,000, in Ohms, increase in steps of 20
+    - poti: selects between potentiometer 'A' and 'B'
+ */
+uint16_t Poti_Set_RDAC(uint16_t resistance, unsigned char poti, SPI_HandleTypeDef *hspi1)
+{
+	// Sets new resistance value to specified AD5270 poti (A or B)
+	uint16_t RDAC_val = AD5270_CalcRDAC(resistance);
+	uint8_t RDAC[2];
+
+	//RDAC_Value = (float)((RDAC_val * MAX_RESISTANCE) / 1024.0); // inverse operation to get actual resistance in the RDAC
+
+	RDAC[1] = RDAC_val & 0xff;
+	RDAC[0] = (((RDAC_val >> 8) & MASK_RDAC) | WRITE_RDAC);
+
+	if(poti == 'A'){			// Select Poti A or B
+		HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_RESET);
+		HAL_SPI_Transmit(hspi1, (uint8_t *)RDAC, 2, HAL_MAX_DELAY);
+		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_SET);}
+	else{
+		HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_RESET);
+		HAL_SPI_Transmit(hspi1, (uint8_t *)RDAC, 2, HAL_MAX_DELAY);
+		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOA, SPI1_CS_Pin, GPIO_PIN_SET);}
+
+	HAL_Delay(1);
+
+	return (uint16_t)resistance;
+}
+
+/***************************************************************************
+ * @brief Writes data to SPI.
+ *
+ * @param data - Write data buffer:
+ *               - first byte is the chip select number;
+ *               - from the second byte onwards are located data bytes to write.
+ * @param bytesNumber - Number of bytes to write.
+ * @param poti - Select potentiometer A or B.
+ *
+ * @return Number of written bytes.
+ *******************************************************************************/
+void Poti_SPI_Write(unsigned char* data, unsigned char bytesNumber, unsigned char poti)
+{
+	uint8_t count = 0;
+	int len = 1; // strlen(data[count]), length of 1 char
+
+	if(poti == 'A')			// Select Poti A or B
+
+		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_RESET);
+	else
+		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_RESET);
+
+	for(count = 0;count < bytesNumber;count++)// write instruction
+	{
+		HAL_UART_Transmit(&huart1, &data[count], len, 20);
+	}
+
+	if(poti == 'A')			// Select Poti A or B
+		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_SET);
+	else
+		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_SET);
+
+
+}
+/***************************************************************************//**
+ * @brief Reads data from SPI.
+ *
+ * @param data - As an input parameter, data represents the write buffer:
+ *               - first byte is the chip select number;
+ *               - from the second byte onwards are located data bytes to write.
+ *               As an output parameter, data represents the read buffer:
+ *               - from the first byte onwards are located the read data bytes.
+ * @param bytesNumber - Number of bytes to write.
+ *
+ * @return Number of written bytes.
+ *******************************************************************************/
+void Poti_SPI_Read(unsigned char* data, unsigned char bytesNumber, unsigned char poti)
+{
+	unsigned char writeData[4]  = {0, 0, 0, 0};
+	unsigned char count          = 0;
+	int len = 1; // strlen(writeData[0]), length of 1 char
+
+	for(count = 0;count <= bytesNumber;count++)
+	{
+		if(count == 0)
+			writeData[count] = data[count];
+		else
+			writeData[count] = 0xAA;    /* dummy value */
+	}
+
+	if(poti == 'A')			// Select Poti A or B
+		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_RESET);
+	else
+		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_RESET);
+
+	HAL_UART_Transmit(&huart1, &writeData[0], len, 20);
+
+
+	for(count = 1; count < bytesNumber + 1;count++) {
+		data[count - 1] = HAL_UART_Transmit(&huart1, &writeData[count], len, 20);
+	}
+
+	if(poti == 'A')			// Select Poti A or B
+		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_SET);
+	else
+		HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_SET);
+	//}
+}
 
 /**
  * @brief Compute for the nearest RDAC value from given resistance
@@ -56,193 +160,4 @@ uint16_t AD5270_CalcRDAC(uint16_t resistance)
    return ((uint16_t)( ( ((uint32_t) resistance << 10) / (uint32_t) MAX_RESISTANCE) -1));
 
 }
-/**
- * @brief sets a new value for the RDAC
- * @param resistance new value for the resistance
- * @return actual value of the resistance in the RDAC
-
-float AD5270_WriteRDAC(float resistance, unsigned char poti)
-{
-   float RDAC_Value;
-
-   uint16_t setValue;
-
-    uint16_t RDAC_val = AD5270_CalcRDAC(resistance);
-
-    RDAC_Value = (float)((RDAC_val * MAX_RESISTANCE) / 1024.0); // inverse operation to get actual resistance in the RDAC
-
-    setValue = AD5270_ReadReg(READ_CTRL_REG, poti);
-    uint8_t SPI_Data[2] = {0x1C, 0x03};
-
-    if(strcmp(poti, 'A') ==1){			// Select Poti A or B
-        HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_RESET);
-        HAL_SPI_Transmit(&hspi1, RDAC_val, 2, HAL_MAX_DELAY);
-        HAL_GPIO_WritePin(GPIOB, RDAC_val, GPIO_PIN_SET);}
-    else{
-        HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_RESET);
-        HAL_SPI_Transmit(&hspi1, (uint8_t *)SPI_Data, 2, HAL_MAX_DELAY);
-        HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_SET);}
-
-
-    //AD5270_WriteReg(WRITE_CTRL_REG, (setValue | RDAC_WRITE_PROTECT), poti); // RDAC register write protect -  allow update of wiper position through digital interface
-    //AD5270_WriteReg(WRITE_RDAC, RDAC_val, poti); // write data to the RDAC register
-    //AD5270_WriteReg(WRITE_CTRL_REG, setValue, poti); // RDAC register write protect -  allow update of wiper position through digital interface
-
-    return RDAC_Value;
-}*/
-
-/**
- * Reads the RDAC register
- * @return RDAC resistor value
- */
-float AD5270_ReadRDAC(unsigned char poti)
-{
-    uint16_t RDAC_val;
-
-    RDAC_val = AD5270_ReadReg(READ_CTRL_REG, poti);
-    RDAC_val &= 0x03FF;
-
-    return( ((float)(RDAC_val) * MAX_RESISTANCE) / 1024.0);
-}
-
-/**
- *	@brief Puts the AD5270 SDO line in to Hi-Z mode
- *	@return none
- */
-void AD5270_Set_SDO_HiZ(unsigned char poti)
-{
-   uint8_t data1[2] = {HI_Zupper, HI_Zlower};
-   uint8_t data2[2] = {NO_OP, NO_OP};
-
-   if(strcmp(poti, 'A') ==1)	{		// Select Poti A or B
-      HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_RESET);
-   	  Poti_SPI_Write(data1, 2, poti);
-      Poti_SPI_Write(data1, 2, poti);
-      HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_SET);
-
-      HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_RESET);
-      Poti_SPI_Write(data2, 2, poti);
-      Poti_SPI_Write(data2, 2, poti);
-      HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_SET);
-   }
-   else {
- 	  HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_RESET);
- 	  Poti_SPI_Write(data1, 2, poti);
- 	  Poti_SPI_Write(data1, 2, poti);
- 	 HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIB_Pin, GPIO_PIN_RESET);
-
-     HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_RESET);
-     Poti_SPI_Write(data2, 2, poti);
-     Poti_SPI_Write(data2, 2, poti);
-     HAL_GPIO_WritePin(GPIOB, SPI1_CS_POTIA_Pin, GPIO_PIN_SET);}
-}
-
-
-
-uint16_t AD5270_ReadReg(uint8_t command, unsigned char poti)
-{
-
-   uint8_t data[2];
-   uint16_t result = 0;
-
-   data[0] = (command & 0x3C);
-
-   Poti_SPI_Read(data, 2, poti);
-
-   result = data[0];
-   result = (result << 8) | data[1];
-
-   return result;
-}
-/**
- *  Enables the 50TP memory programming
- */
-void AD5270_Enable_50TP_Programming(unsigned char poti)
-{
-    uint8_t regVal = (uint8_t)AD5270_ReadReg(READ_CTRL_REG, poti);
-    AD5270_WriteReg(WRITE_CTRL_REG, (regVal | PROGRAM_50TP_ENABLE), poti); // RDAC register write protect -  allow update of wiper position through digital interface
-}
-
-/**
- *  Stores current RDAC content to the 50TP memory
- */
-void AD5270_Store_50TP(unsigned char poti)
-{
-   AD5270_WriteReg(STORE_50TP, 0, poti);
-   HAL_Delay(WRITE_OPERATION_50TP_TIMEOUT);
-}
-
-/**
- * Disables the 50TP memory programming
- */
-void AD5270_Disable_50TP_Programming(unsigned char poti)
-{
-    uint8_t regVal = AD5270_ReadReg(READ_CTRL_REG, poti);
-    AD5270_WriteReg(WRITE_CTRL_REG, (regVal & (~PROGRAM_50TP_ENABLE)), poti);
-
-}
-
-/**
- * @brief Writes 16bit data to the AD5270 SPI interface
- * @param data to be written
- * @return data returned by the AD5270
- */
- void AD5270_WriteReg(uint8_t command, uint16_t value, unsigned char poti)
- {
-      uint8_t data[2];
-
-      data[0] = (command & 0x3C);
-      data[0] |= (uint8_t)((value & 0x0300) >> 8);
-
-      data[1] = (uint8_t)(value & 0x00FF);
-
-      Poti_SPI_Write(data,2, poti);
- }
-
-/**
- * Reads the last programmed value of the 50TP memory
- * @return last programmed value
- */
-uint8_t AD5270_Read_50TP_LastAddress(unsigned char poti)
-{
-    uint8_t ret_val;
-
-   AD5270_WriteReg(READ_50TP_ADDRESS,0, poti);
-   ret_val = AD5270_ReadReg(NO_OP, poti);
-
-   return ret_val;
-}
-
-/**
- * Reads the content of a 50TP memory address
- * @param address memory to be read
- * @return value stored in the 50TP address
- */
-uint16_t AD5270_Read_50TP_memory(uint8_t address, unsigned char poti)
-{
-    uint16_t ret_val;
-
-    AD5270_WriteReg(READ_50TP_CONTENTS, address, poti);
-    ret_val = AD5270_ReadReg(NO_OP, poti);
-
-    return ret_val;
-}
-
-/**
- * Resets the wiper register value to the data last written in the 50TP
- */
-void AD5270_ResetRDAC(unsigned char poti)
-{
-   AD5270_WriteReg(SW_RST, 0, poti);
-
-}
-
-/**
- * Changes the device mode, enabled or shutdown
- * @param mode - new mode of the device
- */
-void AD5270_ChangeMode(AD5270Modes_t mode,unsigned char poti)
-{
-
-   AD5270_WriteReg(SW_SHUTDOWN, (uint16_t)(mode), poti);
-}
+////////////////////////////////// END Digital Potentiometer /////////////////////////////////
