@@ -34,13 +34,17 @@ namespace WindowsFormsTest
         private string Sen_A, Sen_B;
         private string A_1, B_1, A_1_Val, B_1_Val;
         private string dataSend;
-        public Thread DataLog;
+
+        // Multiple Threading
+
 
         public Form1()
         {
             InitializeComponent();
+            CheckForIllegalCrossThreadCalls = false;
         }
 
+        
         private void Form1_Load(object sender, EventArgs e)
         {
             this.CenterToScreen();
@@ -49,8 +53,6 @@ namespace WindowsFormsTest
             ButtonStartRecording.Enabled = false;
             ButtonStopRecording.Enabled = false;
             ComboBoxBaudRate.SelectedIndex = 3;
-
-            CheckForIllegalCrossThreadCalls = false;
 
             for (var i = 0; i <= 30; i += 1)
             {
@@ -316,6 +318,8 @@ namespace WindowsFormsTest
                 SerialPort1.Open();
             }
             TimerSerial.Start();
+            TimerLoadLabels.Start();
+            //TimerLoadGraph.Start();
             ComboBoxPort.Enabled = false;
             label1.Enabled = false;
             ComboBoxBaudRate.Enabled = false;
@@ -479,6 +483,8 @@ namespace WindowsFormsTest
             ButtonDisconnect.Enabled = false;
             TimerSerial.Stop();
             TimerDataLogRecord.Stop();
+            TimerLoadGraph.Stop();
+            TimerLoadLabels.Stop();
             ButtonSaveToExcel.Enabled = true;
             ButtonSaveCSV.Enabled = true;
             ButtonStartRecording.Enabled = false;
@@ -504,7 +510,8 @@ namespace WindowsFormsTest
             ButtonSaveCSV.Enabled = false;
             //DataLog = new Thread(TimerDataLogRecord);
             TimerDataLogRecord.Start();
-            
+            TimerLoadGraph.Start();
+
         }
 
         private void ButtonStopRecording_Click(object sender, EventArgs e)
@@ -514,6 +521,7 @@ namespace WindowsFormsTest
             ButtonSaveToExcel.Enabled = true;
             ButtonSaveCSV.Enabled = true;
             TimerDataLogRecord.Stop();
+            TimerLoadGraph.Stop();
             PictureBoxRecordInd.Visible = true;
         }
 
@@ -1287,261 +1295,58 @@ namespace WindowsFormsTest
 
         private void TimerDataLogRecord_Tick(object sender, EventArgs e)
         {
-            string Sen1A_Log, Sen2A_Log, Sen3A_Log, Sen4A_Log, Sen5A_Log, Sen6A_Log, Sen7A_Log, Sen8A_Log, Sen9A_Log;
-            string Sen1B_Log, Sen2B_Log, Sen3B_Log, Sen4B_Log, Sen5B_Log, Sen6B_Log, Sen7B_Log, Sen8B_Log, Sen9B_Log;
-            string A_1_Log, B_1_Log;
+            //string Sen1A_Log, Sen2A_Log, Sen3A_Log, Sen4A_Log, Sen5A_Log, Sen6A_Log, Sen7A_Log, Sen8A_Log, Sen9A_Log;
+            //string Sen1B_Log, Sen2B_Log, Sen3B_Log, Sen4B_Log, Sen5B_Log, Sen6B_Log, Sen7B_Log, Sen8B_Log, Sen9B_Log;
+            //string A_1_Log, B_1_Log;
             DateTime DT = DateTime.Now;
 
-            Sen1A_Log = S1A_Val;
-            Sen2A_Log = S2A_Val;
-            Sen3A_Log = S3A_Val;
-            Sen4A_Log = S4A_Val;
-            Sen5A_Log = S5A_Val;
-            Sen6A_Log = S6A_Val;
-            Sen7A_Log = S7A_Val;
-            Sen8A_Log = S8A_Val;
-            Sen9A_Log = S9A_Val;
+            //Sen1A_Log = S1A_Val;
+            //Sen2A_Log = S2A_Val;
+            //Sen3A_Log = S3A_Val;
+            //Sen4A_Log = S4A_Val;
+            //Sen5A_Log = S5A_Val;
+            //Sen6A_Log = S6A_Val;
+            //Sen7A_Log = S7A_Val;
+            //Sen8A_Log = S8A_Val;
+            //Sen9A_Log = S9A_Val;
 
-            Sen1B_Log = S1B_Val;
-            Sen2B_Log = S2B_Val;
-            Sen3B_Log = S3B_Val;
-            Sen4B_Log = S4B_Val;
-            Sen5B_Log = S5B_Val;
-            Sen6B_Log = S6B_Val;
-            Sen7B_Log = S7B_Val;
-            Sen8B_Log = S8B_Val;
-            Sen9B_Log = S9B_Val;
+            //Sen1B_Log = S1B_Val;
+            //Sen2B_Log = S2B_Val;
+            //Sen3B_Log = S3B_Val;
+            //Sen4B_Log = S4B_Val;
+            //Sen5B_Log = S5B_Val;
+            //Sen6B_Log = S6B_Val;
+            //Sen7B_Log = S7B_Val;
+            //Sen8B_Log = S8B_Val;
+            //Sen9B_Log = S9B_Val;
 
-            A_1_Log = A_1_Val;
-            B_1_Log = B_1_Val;
+            //A_1_Log = A_1_Val;
+            //B_1_Log = B_1_Val;
 
             if (RadioButtonA.Checked)
             {
-                
-                dataGridView1.Rows.Add(new string[] { dataGridView1.RowCount.ToString(), Sen1A_Log, Sen2A_Log, Sen3A_Log, Sen4A_Log, Sen5A_Log, Sen6A_Log, Sen7A_Log, Sen8A_Log, Sen9A_Log, DT.ToString("hh.mm.ss.ffffff"), DT.ToString("dd-MM-yyyy") });
+                dataGridView1.Rows.Add(new string[] { dataGridView1.RowCount.ToString(), S1A_Val, S2A_Val, S3A_Val, S4A_Val, S5A_Val, S6A_Val, S7A_Val, S8A_Val, S9A_Val, DT.ToString("hh.mm.ss.ffffff"), DT.ToString("dd-MM-yyyy") });
                 this.dataGridView1.FirstDisplayedScrollingRowIndex = this.dataGridView1.RowCount - 1;
-
-                chart1.Series["A1"].Points.AddXY(DateTime.Now.ToString("hh.mm.ss.fff"), Sen1A_Log);
-                if (chart1.Series[0].Points.Count == Limit)
-                {
-                    chart1.Series[0].Points.RemoveAt(0);
-                }
-
-                chart1.Series["A2"].Points.AddY(Sen2A_Log);
-                if (chart1.Series[1].Points.Count == Limit)
-                {
-                    chart1.Series[1].Points.RemoveAt(0);
-                }
-
-                chart1.Series["A3"].Points.AddY(Sen3A_Log);
-                if (chart1.Series[2].Points.Count == Limit)
-                {
-                    chart1.Series[2].Points.RemoveAt(0);
-                }
-                chart1.Series["A4"].Points.AddY(Sen4A_Log);
-                if (chart1.Series[3].Points.Count == Limit)
-                {
-                    chart1.Series[3].Points.RemoveAt(0);
-                }
-                chart1.Series["A5"].Points.AddY(Sen5A_Log);
-                if (chart1.Series[4].Points.Count == Limit)
-                {
-                    chart1.Series[4].Points.RemoveAt(0);
-                }
-                chart1.Series["A6"].Points.AddY(Sen6A_Log);
-                if (chart1.Series[5].Points.Count == Limit)
-                {
-                    chart1.Series[5].Points.RemoveAt(0);
-                }
-                chart1.Series["A7"].Points.AddY(Sen7A_Log);
-                if (chart1.Series[6].Points.Count == Limit)
-                {
-                    chart1.Series[6].Points.RemoveAt(0);
-                }
-                chart1.Series["A8"].Points.AddY(Sen8A_Log);
-                if (chart1.Series[7].Points.Count == Limit)
-                {
-                    chart1.Series[7].Points.RemoveAt(0);
-                }
-                chart1.Series["A9"].Points.AddY(Sen9A_Log);
-                if (chart1.Series[8].Points.Count == Limit)
-                {
-                    chart1.Series[8].Points.RemoveAt(0);
-                }
             }
 
             else if (RadioButtonB.Checked)
             {
-                
-                dataGridView2.Rows.Add(new string[] { dataGridView2.RowCount.ToString(), Sen1B_Log, Sen2B_Log, Sen3B_Log, Sen4B_Log, Sen5B_Log, Sen6B_Log, Sen7B_Log, Sen8B_Log, Sen9B_Log, DT.ToString("hh.mm.ss.ffffff"), DT.ToString("dd-MM-yyyy") });
+                dataGridView2.Rows.Add(new string[] { dataGridView2.RowCount.ToString(), S1B_Val, S2B_Val, S3B_Val, S4B_Val, S5B_Val, S6B_Val, S7B_Val, S8B_Val, S9B_Val, DT.ToString("hh.mm.ss.ffffff"), DT.ToString("dd-MM-yyyy") });
                 this.dataGridView2.FirstDisplayedScrollingRowIndex = this.dataGridView2.RowCount - 1;
-
-                chart2.Series["B1"].Points.AddXY(DateTime.Now.ToString("hh.mm.ss.fff"), Sen1B_Log);
-                if (chart2.Series[0].Points.Count == Limit)
-                {
-                    chart2.Series[0].Points.RemoveAt(0);
-                }
-
-                chart2.Series["B2"].Points.AddY(Sen2B_Log);
-                if (chart2.Series[1].Points.Count == Limit)
-                {
-                    chart2.Series[1].Points.RemoveAt(0);
-                }
-
-                chart2.Series["B3"].Points.AddY(Sen3B_Log);
-                if (chart2.Series[2].Points.Count == Limit)
-                {
-                    chart2.Series[2].Points.RemoveAt(0);
-                }
-                chart2.Series["B4"].Points.AddY(Sen4B_Log);
-                if (chart2.Series[3].Points.Count == Limit)
-                {
-                    chart2.Series[3].Points.RemoveAt(0);
-                }
-                chart2.Series["B5"].Points.AddY(Sen5B_Log);
-                if (chart2.Series[4].Points.Count == Limit)
-                {
-                    chart2.Series[4].Points.RemoveAt(0);
-                }
-                chart2.Series["B6"].Points.AddY(Sen6B_Log);
-                if (chart2.Series[5].Points.Count == Limit)
-                {
-                    chart2.Series[5].Points.RemoveAt(0);
-                }
-                chart2.Series["B7"].Points.AddY(Sen7B_Log);
-                if (chart2.Series[6].Points.Count == Limit)
-                {
-                    chart2.Series[6].Points.RemoveAt(0);
-                }
-                chart2.Series["B8"].Points.AddY(Sen8B_Log);
-                if (chart2.Series[7].Points.Count == Limit)
-                {
-                    chart2.Series[7].Points.RemoveAt(0);
-                }
-                chart2.Series["B9"].Points.AddY(Sen9B_Log);
-                if (chart2.Series[8].Points.Count == Limit)
-                {
-                    chart2.Series[8].Points.RemoveAt(0);
-                }
             }
 
             else if (RadioButtonAB.Checked)
             {
-                
-                dataGridView3.Rows.Add(new string[] { dataGridView3.RowCount.ToString(), Sen1A_Log, Sen2A_Log, Sen3A_Log, Sen4A_Log, Sen5A_Log, Sen6A_Log, Sen7A_Log, Sen8A_Log, Sen9A_Log, Sen1B_Log, Sen2B_Log, Sen3B_Log, Sen4B_Log, Sen5B_Log, Sen6B_Log, Sen7B_Log, Sen8B_Log, Sen9B_Log, DT.ToString("hh.mm.ss.ffffff") });
+                dataGridView3.Rows.Add(new string[] { dataGridView3.RowCount.ToString(), S1A_Val, S2A_Val, S3A_Val, S4A_Val, S5A_Val, S6A_Val, S7A_Val, S8A_Val, S9A_Val, S1B_Val, S2B_Val, S3B_Val, S4B_Val, S5B_Val, S6B_Val, S7B_Val, S8B_Val, S9B_Val, DT.ToString("hh.mm.ss.ffffff") });
                 this.dataGridView3.FirstDisplayedScrollingRowIndex = this.dataGridView3.RowCount - 1;
-
-                chart3.Series["A1"].Points.AddXY(DateTime.Now.ToString("hh.mm.ss.fff"), Sen1A_Log);
-                if (chart3.Series[0].Points.Count == Limit)
-                {
-                    chart3.Series[0].Points.RemoveAt(0);
-                }
-
-                chart3.Series["A2"].Points.AddY(Sen2A_Log);
-                if (chart3.Series[1].Points.Count == Limit)
-                {
-                    chart3.Series[1].Points.RemoveAt(0);
-                }
-
-                chart3.Series["A3"].Points.AddY(Sen3A_Log);
-                if (chart3.Series[2].Points.Count == Limit)
-                {
-                    chart3.Series[2].Points.RemoveAt(0);
-                }
-                chart3.Series["A4"].Points.AddY(Sen4A_Log);
-                if (chart3.Series[3].Points.Count == Limit)
-                {
-                    chart3.Series[3].Points.RemoveAt(0);
-                }
-                chart3.Series["A5"].Points.AddY(Sen5A_Log);
-                if (chart3.Series[4].Points.Count == Limit)
-                {
-                    chart3.Series[4].Points.RemoveAt(0);
-                }
-                chart3.Series["A6"].Points.AddY(Sen6A_Log);
-                if (chart3.Series[5].Points.Count == Limit)
-                {
-                    chart3.Series[5].Points.RemoveAt(0);
-                }
-                chart3.Series["A7"].Points.AddY(Sen7A_Log);
-                if (chart3.Series[6].Points.Count == Limit)
-                {
-                    chart3.Series[6].Points.RemoveAt(0);
-                }
-                chart3.Series["A8"].Points.AddY(Sen8A_Log);
-                if (chart3.Series[7].Points.Count == Limit)
-                {
-                    chart3.Series[7].Points.RemoveAt(0);
-                }
-                chart3.Series["A9"].Points.AddY(Sen9A_Log);
-                if (chart3.Series[8].Points.Count == Limit)
-                {
-                    chart3.Series[8].Points.RemoveAt(0);
-                }
-                chart3.Series["B1"].Points.AddY(Sen1B_Log);
-                if (chart3.Series[9].Points.Count == Limit)
-                {
-                    chart3.Series[9].Points.RemoveAt(0);
-                }
-                chart3.Series["B2"].Points.AddY(Sen2B_Log);
-                if (chart3.Series[10].Points.Count == Limit)
-                {
-                    chart3.Series[10].Points.RemoveAt(0);
-                }
-
-                chart3.Series["B3"].Points.AddY(Sen3B_Log);
-                if (chart3.Series[11].Points.Count == Limit)
-                {
-                    chart3.Series[11].Points.RemoveAt(0);
-                }
-                chart3.Series["B4"].Points.AddY(Sen4B_Log);
-                if (chart3.Series[12].Points.Count == Limit)
-                {
-                    chart3.Series[12].Points.RemoveAt(0);
-                }
-                chart3.Series["B5"].Points.AddY(Sen5B_Log);
-                if (chart3.Series[13].Points.Count == Limit)
-                {
-                    chart3.Series[13].Points.RemoveAt(0);
-                }
-                chart3.Series["B6"].Points.AddY(Sen6B_Log);
-                if (chart3.Series[14].Points.Count == Limit)
-                {
-                    chart3.Series[14].Points.RemoveAt(0);
-                }
-                chart3.Series["B7"].Points.AddY(Sen7B_Log);
-                if (chart3.Series[15].Points.Count == Limit)
-                {
-                    chart3.Series[15].Points.RemoveAt(0);
-                }
-                chart3.Series["B8"].Points.AddY(Sen8B_Log);
-                if (chart3.Series[16].Points.Count == Limit)
-                {
-                    chart3.Series[16].Points.RemoveAt(0);
-                }
-                chart3.Series["B9"].Points.AddY(Sen9B_Log);
-                if (chart3.Series[17].Points.Count == Limit)
-                {
-                    chart3.Series[17].Points.RemoveAt(0);
-                }
             }
+
             else
             {
-                
-                dataGridView4.Rows.Add(new string[] { dataGridView4.RowCount.ToString(), A_1_Log, B_1_Log, DT.ToString("hh.mm.ss.ffffff"), DT.ToString("dd-MM-yyyy") });
+                dataGridView4.Rows.Add(new string[] { dataGridView4.RowCount.ToString(), A_1_Val, B_1_Val, DT.ToString("hh.mm.ss.ffffff"), DT.ToString("dd-MM-yyyy") });
                 this.dataGridView4.FirstDisplayedScrollingRowIndex = this.dataGridView4.RowCount - 1;
+            }
 
-                chart4.Series["A1"].Points.AddXY(DateTime.Now.ToString("hh.mm.ss.fff"), A_1_Log);
-                if (chart4.Series[0].Points.Count == Limit)
-                {
-                    chart4.Series[0].Points.RemoveAt(0);
-                }
-                chart4.Series["B1"].Points.AddY(B_1_Log);
-                if (chart4.Series[1].Points.Count == Limit)
-                {
-                    chart4.Series[1].Points.RemoveAt(0);
-                }
-            } 
 
             if (PictureBoxRecordInd.Visible == true)
             {
@@ -1551,6 +1356,252 @@ namespace WindowsFormsTest
             {
                 PictureBoxRecordInd.Visible = true;
             }
+        }
+
+        private void TimerLoadGraph_Tick(object sender, EventArgs e)
+        {
+            //string Sen1A_Log, Sen2A_Log, Sen3A_Log, Sen4A_Log, Sen5A_Log, Sen6A_Log, Sen7A_Log, Sen8A_Log, Sen9A_Log;
+            //string Sen1B_Log, Sen2B_Log, Sen3B_Log, Sen4B_Log, Sen5B_Log, Sen6B_Log, Sen7B_Log, Sen8B_Log, Sen9B_Log;
+            //string A_1_Log, B_1_Log;
+            DateTime DT = DateTime.Now;
+
+            //Sen1A_Log = S1A_Val;
+            //Sen2A_Log = S2A_Val;
+            //Sen3A_Log = S3A_Val;
+            //Sen4A_Log = S4A_Val;
+            //Sen5A_Log = S5A_Val;
+            //Sen6A_Log = S6A_Val;
+            //Sen7A_Log = S7A_Val;
+            //Sen8A_Log = S8A_Val;
+            //Sen9A_Log = S9A_Val;
+
+            //Sen1B_Log = S1B_Val;
+            //Sen2B_Log = S2B_Val;
+            //Sen3B_Log = S3B_Val;
+            //Sen4B_Log = S4B_Val;
+            //Sen5B_Log = S5B_Val;
+            //Sen6B_Log = S6B_Val;
+            //Sen7B_Log = S7B_Val;
+            //Sen8B_Log = S8B_Val;
+            //Sen9B_Log = S9B_Val;
+
+            //A_1_Log = A_1_Val;
+            //B_1_Log = B_1_Val;
+
+            if (RadioButtonA.Checked)
+            {
+                chart1.Series["A1"].Points.AddXY(DateTime.Now.ToString("hh.mm.ss.fff"), S1A_Val);
+                if (chart1.Series[0].Points.Count == Limit)
+                {
+                    chart1.Series[0].Points.RemoveAt(0);
+                }
+
+                chart1.Series["A2"].Points.AddY(S2A_Val);
+                if (chart1.Series[1].Points.Count == Limit)
+                {
+                    chart1.Series[1].Points.RemoveAt(0);
+                }
+
+                chart1.Series["A3"].Points.AddY(S3A_Val);
+                if (chart1.Series[2].Points.Count == Limit)
+                {
+                    chart1.Series[2].Points.RemoveAt(0);
+                }
+                chart1.Series["A4"].Points.AddY(S4A_Val);
+                if (chart1.Series[3].Points.Count == Limit)
+                {
+                    chart1.Series[3].Points.RemoveAt(0);
+                }
+                chart1.Series["A5"].Points.AddY(S5A_Val);
+                if (chart1.Series[4].Points.Count == Limit)
+                {
+                    chart1.Series[4].Points.RemoveAt(0);
+                }
+                chart1.Series["A6"].Points.AddY(S6A_Val);
+                if (chart1.Series[5].Points.Count == Limit)
+                {
+                    chart1.Series[5].Points.RemoveAt(0);
+                }
+                chart1.Series["A7"].Points.AddY(S7A_Val);
+                if (chart1.Series[6].Points.Count == Limit)
+                {
+                    chart1.Series[6].Points.RemoveAt(0);
+                }
+                chart1.Series["A8"].Points.AddY(S8A_Val);
+                if (chart1.Series[7].Points.Count == Limit)
+                {
+                    chart1.Series[7].Points.RemoveAt(0);
+                }
+                chart1.Series["A9"].Points.AddY(S9A_Val);
+                if (chart1.Series[8].Points.Count == Limit)
+                {
+                    chart1.Series[8].Points.RemoveAt(0);
+                }
+            }
+
+            else if (RadioButtonB.Checked)
+            {
+                chart2.Series["B1"].Points.AddXY(DateTime.Now.ToString("hh.mm.ss.fff"), S1B_Val);
+                if (chart2.Series[0].Points.Count == Limit)
+                {
+                    chart2.Series[0].Points.RemoveAt(0);
+                }
+
+                chart2.Series["B2"].Points.AddY(S2B_Val);
+                if (chart2.Series[1].Points.Count == Limit)
+                {
+                    chart2.Series[1].Points.RemoveAt(0);
+                }
+
+                chart2.Series["B3"].Points.AddY(S3B_Val);
+                if (chart2.Series[2].Points.Count == Limit)
+                {
+                    chart2.Series[2].Points.RemoveAt(0);
+                }
+                chart2.Series["B4"].Points.AddY(S4B_Val);
+                if (chart2.Series[3].Points.Count == Limit)
+                {
+                    chart2.Series[3].Points.RemoveAt(0);
+                }
+                chart2.Series["B5"].Points.AddY(S5B_Val);
+                if (chart2.Series[4].Points.Count == Limit)
+                {
+                    chart2.Series[4].Points.RemoveAt(0);
+                }
+                chart2.Series["B6"].Points.AddY(S6B_Val);
+                if (chart2.Series[5].Points.Count == Limit)
+                {
+                    chart2.Series[5].Points.RemoveAt(0);
+                }
+                chart2.Series["B7"].Points.AddY(S7B_Val);
+                if (chart2.Series[6].Points.Count == Limit)
+                {
+                    chart2.Series[6].Points.RemoveAt(0);
+                }
+                chart2.Series["B8"].Points.AddY(S8B_Val);
+                if (chart2.Series[7].Points.Count == Limit)
+                {
+                    chart2.Series[7].Points.RemoveAt(0);
+                }
+                chart2.Series["B9"].Points.AddY(S9B_Val);
+                if (chart2.Series[8].Points.Count == Limit)
+                {
+                    chart2.Series[8].Points.RemoveAt(0);
+                }
+            }
+
+            else if (RadioButtonAB.Checked)
+            {
+                chart3.Series["A1"].Points.AddXY(DateTime.Now.ToString("hh.mm.ss.fff"), S1A_Val);
+                if (chart3.Series[0].Points.Count == Limit)
+                {
+                    chart3.Series[0].Points.RemoveAt(0);
+                }
+
+                chart3.Series["A2"].Points.AddY(S2A_Val);
+                if (chart3.Series[1].Points.Count == Limit)
+                {
+                    chart3.Series[1].Points.RemoveAt(0);
+                }
+
+                chart3.Series["A3"].Points.AddY(S3A_Val);
+                if (chart3.Series[2].Points.Count == Limit)
+                {
+                    chart3.Series[2].Points.RemoveAt(0);
+                }
+                chart3.Series["A4"].Points.AddY(S4A_Val);
+                if (chart3.Series[3].Points.Count == Limit)
+                {
+                    chart3.Series[3].Points.RemoveAt(0);
+                }
+                chart3.Series["A5"].Points.AddY(S5A_Val);
+                if (chart3.Series[4].Points.Count == Limit)
+                {
+                    chart3.Series[4].Points.RemoveAt(0);
+                }
+                chart3.Series["A6"].Points.AddY(S6A_Val);
+                if (chart3.Series[5].Points.Count == Limit)
+                {
+                    chart3.Series[5].Points.RemoveAt(0);
+                }
+                chart3.Series["A7"].Points.AddY(S7A_Val);
+                if (chart3.Series[6].Points.Count == Limit)
+                {
+                    chart3.Series[6].Points.RemoveAt(0);
+                }
+                chart3.Series["A8"].Points.AddY(S8A_Val);
+                if (chart3.Series[7].Points.Count == Limit)
+                {
+                    chart3.Series[7].Points.RemoveAt(0);
+                }
+                chart3.Series["A9"].Points.AddY(S9A_Val);
+                if (chart3.Series[8].Points.Count == Limit)
+                {
+                    chart3.Series[8].Points.RemoveAt(0);
+                }
+                chart3.Series["B1"].Points.AddY(S1B_Val);
+                if (chart3.Series[9].Points.Count == Limit)
+                {
+                    chart3.Series[9].Points.RemoveAt(0);
+                }
+                chart3.Series["B2"].Points.AddY(S2B_Val);
+                if (chart3.Series[10].Points.Count == Limit)
+                {
+                    chart3.Series[10].Points.RemoveAt(0);
+                }
+
+                chart3.Series["B3"].Points.AddY(S3B_Val);
+                if (chart3.Series[11].Points.Count == Limit)
+                {
+                    chart3.Series[11].Points.RemoveAt(0);
+                }
+                chart3.Series["B4"].Points.AddY(S4B_Val);
+                if (chart3.Series[12].Points.Count == Limit)
+                {
+                    chart3.Series[12].Points.RemoveAt(0);
+                }
+                chart3.Series["B5"].Points.AddY(S5B_Val);
+                if (chart3.Series[13].Points.Count == Limit)
+                {
+                    chart3.Series[13].Points.RemoveAt(0);
+                }
+                chart3.Series["B6"].Points.AddY(S6B_Val);
+                if (chart3.Series[14].Points.Count == Limit)
+                {
+                    chart3.Series[14].Points.RemoveAt(0);
+                }
+                chart3.Series["B7"].Points.AddY(S7B_Val);
+                if (chart3.Series[15].Points.Count == Limit)
+                {
+                    chart3.Series[15].Points.RemoveAt(0);
+                }
+                chart3.Series["B8"].Points.AddY(S8B_Val);
+                if (chart3.Series[16].Points.Count == Limit)
+                {
+                    chart3.Series[16].Points.RemoveAt(0);
+                }
+                chart3.Series["B9"].Points.AddY(S9B_Val);
+                if (chart3.Series[17].Points.Count == Limit)
+                {
+                    chart3.Series[17].Points.RemoveAt(0);
+                }
+
+            }
+
+            else
+            {
+                chart4.Series["A1"].Points.AddXY(DateTime.Now.ToString("hh.mm.ss.fff"), A_1_Val);
+                if (chart4.Series[0].Points.Count == Limit)
+                {
+                    chart4.Series[0].Points.RemoveAt(0);
+                }
+                chart4.Series["B1"].Points.AddY(B_1_Val);
+                if (chart4.Series[1].Points.Count == Limit)
+                {
+                    chart4.Series[1].Points.RemoveAt(0);
+                }
+            }
+
         }
         private void TimerSerial_Tick(object sender, EventArgs e)
         {
@@ -1562,7 +1613,7 @@ namespace WindowsFormsTest
                     string StrSerialIn = SerialPort1.ReadExisting();
                     string StrSerialInRam;
 
-                    System.Windows.Forms.TextBox TB = new System.Windows.Forms.TextBox();
+                    System.Windows.Forms.RichTextBox TB = new System.Windows.Forms.RichTextBox();
                     TB.Multiline = true;
                     TB.Text = StrSerialIn;
 
@@ -1638,6 +1689,7 @@ namespace WindowsFormsTest
                     }
                     B_1 = "";
                 }
+                
                 if (PictureBoxConnectionInd.Visible == true)
                 {
                     PictureBoxConnectionInd.Visible = false;
@@ -1646,62 +1698,67 @@ namespace WindowsFormsTest
                 {
                     PictureBoxConnectionInd.Visible = true;
                 }
-                if (RadioButtonA.Checked)
-                {
-                    LabelSensor1.Text = "A1 = " + S1A_Val;
-                    LabelSensor2.Text = "A2 = " + S2A_Val;
-                    LabelSensor3.Text = "A3 = " + S3A_Val;
-                    LabelSensor4.Text = "A4 = " + S4A_Val;
-                    LabelSensor5.Text = "A4 = " + S5A_Val;
-                    LabelSensor6.Text = "A6 = " + S6A_Val;
-                    LabelSensor7.Text = "A7 = " + S7A_Val;
-                    LabelSensor8.Text = "A8 = " + S8A_Val;
-                    LabelSensor9.Text = "A9 = " + S9A_Val;
-                }
-                else if (RadioButtonB.Checked)
-                {
-                    LabelSensor1.Text = "B1 = " + S1B_Val;
-                    LabelSensor2.Text = "B2 = " + S2B_Val;
-                    LabelSensor3.Text = "B3 = " + S3B_Val;
-                    LabelSensor4.Text = "B4 = " + S4B_Val;
-                    LabelSensor5.Text = "B5 = " + S5B_Val;
-                    LabelSensor6.Text = "B6 = " + S6B_Val;
-                    LabelSensor7.Text = "B7 = " + S7B_Val;
-                    LabelSensor8.Text = "B8 = " + S8B_Val;
-                    LabelSensor9.Text = "B9 = " + S9B_Val;
-                }
-                else if (RadioButtonAB.Checked)
-                {
-                    LabelSensor10.Text = "A1 = " + S1A_Val;
-                    LabelSensor11.Text = "A2 = " + S2A_Val;
-                    LabelSensor12.Text = "A3 = " + S3A_Val;
-                    LabelSensor13.Text = "A4 = " + S4A_Val;
-                    LabelSensor14.Text = "A4 = " + S5A_Val;
-                    LabelSensor15.Text = "A6 = " + S6A_Val;
-                    LabelSensor16.Text = "A7 = " + S7A_Val;
-                    LabelSensor17.Text = "A8 = " + S8A_Val;
-                    LabelSensor18.Text = "A9 = " + S9A_Val;
-                    LabelSensor19.Text = "B1 = " + S1B_Val;
-                    LabelSensor20.Text = "B2 = " + S2B_Val;
-                    LabelSensor21.Text = "B3 = " + S3B_Val;
-                    LabelSensor22.Text = "B4 = " + S4B_Val;
-                    LabelSensor23.Text = "B5 = " + S5B_Val;
-                    LabelSensor24.Text = "B6 = " + S6B_Val;
-                    LabelSensor25.Text = "B7 = " + S7B_Val;
-                    LabelSensor26.Text = "B8 = " + S8B_Val;
-                    LabelSensor27.Text = "B9 = " + S9B_Val;
-                }
-                else
-                {
-                    LabelSensor1.Text = "A1 = " + A_1_Val;
-                    LabelSensor2.Text = "B1 = " + B_1_Val;
-                }
+                
             }
             catch (Exception ex)
             {
                 
             }
-        }  
+        }
+        private void TimerLoadLabels_Tick(object sender, EventArgs e)
+        {
+            if (RadioButtonA.Checked)
+            {
+                LabelSensor1.Text = "A1 = " + S1A_Val;
+                LabelSensor2.Text = "A2 = " + S2A_Val;
+                LabelSensor3.Text = "A3 = " + S3A_Val;
+                LabelSensor4.Text = "A4 = " + S4A_Val;
+                LabelSensor5.Text = "A4 = " + S5A_Val;
+                LabelSensor6.Text = "A6 = " + S6A_Val;
+                LabelSensor7.Text = "A7 = " + S7A_Val;
+                LabelSensor8.Text = "A8 = " + S8A_Val;
+                LabelSensor9.Text = "A9 = " + S9A_Val;
+            }
+            else if (RadioButtonB.Checked)
+            {
+                LabelSensor1.Text = "B1 = " + S1B_Val;
+                LabelSensor2.Text = "B2 = " + S2B_Val;
+                LabelSensor3.Text = "B3 = " + S3B_Val;
+                LabelSensor4.Text = "B4 = " + S4B_Val;
+                LabelSensor5.Text = "B5 = " + S5B_Val;
+                LabelSensor6.Text = "B6 = " + S6B_Val;
+                LabelSensor7.Text = "B7 = " + S7B_Val;
+                LabelSensor8.Text = "B8 = " + S8B_Val;
+                LabelSensor9.Text = "B9 = " + S9B_Val;
+            }
+            else if (RadioButtonAB.Checked)
+            {
+                LabelSensor10.Text = "A1 = " + S1A_Val;
+                LabelSensor11.Text = "A2 = " + S2A_Val;
+                LabelSensor12.Text = "A3 = " + S3A_Val;
+                LabelSensor13.Text = "A4 = " + S4A_Val;
+                LabelSensor14.Text = "A4 = " + S5A_Val;
+                LabelSensor15.Text = "A6 = " + S6A_Val;
+                LabelSensor16.Text = "A7 = " + S7A_Val;
+                LabelSensor17.Text = "A8 = " + S8A_Val;
+                LabelSensor18.Text = "A9 = " + S9A_Val;
+                LabelSensor19.Text = "B1 = " + S1B_Val;
+                LabelSensor20.Text = "B2 = " + S2B_Val;
+                LabelSensor21.Text = "B3 = " + S3B_Val;
+                LabelSensor22.Text = "B4 = " + S4B_Val;
+                LabelSensor23.Text = "B5 = " + S5B_Val;
+                LabelSensor24.Text = "B6 = " + S6B_Val;
+                LabelSensor25.Text = "B7 = " + S7B_Val;
+                LabelSensor26.Text = "B8 = " + S8B_Val;
+                LabelSensor27.Text = "B9 = " + S9B_Val;
+            }
+            else
+            {
+                LabelSensor1.Text = "A1 = " + A_1_Val;
+                LabelSensor2.Text = "B1 = " + B_1_Val;
+            }
+        }
+
 
     }
 }

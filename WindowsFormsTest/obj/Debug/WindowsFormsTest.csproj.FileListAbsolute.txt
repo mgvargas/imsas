@@ -1,4 +1,3 @@
-D:\IMSAS_GUI\NewTest\WindowsFormsTest\obj\Debug\WindowsFormsTest.csprojAssemblyReference.cache
 D:\IMSAS_GUI\NewTest\WindowsFormsTest\obj\Debug\WindowsFormsTest.csproj.ResolveComReference.cache
 D:\IMSAS_GUI\NewTest\WindowsFormsTest\obj\Debug\WindowsFormsTest.Form1.resources
 D:\IMSAS_GUI\NewTest\WindowsFormsTest\obj\Debug\WindowsFormsTest.Properties.Resources.resources
@@ -9,3 +8,4 @@ D:\IMSAS_GUI\NewTest\WindowsFormsTest\bin\Debug\WindowsFormsTest.exe
 D:\IMSAS_GUI\NewTest\WindowsFormsTest\bin\Debug\WindowsFormsTest.pdb
 D:\IMSAS_GUI\NewTest\WindowsFormsTest\obj\Debug\WindowsFormsTest.exe
 D:\IMSAS_GUI\NewTest\WindowsFormsTest\obj\Debug\WindowsFormsTest.pdb
+D:\IMSAS_GUI\NewTest\WindowsFormsTest\obj\Debug\WindowsFormsTest.csproj.AssemblyReference.cache
