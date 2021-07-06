@@ -74,7 +74,7 @@ void calibrate_potis(SPI_HandleTypeDef *hspi1){
 
 int balance_one_channel(unsigned char channel, SPI_HandleTypeDef *hspi1){
 	float Vref= 1.65;
-	int poti_value = 10000, n;
+	int poti_value = 10000;
 	uint8_t *raw_ADC;
 	float value_ADC;
 	char *usb_msg = malloc(20);
