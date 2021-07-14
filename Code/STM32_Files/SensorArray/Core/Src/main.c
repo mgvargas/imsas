@@ -651,16 +651,20 @@ void read_single_sensor(){
 
 
 		if ((HAL_GPIO_ReadPin(GPIOC, Switch_Mode_Pin)) != 1){
-			break;
+			break; }
 
-		// Check if a new command came over USB
+		// Check if calibration button was pressed
+		if ((HAL_GPIO_ReadPin(GPIOC, PushButton_Calibration_Pin)) != 1){
+			calibrate_potis(&hspi1); }
+
+		// Check if a new command came over USB   PushButton_Calibration_Pin
 		if(usb_data.new_data == 1)
 		{
 			decode_command(&usb_data.data[0]);
 			usb_data_reset();
 		}
 
-		}
+
 	}
 }
 //////////////////////////////////  End Read: Array or single sensor mode ///////////////////

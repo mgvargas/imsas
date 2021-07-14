@@ -92,7 +92,7 @@ int balance_one_channel(unsigned char channel, SPI_HandleTypeDef *hspi1){
 	// --> increase poti value (increase voltage) to balance the bridge
 	if (value_ADC < Vref)
 	{
-		while (value_ADC <= (Vref+.015)) // +- 15mV
+		while (value_ADC <= (Vref+.01)) // +- 10mV
 		{
 			// Increase POTI
 			if ((Vref - value_ADC) > 1.5)
@@ -132,7 +132,7 @@ int balance_one_channel(unsigned char channel, SPI_HandleTypeDef *hspi1){
 	// If the value is higher than the ref voltage, then the sensor output is lower than the poti output
 	// --> decrease poti value (decrease voltage) to balance the bridge
 	else{
-		while (value_ADC >= (Vref-.015)) // +- 15mV
+		while (value_ADC >= (Vref-.010)) // +- 15mV
 		{
 			// Decrease POTI
 			if ((value_ADC - Vref) > 1.5)
