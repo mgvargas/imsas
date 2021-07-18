@@ -550,6 +550,7 @@ namespace WindowsFormsTest
 
         private void ButtonStartRecording_Click(object sender, EventArgs e)
         {
+            /* This method is to start the GUI to record the incoming serial data.*/
             ButtonStartRecording.Enabled = false;
             ButtonStopRecording.Enabled = true;
             ButtonSaveToExcel.Enabled = false;
@@ -560,6 +561,7 @@ namespace WindowsFormsTest
 
         private void ButtonStopRecording_Click(object sender, EventArgs e)
         {
+            /* This method is to stop the GUI from recording the incoming serial data.*/
             ButtonStartRecording.Enabled = true;
             ButtonStopRecording.Enabled = false;
             ButtonSaveToExcel.Enabled = true;
@@ -887,6 +889,7 @@ namespace WindowsFormsTest
 
         private void ButtonSaveToExcel_Click(object sender, EventArgs e)
         {
+            /* This method is to save the recorded data from datagrid view in excel format.*/
             ButtonSaveToExcel.Height = 37;
             ButtonSaveToExcel.Text = "Please Wait...";
             ButtonSaveToExcel.Enabled = false;
@@ -1043,6 +1046,7 @@ namespace WindowsFormsTest
 
         private void ButtonSaveCSV_Click(object sender, EventArgs e)
         {
+            /* This method is to save the recorded data from datagrid view in CSV format.*/
             ButtonSaveCSV.Height = 37;
             ButtonSaveCSV.Text = "Please Wait...";
             ButtonSaveCSV.Enabled = false;
@@ -1307,6 +1311,7 @@ namespace WindowsFormsTest
 
         private void SendData_Click(object sender, EventArgs e)
         {
+            /* This method is to send data from GUI to Microcontroller.*/
             if (SerialPort1.IsOpen)
             {
                 dataSend = textBox1.Text;
@@ -1316,6 +1321,7 @@ namespace WindowsFormsTest
 
         private void ClearDataSend_Click(object sender, EventArgs e)
         {
+            /* This method is to clear the data received from microcontroller after the user has send the data through GUI.*/
             textBox2.Clear();
             textBox1.Clear();
         }
@@ -1338,28 +1344,34 @@ namespace WindowsFormsTest
         }
 
         private void TimerDataLogRecord_Tick(object sender, EventArgs e)
-        {  
+        {
+            /* This timer method stores the processed data in data grid view.*/
+
             DateTime DT = DateTime.Now;
             if (RadioButtonA.Checked)
             {
+                /* Stores the processed data in data grid view for sensor array A.*/
                 typeof(DataGridView).InvokeMember("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty, null, dataGridView1, new object[] { true });
                 dataGridView1.Rows.Add(new string[] { dataGridView1.RowCount.ToString(), S1A_Val, S2A_Val, S3A_Val, S4A_Val, S5A_Val, S6A_Val, S7A_Val, S8A_Val, S9A_Val, DT.ToString("HH:mm:ss.fff"), DT.ToString("dd-MM-yyyy") });
                 this.dataGridView1.FirstDisplayedScrollingRowIndex = this.dataGridView1.RowCount - 1;
             }
             else if (RadioButtonB.Checked)
             {
+                /* Stores the processed data in data grid view for sensor array B.*/   
                 typeof(DataGridView).InvokeMember("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty, null, dataGridView2, new object[] { true });
                 dataGridView2.Rows.Add(new string[] { dataGridView2.RowCount.ToString(), S1B_Val, S2B_Val, S3B_Val, S4B_Val, S5B_Val, S6B_Val, S7B_Val, S8B_Val, S9B_Val, DT.ToString("HH:mm:ss.fff"), DT.ToString("dd-MM-yyyy") });
                 this.dataGridView2.FirstDisplayedScrollingRowIndex = this.dataGridView2.RowCount - 1;
             }
             else if (RadioButtonAB.Checked)
             {
+                /* Stores the processed data in data grid view for sensor array A and sensor array B.*/
                 typeof(DataGridView).InvokeMember("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty, null, dataGridView3, new object[] { true });
                 dataGridView3.Rows.Add(new string[] { dataGridView3.RowCount.ToString(), S1A_Val, S2A_Val, S3A_Val, S4A_Val, S5A_Val, S6A_Val, S7A_Val, S8A_Val, S9A_Val, S1B_Val, S2B_Val, S3B_Val, S4B_Val, S5B_Val, S6B_Val, S7B_Val, S8B_Val, S9B_Val, DT.ToString("HH:mm:ss.fff") });
                 this.dataGridView3.FirstDisplayedScrollingRowIndex = this.dataGridView3.RowCount - 1;
             }
             else
             {
+                /* Stores the processed data in data grid view for individual single sensor A and single sensor B.*/
                 typeof(DataGridView).InvokeMember("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty, null, dataGridView4, new object[] { true });
                 dataGridView4.Rows.Add(new string[] { dataGridView4.RowCount.ToString(), A_1_Val, B_1_Val, DT.ToString("HH:mm:ss.fff"), DT.ToString("dd-MM-yyyy") });
                 this.dataGridView4.FirstDisplayedScrollingRowIndex = this.dataGridView4.RowCount - 1;
@@ -1376,9 +1388,12 @@ namespace WindowsFormsTest
 
         private void TimerLoadGraph_Tick(object sender, EventArgs e)
         {
+
+            /* This Timer method dispalys the processed data in the chart.*/
             DateTime DT = DateTime.Now;
             if (RadioButtonA.Checked)
             {
+                /* Dispalys the processed data of sensor array A in the chart.*/
                 chart1.Series["A1"].Points.AddXY(DateTime.Now.ToString("HH:mm:ss.fff"), S1A_Val);
                 if (chart1.Series[0].Points.Count == Limit)
                 {
@@ -1429,6 +1444,8 @@ namespace WindowsFormsTest
             }
             else if (RadioButtonB.Checked)
             {
+
+                /* Dispalys the processed data of sensor array B in the chart.*/
                 chart2.Series["B1"].Points.AddXY(DateTime.Now.ToString("HH:mm:ss.fff"), S1B_Val);
                 if (chart2.Series[0].Points.Count == Limit)
                 {
@@ -1479,6 +1496,8 @@ namespace WindowsFormsTest
             }
             else if (RadioButtonAB.Checked)
             {
+                /* Dispalys the processed data of all 18 sensors (Sensor Array A and Sensor Array B) in the chart.*/
+
                 chart3.Series["A1"].Points.AddXY(DateTime.Now.ToString("HH:mm:ss.fff"), S1A_Val);
                 if (chart3.Series[0].Points.Count == Limit)
                 {
@@ -1575,6 +1594,7 @@ namespace WindowsFormsTest
             }
             else
             {
+                /* Dispalys the processed data of individual single sensor A and single sensor B in the chart.*/
                 chart4.Series["A1"].Points.AddXY(DateTime.Now.ToString("HH:mm:ss.fff"), A_1_Val);
                 if (chart4.Series[0].Points.Count == Limit)
                 {
@@ -1590,25 +1610,27 @@ namespace WindowsFormsTest
 
         private void TimerSerial_Tick(object sender, EventArgs e)
         {
-            try {
+            /* This Timer method is used to process the incoming serial data.*/
+            try
+            {
                 if (RadioButtonA.Checked || RadioButtonB.Checked || RadioButtonAB.Checked)
                 {   
-                    string StrSerialIn = SerialPort1.ReadExisting();
+                    string StrSerialIn = SerialPort1.ReadExisting();                         // String variable reads the incoming serial port data 
                     string StrSerialInRam;
                     System.Windows.Forms.TextBox TB = new System.Windows.Forms.TextBox();
                     typeof(System.Windows.Forms.TextBox).InvokeMember("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty, null, TB, new object[] { true });
                     TB.Multiline = true;
                     TB.Text = StrSerialIn;
                     StrSerialInRam = TB.Lines[0];
-                    if (StrSerialInRam.Contains("Poti"))
+                    if (StrSerialInRam.Contains("Poti"))                                    // Checks if the user has send any command for obtaining individual potentiometer data values.
                     {
                         textBox2.Text = StrSerialInRam;
                     }
-                    StrSerialInRam = TB.Lines[0].Substring(0, 8);
+                    StrSerialInRam = TB.Lines[0].Substring(0, 8);                           // Data Processing begins for Sensor Array A
                     if (StrSerialInRam == "Array_A ")
                     {
                         Sen_A = TB.Lines[0];
-                        string[] valA = Sen_A.Split(',');
+                        string[] valA = Sen_A.Split(',');                                   // Split the data and store it in an array.
                         S1A_Val = valA[0].Substring(8);
                         S2A_Val = valA[1];
                         S3A_Val = valA[2];
@@ -1621,15 +1643,15 @@ namespace WindowsFormsTest
                     }
                     Sen_A = "";
                     StrSerialInRam = TB.Lines[1];
-                    if (StrSerialInRam.Contains("Poti"))
+                    if (StrSerialInRam.Contains("Poti"))                                  // Checks if the user has send any command for obtaining individual potentiometer data values.
                     {
                         textBox2.Text = StrSerialInRam;
                     }
-                    StrSerialInRam = TB.Lines[1].Substring(0, 8);
+                    StrSerialInRam = TB.Lines[1].Substring(0, 8);                         // Data Processing begins for Sensor Array B
                     if (StrSerialInRam == "Array_B ")
                     {
                         Sen_B = TB.Lines[1];
-                        string[] valB = Sen_B.Split(',');
+                        string[] valB = Sen_B.Split(',');                                 // Split the data and store it in an array.
                         S1B_Val = valB[0].Substring(8);
                         S2B_Val = valB[1];
                         S3B_Val = valB[2];
@@ -1655,14 +1677,14 @@ namespace WindowsFormsTest
                     typeof(System.Windows.Forms.TextBox).InvokeMember("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty, null, TB, new object[] { true });
                     TB.Multiline = true;
                     TB.Text = StrSerialIn;
-                    StrSerialInRam = TB.Lines[0].Substring(0, 2);
+                    StrSerialInRam = TB.Lines[0].Substring(0, 2);                          // Data Processing begins individual for Sensor A
                     if (StrSerialInRam == "SA")
                     {
                         A_1 = TB.Lines[0];
                         A_1_Val = A_1.Substring(2);                       
                     }
                     A_1 = "";
-                    StrSerialInRam = TB.Lines[1].Substring(0, 2);
+                    StrSerialInRam = TB.Lines[1].Substring(0, 2);                          // Data Processing begins individual for Sensor B
                     if (StrSerialInRam == "SB")
                     {
                         B_1 = TB.Lines[1];
@@ -1679,8 +1701,11 @@ namespace WindowsFormsTest
 
         private void TimerLoadLabels_Tick(object sender, EventArgs e)
         {
+            /* This Timer method dispalys the individual real time sensor values obtained from serial port.*/
             if (RadioButtonA.Checked)
             {
+                /* Individual real time sensor values of Sensor Array A.*/
+
                 LabelSensor1.Text = "A1 = " + S1A_Val;
                 LabelSensor2.Text = "A2 = " + S2A_Val;
                 LabelSensor3.Text = "A3 = " + S3A_Val;
@@ -1694,6 +1719,7 @@ namespace WindowsFormsTest
             }
             else if (RadioButtonB.Checked)
             {
+                /* Individual real time sensor values of Sensor Array B.*/
                 LabelSensor1.Text = "B1 = " + S1B_Val;
                 LabelSensor2.Text = "B2 = " + S2B_Val;
                 LabelSensor3.Text = "B3 = " + S3B_Val;
@@ -1706,6 +1732,7 @@ namespace WindowsFormsTest
             }
             else if (RadioButtonAB.Checked)
             {
+                /* Individual real time sensor values of Sensor Array A and Sensor Array B*/
                 LabelSensor10.Text = "A1 = " + S1A_Val;
                 LabelSensor11.Text = "A2 = " + S2A_Val;
                 LabelSensor12.Text = "A3 = " + S3A_Val;
@@ -1727,6 +1754,7 @@ namespace WindowsFormsTest
             }
             else
             {
+                /* Individual real time sensor values of single sensor A and single sensor B.*/
                 LabelSensor1.Text = "A1 = " + A_1_Val;
                 LabelSensor2.Text = "B1 = " + B_1_Val;
             }
@@ -1742,6 +1770,7 @@ namespace WindowsFormsTest
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            /* This Method closes the application */
             this.Hide();
             this.Parent = null;
             e.Cancel = true;
