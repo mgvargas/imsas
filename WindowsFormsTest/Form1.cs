@@ -42,18 +42,25 @@ namespace WindowsFormsTest
         {
             InitializeComponent();
             CheckForIllegalCrossThreadCalls = false;
-        }    
+        }
 
-
+        /* This Method loads the initial GUI with the functionality buttons and charts */
         private void Form1_Load(object sender, EventArgs e)
         {
-            /* Multiple Variables Declaration */
+            /* Multiple Properties of different functionality buttons are set to initial values */
+
             this.CenterToScreen();
-            ButtonDisconnect.Enabled = false;
-            ButtonConnect.Enabled = false;
-            ButtonStartRecording.Enabled = false;
-            ButtonStopRecording.Enabled = false;
-            ComboBoxBaudRate.SelectedIndex = 3;
+            ButtonDisconnect.Enabled = false;                                 // The Disconnect Button is set to false as its initial value.
+            ButtonConnect.Enabled = false;                                    // the Connect Button is set to false as its initial value.
+            ButtonStartRecording.Enabled = false;                             // The Start Recording Button is set to false as its initial value.
+            ButtonStopRecording.Enabled = false;                              // The Stop Recording Button is set to false as its initial value.
+            ComboBoxBaudRate.SelectedIndex = 1;                               // Initial Value of Baud Rate is set to index 1 i.e 9600
+
+
+            /* Multiple Properties of charts are set to initial values */
+
+
+            /* Multiple Properties of chart A for Sensor Array A are set to initial values */
 
             for (var i = 0; i <= 30; i += 1)
             {
@@ -111,6 +118,8 @@ namespace WindowsFormsTest
 
             chart1.ChartAreas[0].AxisY.Maximum = 3.5;
 
+            /* Multiple Properties of chart B for Sensor Array B are set to initial values */
+
             for (var i = 0; i <= 30; i += 1)
             {
                 chart2.Series["B1"].Points.AddXY(DateTime.Now.ToLongTimeString(), 0);
@@ -165,6 +174,8 @@ namespace WindowsFormsTest
             }
 
             chart2.ChartAreas[0].AxisY.Maximum = 3.5;
+
+            /* Multiple Properties of chart AB for Sensor Array A and Sensor Array B are set to initial values */
 
             for (var i = 0; i <= 30; i += 1)
             {
@@ -267,6 +278,8 @@ namespace WindowsFormsTest
             }
             chart3.ChartAreas[0].AxisY.Maximum = 3.5;
 
+            /* Multiple Properties of chart A1B1 for single sensor A and sensor B are set to initial values */
+
             for (var i = 0; i <= 30; i += 1)
             {
                 chart4.Series["A1"].Points.AddXY(DateTime.Now.ToLongTimeString(), 0);
@@ -289,18 +302,20 @@ namespace WindowsFormsTest
 
         private void ButtonScanPort_Click(object sender, EventArgs e)
         {
+            /* This Method scans the available serial port when the GUI is running. */
+
             ComboBoxPort.Items.Clear();
-            Array myPort;
+            Array myPort;                                             // Array to store the number of serial ports available.
             int i;
-            myPort = System.IO.Ports.SerialPort.GetPortNames();
+            myPort = System.IO.Ports.SerialPort.GetPortNames();       
             ComboBoxPort.Items.AddRange((object[])myPort);
             i = ComboBoxPort.Items.Count;
             i = i - 1;
-            try
+            try                                                       // Try block method checks whether the selected port is available for data transmission
             {
                 ComboBoxPort.SelectedIndex = i;
             }
-            catch (Exception ex)
+            catch (Exception ex)                                      // Catch block method displays the error if the port selected is not available for data transmission.
             {
                 MessageBox.Show("Com port not detected", "Warning !!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 ComboBoxPort.Text = "";
@@ -313,15 +328,20 @@ namespace WindowsFormsTest
 
         private void ButtonConnect_Click(object sender, EventArgs e)
         {
-            SerialPort1.BaudRate = Int32.Parse(ComboBoxBaudRate.SelectedItem.ToString());
-            SerialPort1.PortName = (string)ComboBoxPort.SelectedItem;
-            SerialPort1.Parity = Parity.None;
-            SerialPort1.DataBits = 8;
-            SerialPort1.StopBits = StopBits.One;
-            SerialPort1.ReadBufferSize = 20000000;
-            SerialPort1.NewLine = Environment.NewLine;
+
+            /* This connect method sets all the variables required for data transmission and then connects the GUI with the serial port  */
+
+            SerialPort1.BaudRate = Int32.Parse(ComboBoxBaudRate.SelectedItem.ToString());   // Baud Rate is selected and converted to integer
+            SerialPort1.PortName = (string)ComboBoxPort.SelectedItem;                       // Port Name is selected
+            SerialPort1.Parity = Parity.None;                                               // Parity bit is set to None
+            SerialPort1.DataBits = 8;                                                       // Data Bits is et to 8
+            SerialPort1.StopBits = StopBits.One;                                            // Stop bit is set to 1
+            SerialPort1.ReadBufferSize = 20000000;                                          // Buffer Size is set to initial value
+            SerialPort1.NewLine = Environment.NewLine;                                      // Data coming from serial port is set to newline
             SerialPort1.DtrEnable = true;
             SerialPort1.ReceivedBytesThreshold = 20000000;
+
+            /* Try and catch block checks whether the serial port is open for communication */
             try
             {
                 SerialPort1.Open();
@@ -330,8 +350,8 @@ namespace WindowsFormsTest
             {
                 MessageBox.Show(ex.Message, "Error!");
             }
-            TimerSerial.Start();
-            TimerLoadLabels.Start();
+            TimerSerial.Start();                                  // Serial Timer Method Starts once the connection has been established
+            TimerLoadLabels.Start();                              // Loading labels timer start once the connection has been established
             ComboBoxPort.Enabled = false;
             label1.Enabled = false;
             ComboBoxBaudRate.Enabled = false;
@@ -351,19 +371,23 @@ namespace WindowsFormsTest
 
         private void RadioButtonA_CheckedChanged(object sender, EventArgs e)
         {
-            RadioButtonA1B1.Enabled = false;
+            /* This Radio Button Method sets all values required for Sensor Array A and disables all the unnecessary methods. */
+
+            RadioButtonA1B1.Enabled = false;               // Radio Button A1B1 is disabled
             ButtonConnect.Enabled = true;
-            dataGridView2.Visible = false;
-            dataGridView3.Visible = false;
-            dataGridView4.Visible = false;
-            dataGridView1.Visible = true;
-            chart1.Visible = true;
+            dataGridView2.Visible = false;                 // Data Storing for Sensor Array B is disabled
+            dataGridView3.Visible = false;                 // Data Storing for Sensor Array A and Sensor Array B is disabled
+            dataGridView4.Visible = false;                 // Data Storing for individual sensor A and individual sensor B is disabled
+            dataGridView1.Visible = true;                  // Data Storing for Sensor Array A is enabled
+            chart1.Visible = true;                         
             chart2.Visible = false;
             chart3.Visible = false;
             chart4.Visible = false;
             GroupBoxComAB.Visible = false;
             GroupBoxAandB.Visible = true;
             GroupBoxAandB.Text = "Data A";
+
+            /* Labels are set for individual sensors of Array A */
             LabelSensor1.Text = "A1";
             LabelSensor2.Text = "A2";
             LabelSensor3.Text = "A3";
@@ -377,12 +401,12 @@ namespace WindowsFormsTest
 
         private void RadioButtonB_CheckedChanged(object sender, EventArgs e)
         {
-            RadioButtonA1B1.Enabled = false;
+            RadioButtonA1B1.Enabled = false;                // Radio Button A1B1 is disabled
             ButtonConnect.Enabled = true;
-            dataGridView1.Visible = false;
-            dataGridView3.Visible = false;
-            dataGridView4.Visible = false;
-            dataGridView2.Visible = true;
+            dataGridView1.Visible = false;                  // Data Storing for Sensor Array A is disabled
+            dataGridView3.Visible = false;                  // Data Storing for Sensor Array A and Sensor Array B is disabled
+            dataGridView4.Visible = false;                  // Data Storing for individual sensor A and individual sensor B is disabled
+            dataGridView2.Visible = true;                   // Data Storing for Sensor Array B is enabled
             chart2.Visible = true;
             chart1.Visible = false;
             chart3.Visible = false;
@@ -390,6 +414,8 @@ namespace WindowsFormsTest
             GroupBoxComAB.Visible = false;
             GroupBoxAandB.Visible = true;
             GroupBoxAandB.Text = "Data B";
+
+            /* Labels are set for individual sensors of Array B */
             LabelSensor1.Text = "B1";
             LabelSensor2.Text = "B2";
             LabelSensor3.Text = "B3";
@@ -404,18 +430,20 @@ namespace WindowsFormsTest
 
         private void RadioButtonAB_CheckedChanged(object sender, EventArgs e)
         {
-            RadioButtonA1B1.Enabled = false;
-            ButtonConnect.Enabled = true;
-            dataGridView1.Visible = false;
-            dataGridView2.Visible = false;
-            dataGridView4.Visible = false;
-            dataGridView3.Visible = true;
+            RadioButtonA1B1.Enabled = false;                // Radio Button A1B1 is disabled
+            ButtonConnect.Enabled = true; 
+            dataGridView1.Visible = false;                  // Data Storing for Sensor Array A is disabled
+            dataGridView2.Visible = false;                  // Data Storing for Sensor Array B is disabled
+            dataGridView4.Visible = false;                  // Data Storing for individual sensor A and individual sensor B is disabled
+            dataGridView3.Visible = true;                   // Data Storing for Sensor Array A and Sensor Array B is enabled
             chart3.Visible = true;
             chart2.Visible = false;
             chart1.Visible = false;
             chart4.Visible = false;
             GroupBoxAandB.Visible = false;
             GroupBoxComAB.Visible = true;
+
+            /* Labels are set for all 18 sensors of Array A and Array B */
             LabelSensor10.Visible = true;
             LabelSensor10.Text = "A1";
             LabelSensor11.Visible = true;
@@ -458,14 +486,14 @@ namespace WindowsFormsTest
         {
             SendData.Enabled = false;
             ClearDataSend.Enabled = false;
-            RadioButtonA.Enabled = false;
-            RadioButtonB.Enabled = false;
-            RadioButtonAB.Enabled = false;
+            RadioButtonA.Enabled = false;                         // Radio Button A is disabled
+            RadioButtonB.Enabled = false;                         // Radio Button B is disabled
+            RadioButtonAB.Enabled = false;                        // Radio Button AB is disabled
             ButtonConnect.Enabled = true;
-            dataGridView2.Visible = false;
-            dataGridView3.Visible = false;
-            dataGridView1.Visible = false;
-            dataGridView4.Visible = true;
+            dataGridView2.Visible = false;                        // Data Storing for Sensor Array B is disabled
+            dataGridView3.Visible = false;                        // Data Storing for Sensor Array A and Sensor Array B is disabled
+            dataGridView1.Visible = false;                        // Data Storing for Sensor Array A is disabled
+            dataGridView4.Visible = true;                         // Data Storing for individual sensor A and individual sensor B is enabled
             chart4.Visible = true;
             chart1.Visible = false;
             chart2.Visible = false;
@@ -473,6 +501,8 @@ namespace WindowsFormsTest
             GroupBoxComAB.Visible = false;
             GroupBoxAandB.Visible = true;
             GroupBoxAandB.Text = "Data A1B1";
+
+            /* Labels are set for individual single sensor A and Sensor B */
             LabelSensor1.Text = "A1";
             LabelSensor2.Text = "B1";
             LabelSensor3.Visible = false;
@@ -486,6 +516,8 @@ namespace WindowsFormsTest
 
         private void ButtonDisconnect_Click(object sender, EventArgs e)
         {
+            /* This Method disconnects the communication between the serial port and GUI */
+
             PictureBoxConnectionInd.Image = global::WindowsFormsTest.Properties.Resources.Red;
             PictureBoxConnectionInd.Visible = true;
             LabelStatus.Text = "Status : Disconnect";
