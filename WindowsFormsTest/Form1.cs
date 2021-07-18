@@ -1,4 +1,5 @@
-﻿using System;
+﻿/* Using all the necessary libraries for the GUI application design */
+using System;
 using System.Threading;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -27,21 +28,26 @@ namespace WindowsFormsTest
 {
     public partial class Form1 : Form
     {
-        private int Limit = 10;
-        private string FilePathAndName;
-        private string S1A_Val, S2A_Val, S3A_Val, S4A_Val, S5A_Val, S6A_Val, S7A_Val, S8A_Val, S9A_Val;
-        private string S1B_Val, S2B_Val, S3B_Val, S4B_Val, S5B_Val, S6B_Val, S7B_Val, S8B_Val, S9B_Val;
-        private string Sen_A, Sen_B;
-        private string A_1, B_1, A_1_Val, B_1_Val;
-        private string dataSend;
-        
+        /* Multiple Variables Declaration */
+
+        private int Limit = 10;                                                                          //  Variable to set the limit in Chart to 10 Scales along X-axis
+        private string FilePathAndName;                                                                  //  Variable for saving the File Path and Name
+        private string S1A_Val, S2A_Val, S3A_Val, S4A_Val, S5A_Val, S6A_Val, S7A_Val, S8A_Val, S9A_Val;  //  9 Variables defined to store the processed data from Sensor Array A 
+        private string S1B_Val, S2B_Val, S3B_Val, S4B_Val, S5B_Val, S6B_Val, S7B_Val, S8B_Val, S9B_Val;  //  9 Variables defined to store the processed data from Sensor Array B
+        private string Sen_A, Sen_B;                                                                     //  2 Variables defined for storing the incoming serial string data from Sensor Array A and Sensor Array B
+        private string A_1_Val, B_1_Val;                                                                 //  2 Variables defined to store the processed data from individual sensor A and sensor B 
+        private string A_1, B_1;                                                                         //  2 Variables defined to store the incoming serial string data from individual sensor A and sensor B 
+        private string dataSend;                                                                         //  Variable defined to send the data from GUI to Microcontroller    
         public Form1()
         {
             InitializeComponent();
             CheckForIllegalCrossThreadCalls = false;
         }    
+
+
         private void Form1_Load(object sender, EventArgs e)
         {
+            /* Multiple Variables Declaration */
             this.CenterToScreen();
             ButtonDisconnect.Enabled = false;
             ButtonConnect.Enabled = false;
@@ -304,6 +310,7 @@ namespace WindowsFormsTest
             }
             ComboBoxPort.DroppedDown = true;
         }
+
         private void ButtonConnect_Click(object sender, EventArgs e)
         {
             SerialPort1.BaudRate = Int32.Parse(ComboBoxBaudRate.SelectedItem.ToString());
@@ -323,10 +330,6 @@ namespace WindowsFormsTest
             {
                 MessageBox.Show(ex.Message, "Error!");
             }
-            //ReadEvent();
-            //serThread = new Thread(new ThreadStart(ReadEvent));
-            //serThread.Priority = ThreadPriority.Normal;
-            //serThread.Name = "SerialHandle" + serThread.ManagedThreadId;
             TimerSerial.Start();
             TimerLoadLabels.Start();
             ComboBoxPort.Enabled = false;
@@ -340,117 +343,6 @@ namespace WindowsFormsTest
             LabelStatus.Text = "Status : Connected";
             
         }
-        //private void SerPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
-        //{
-        //    //ReceivedData = SerialPort1.ReadLine();
-        //    this.Invoke(new Action(ProcessingData));
-        //}
-
-        //private void ProcessingData()
-        //{
-        //    try
-        //    {
-
-        //        if (RadioButtonA.Checked || RadioButtonB.Checked || RadioButtonAB.Checked)
-        //        {
-
-        //            string StrSerialIn = SerialPort1.ReadLine();
-        //            string StrSerialInRam;
-
-        //            System.Windows.Forms.RichTextBox TB = new System.Windows.Forms.RichTextBox();
-        //            TB.Multiline = true;
-        //            TB.Text = StrSerialIn;
-
-        //            StrSerialInRam = TB.Lines[0];
-        //            if (StrSerialInRam.Contains("Poti"))
-        //            {
-        //                textBox2.Text = StrSerialInRam;
-        //            }
-        //            StrSerialInRam = TB.Lines[0].Substring(0, 8);
-        //            if (StrSerialInRam == "Array_A ")
-        //            {
-        //                Sen_A = TB.Lines[0];
-        //                string[] valA = Sen_A.Split(',');
-        //                S1A_Val = valA[0].Substring(8);
-        //                S2A_Val = valA[1];
-        //                S3A_Val = valA[2];
-        //                S4A_Val = valA[3];
-        //                S5A_Val = valA[4];
-        //                S6A_Val = valA[5];
-        //                S7A_Val = valA[6];
-        //                S8A_Val = valA[7];
-        //                S9A_Val = valA[8];
-        //            }
-        //            Sen_A = "";
-        //            StrSerialInRam = TB.Lines[1];
-        //            if (StrSerialInRam.Contains("Poti"))
-        //            {
-        //                textBox2.Text = StrSerialInRam;
-        //            }
-        //            StrSerialInRam = TB.Lines[1].Substring(0, 8);
-        //            if (StrSerialInRam == "Array_B ")
-        //            {
-        //                Sen_B = TB.Lines[1];
-        //                string[] valB = Sen_B.Split(',');
-        //                S1B_Val = valB[0].Substring(8);
-        //                S2B_Val = valB[1];
-        //                S3B_Val = valB[2];
-        //                S4B_Val = valB[3];
-        //                S5B_Val = valB[4];
-        //                S6B_Val = valB[5];
-        //                S7B_Val = valB[6];
-        //                S8B_Val = valB[7];
-        //                S9B_Val = valB[8];
-        //            }
-        //            Sen_B = "";
-        //            StrSerialInRam = TB.Lines[2];
-        //            if (StrSerialInRam.Contains("Poti"))
-        //            {
-        //                textBox2.Text = StrSerialInRam;
-        //            }
-        //        }
-        //        else
-        //        {
-        //            string StrSerialIn = SerialPort1.ReadExisting();
-        //            string StrSerialInRam;
-
-        //            System.Windows.Forms.TextBox TB = new System.Windows.Forms.TextBox();
-        //            TB.Multiline = true;
-        //            TB.Text = StrSerialIn;
-
-        //            StrSerialInRam = TB.Lines[0].Substring(0, 2);
-        //            if (StrSerialInRam == "SA")
-        //            {
-        //                A_1 = TB.Lines[0];
-        //                A_1_Val = A_1.Substring(2);
-        //            }
-        //            A_1 = "";
-        //            StrSerialInRam = TB.Lines[1].Substring(0, 2);
-        //            if (StrSerialInRam == "SB")
-        //            {
-        //                B_1 = TB.Lines[1];
-        //                B_1_Val = B_1.Substring(2);
-        //            }
-        //            B_1 = "";
-        //        }
-
-        //        if (PictureBoxConnectionInd.Visible == true)
-        //        {
-        //            PictureBoxConnectionInd.Visible = false;
-        //        }
-        //        else if (PictureBoxConnectionInd.Visible == false)
-        //        {
-        //            PictureBoxConnectionInd.Visible = true;
-        //        }
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-
-        //    }
-
-        //}
-
 
         private void groupBox4_Enter(object sender, EventArgs e)
         {
@@ -482,6 +374,7 @@ namespace WindowsFormsTest
             LabelSensor8.Text = "A8";
             LabelSensor9.Text = "A9";
         }
+
         private void RadioButtonB_CheckedChanged(object sender, EventArgs e)
         {
             RadioButtonA1B1.Enabled = false;
@@ -629,10 +522,8 @@ namespace WindowsFormsTest
             ButtonStopRecording.Enabled = true;
             ButtonSaveToExcel.Enabled = false;
             ButtonSaveCSV.Enabled = false;
-            //DataLog = new Thread(TimerDataLogRecord);
             TimerDataLogRecord.Start();
             TimerLoadGraph.Start();
-
         }
 
         private void ButtonStopRecording_Click(object sender, EventArgs e)
@@ -718,7 +609,6 @@ namespace WindowsFormsTest
                 }
 
             }
-
             else if (RadioButtonB.Checked)
             {
                 for (var i = 0; i <= 30; i += 1)
@@ -962,6 +852,7 @@ namespace WindowsFormsTest
                 }
             }
         }
+
         private void ButtonSaveToExcel_Click(object sender, EventArgs e)
         {
             ButtonSaveToExcel.Height = 37;
@@ -1420,32 +1311,27 @@ namespace WindowsFormsTest
             if (RadioButtonA.Checked)
             {
                 typeof(DataGridView).InvokeMember("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty, null, dataGridView1, new object[] { true });
-                dataGridView1.Rows.Add(new string[] { dataGridView1.RowCount.ToString(), S1A_Val, S2A_Val, S3A_Val, S4A_Val, S5A_Val, S6A_Val, S7A_Val, S8A_Val, S9A_Val, DT.ToString("hh.mm.ss.ffffff"), DT.ToString("dd-MM-yyyy") });
+                dataGridView1.Rows.Add(new string[] { dataGridView1.RowCount.ToString(), S1A_Val, S2A_Val, S3A_Val, S4A_Val, S5A_Val, S6A_Val, S7A_Val, S8A_Val, S9A_Val, DT.ToString("HH:mm:ss.fff"), DT.ToString("dd-MM-yyyy") });
                 this.dataGridView1.FirstDisplayedScrollingRowIndex = this.dataGridView1.RowCount - 1;
             }
-
             else if (RadioButtonB.Checked)
             {
                 typeof(DataGridView).InvokeMember("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty, null, dataGridView2, new object[] { true });
-                dataGridView2.Rows.Add(new string[] { dataGridView2.RowCount.ToString(), S1B_Val, S2B_Val, S3B_Val, S4B_Val, S5B_Val, S6B_Val, S7B_Val, S8B_Val, S9B_Val, DT.ToString("hh.mm.ss.ffffff"), DT.ToString("dd-MM-yyyy") });
+                dataGridView2.Rows.Add(new string[] { dataGridView2.RowCount.ToString(), S1B_Val, S2B_Val, S3B_Val, S4B_Val, S5B_Val, S6B_Val, S7B_Val, S8B_Val, S9B_Val, DT.ToString("HH:mm:ss.fff"), DT.ToString("dd-MM-yyyy") });
                 this.dataGridView2.FirstDisplayedScrollingRowIndex = this.dataGridView2.RowCount - 1;
             }
-
             else if (RadioButtonAB.Checked)
             {
                 typeof(DataGridView).InvokeMember("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty, null, dataGridView3, new object[] { true });
-                dataGridView3.Rows.Add(new string[] { dataGridView3.RowCount.ToString(), S1A_Val, S2A_Val, S3A_Val, S4A_Val, S5A_Val, S6A_Val, S7A_Val, S8A_Val, S9A_Val, S1B_Val, S2B_Val, S3B_Val, S4B_Val, S5B_Val, S6B_Val, S7B_Val, S8B_Val, S9B_Val, DT.ToString("hh.mm.ss.ffffff") });
+                dataGridView3.Rows.Add(new string[] { dataGridView3.RowCount.ToString(), S1A_Val, S2A_Val, S3A_Val, S4A_Val, S5A_Val, S6A_Val, S7A_Val, S8A_Val, S9A_Val, S1B_Val, S2B_Val, S3B_Val, S4B_Val, S5B_Val, S6B_Val, S7B_Val, S8B_Val, S9B_Val, DT.ToString("HH:mm:ss.fff") });
                 this.dataGridView3.FirstDisplayedScrollingRowIndex = this.dataGridView3.RowCount - 1;
             }
-
             else
             {
                 typeof(DataGridView).InvokeMember("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty, null, dataGridView4, new object[] { true });
-                dataGridView4.Rows.Add(new string[] { dataGridView4.RowCount.ToString(), A_1_Val, B_1_Val, DT.ToString("hh.mm.ss.ffffff"), DT.ToString("dd-MM-yyyy") });
+                dataGridView4.Rows.Add(new string[] { dataGridView4.RowCount.ToString(), A_1_Val, B_1_Val, DT.ToString("HH:mm:ss.fff"), DT.ToString("dd-MM-yyyy") });
                 this.dataGridView4.FirstDisplayedScrollingRowIndex = this.dataGridView4.RowCount - 1;
             }
-
-
             if (PictureBoxRecordInd.Visible == true)
             {
                 PictureBoxRecordInd.Visible = false;
@@ -1461,7 +1347,7 @@ namespace WindowsFormsTest
             DateTime DT = DateTime.Now;
             if (RadioButtonA.Checked)
             {
-                chart1.Series["A1"].Points.AddXY(DateTime.Now.ToString("hh.mm.ss.fff"), S1A_Val);
+                chart1.Series["A1"].Points.AddXY(DateTime.Now.ToString("HH:mm:ss.fff"), S1A_Val);
                 if (chart1.Series[0].Points.Count == Limit)
                 {
                     chart1.Series[0].Points.RemoveAt(0);
@@ -1509,10 +1395,9 @@ namespace WindowsFormsTest
                     chart1.Series[8].Points.RemoveAt(0);
                 }
             }
-
             else if (RadioButtonB.Checked)
             {
-                chart2.Series["B1"].Points.AddXY(DateTime.Now.ToString("hh.mm.ss.fff"), S1B_Val);
+                chart2.Series["B1"].Points.AddXY(DateTime.Now.ToString("HH:mm:ss.fff"), S1B_Val);
                 if (chart2.Series[0].Points.Count == Limit)
                 {
                     chart2.Series[0].Points.RemoveAt(0);
@@ -1560,10 +1445,9 @@ namespace WindowsFormsTest
                     chart2.Series[8].Points.RemoveAt(0);
                 }
             }
-
             else if (RadioButtonAB.Checked)
             {
-                chart3.Series["A1"].Points.AddXY(DateTime.Now.ToString("hh.mm.ss.fff"), S1A_Val);
+                chart3.Series["A1"].Points.AddXY(DateTime.Now.ToString("HH:mm:ss.fff"), S1A_Val);
                 if (chart3.Series[0].Points.Count == Limit)
                 {
                     chart3.Series[0].Points.RemoveAt(0);
@@ -1656,11 +1540,10 @@ namespace WindowsFormsTest
                 {
                     chart3.Series[17].Points.RemoveAt(0);
                 }
-
             }
             else
             {
-                chart4.Series["A1"].Points.AddXY(DateTime.Now.ToString("hh.mm.ss.fff"), A_1_Val);
+                chart4.Series["A1"].Points.AddXY(DateTime.Now.ToString("HH:mm:ss.fff"), A_1_Val);
                 if (chart4.Series[0].Points.Count == Limit)
                 {
                     chart4.Series[0].Points.RemoveAt(0);
@@ -1671,22 +1554,19 @@ namespace WindowsFormsTest
                     chart4.Series[1].Points.RemoveAt(0);
                 }
             }
-
         }
+
         private void TimerSerial_Tick(object sender, EventArgs e)
         {
             try {
-
                 if (RadioButtonA.Checked || RadioButtonB.Checked || RadioButtonAB.Checked)
-                {
-                    
+                {   
                     string StrSerialIn = SerialPort1.ReadExisting();
                     string StrSerialInRam;
-
-                    System.Windows.Forms.RichTextBox TB = new System.Windows.Forms.RichTextBox();
+                    System.Windows.Forms.TextBox TB = new System.Windows.Forms.TextBox();
+                    typeof(System.Windows.Forms.TextBox).InvokeMember("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty, null, TB, new object[] { true });
                     TB.Multiline = true;
                     TB.Text = StrSerialIn;
-
                     StrSerialInRam = TB.Lines[0];
                     if (StrSerialInRam.Contains("Poti"))
                     {
@@ -1739,11 +1619,10 @@ namespace WindowsFormsTest
                 {  
                     string StrSerialIn = SerialPort1.ReadExisting();
                     string StrSerialInRam;
-
                     System.Windows.Forms.TextBox TB = new System.Windows.Forms.TextBox();
+                    typeof(System.Windows.Forms.TextBox).InvokeMember("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty, null, TB, new object[] { true });
                     TB.Multiline = true;
                     TB.Text = StrSerialIn;
-
                     StrSerialInRam = TB.Lines[0].Substring(0, 2);
                     if (StrSerialInRam == "SA")
                     {
@@ -1758,13 +1637,14 @@ namespace WindowsFormsTest
                         B_1_Val = B_1.Substring(2);
                     }
                     B_1 = "";
-                }        
+                }   
             }
             catch (Exception ex)
             {
                 
             }
         }
+
         private void TimerLoadLabels_Tick(object sender, EventArgs e)
         {
             if (RadioButtonA.Checked)
@@ -1828,140 +1708,11 @@ namespace WindowsFormsTest
             }
         }
 
-
-
-        //private void ReadEvent()
-        //{
-        //    byte[] buffer = new byte[2000];
-        //    Action kickoffRead = null;
-
-        //    kickoffRead = (Action)(() => SerialPort1.BaseStream.BeginRead(buffer, 0, buffer.Length, delegate (IAsyncResult ar)
-        //    {
-        //        try
-        //        {
-        //            int count = SerialPort1.BaseStream.EndRead(ar);
-        //            byte[] dst = new byte[count];
-        //            Buffer.BlockCopy(buffer, 0, dst, 0, count);
-        //            RaiseAppSerialDataEvent(dst);
-        //        }
-        //        catch (Exception ex)
-        //        {
-                    
-        //        }
-        //        kickoffRead();
-        //    }, null)); kickoffRead();
-        //}
-
-        //private void RaiseAppSerialDataEvent(byte[] Data)
-        //{
-        //    //string Result = Encoding.Default.GetString(Data);
-        //    try
-        //    {
-        //        if (RadioButtonA.Checked || RadioButtonB.Checked || RadioButtonAB.Checked)
-        //        {
-        //            string StrSerialIn = Encoding.Default.GetString(Data);
-        //            string StrSerialInRam;
-        //            System.Windows.Forms.RichTextBox TB = new System.Windows.Forms.RichTextBox();
-        //            TB.Multiline = true;
-        //            TB.Text = StrSerialIn;
-
-        //            StrSerialInRam = TB.Lines[0];
-        //            if (StrSerialInRam.Contains("Poti"))
-        //            {
-        //                textBox2.Text = StrSerialInRam;
-        //            }
-        //            StrSerialInRam = TB.Lines[0].Substring(0, 8);
-        //            if (StrSerialInRam == "Array_A ")
-        //            {
-        //                Sen_A = TB.Lines[0];
-        //                string[] valA = Sen_A.Split(',');
-        //                S1A_Val = valA[0].Substring(8);
-        //                S2A_Val = valA[1];
-        //                S3A_Val = valA[2];
-        //                S4A_Val = valA[3];
-        //                S5A_Val = valA[4];
-        //                S6A_Val = valA[5];
-        //                S7A_Val = valA[6];
-        //                S8A_Val = valA[7];
-        //                S9A_Val = valA[8];
-        //            }
-        //            Sen_A = "";
-        //            StrSerialInRam = TB.Lines[1];
-        //            if (StrSerialInRam.Contains("Poti"))
-        //            {
-        //                textBox2.Text = StrSerialInRam;
-        //            }
-        //            StrSerialInRam = TB.Lines[1].Substring(0, 8);
-        //            if (StrSerialInRam == "Array_B ")
-        //            {
-        //                Sen_B = TB.Lines[1];
-        //                string[] valB = Sen_B.Split(',');
-        //                S1B_Val = valB[0].Substring(8);
-        //                S2B_Val = valB[1];
-        //                S3B_Val = valB[2];
-        //                S4B_Val = valB[3];
-        //                S5B_Val = valB[4];
-        //                S6B_Val = valB[5];
-        //                S7B_Val = valB[6];
-        //                S8B_Val = valB[7];
-        //                S9B_Val = valB[8];
-        //            }
-        //            Sen_B = "";
-        //            StrSerialInRam = TB.Lines[2];
-        //            if (StrSerialInRam.Contains("Poti"))
-        //            {
-        //                textBox2.Text = StrSerialInRam;
-        //            }
-        //        }
-        //        else
-        //        {
-        //            string StrSerialIn = SerialPort1.ReadExisting();
-        //            string StrSerialInRam;
-
-        //            System.Windows.Forms.TextBox TB = new System.Windows.Forms.TextBox();
-        //            TB.Multiline = true;
-        //            TB.Text = StrSerialIn;
-
-        //            StrSerialInRam = TB.Lines[0].Substring(0, 2);
-        //            if (StrSerialInRam == "SA")
-        //            {
-        //                A_1 = TB.Lines[0];
-        //                A_1_Val = A_1.Substring(2);
-        //            }
-        //            A_1 = "";
-        //            StrSerialInRam = TB.Lines[1].Substring(0, 2);
-        //            if (StrSerialInRam == "SB")
-        //            {
-        //                B_1 = TB.Lines[1];
-        //                B_1_Val = B_1.Substring(2);
-        //            }
-        //            B_1 = "";
-        //        }
-
-        //        if (PictureBoxConnectionInd.Visible == true)
-        //        {
-        //            PictureBoxConnectionInd.Visible = false;
-        //        }
-        //        else if (PictureBoxConnectionInd.Visible == false)
-        //        {
-        //            PictureBoxConnectionInd.Visible = true;
-        //        }
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-
-        //    }
-
-        //}
-
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             this.Hide();
             this.Parent = null;
             e.Cancel = true;
         }
-
-
     }
 }
